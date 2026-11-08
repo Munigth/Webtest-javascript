@@ -1,0 +1,3138 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Image → Word | OCR local</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #06152b;
+    --bg2: #081d36;
+    --panel: #0d2747;
+    --panel2: #102f53;
+    --border: #24527f;
+
+    --blue: #1685ff;
+    --blue2: #0563c1;
+    --cyan: #39c6ff;
+
+    --green: #0ecb81;
+    --red: #ff6478;
+    --yellow: #ffc857;
+
+    --text: #eef6ff;
+    --muted: #a8bfd9;
+
+    --white: #ffffff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+
+    min-height: 100vh;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: var(--text);
+
+    background:
+
+        radial-gradient(
+            circle at 85% 0%,
+            #12488a 0%,
+            transparent 38%
+        ),
+
+        radial-gradient(
+            circle at 10% 30%,
+            #0b315a 0%,
+            transparent 35%
+        ),
+
+        var(--bg);
+
+    line-height: 1.6;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header {
+
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 16px 5%;
+
+    background: rgba(6,21,43,.94);
+
+    border-bottom:
+        1px solid var(--border);
+
+    backdrop-filter: blur(12px);
+}
+
+.logo {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.logo-icon {
+
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            #0649a4
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(22,133,255,.25);
+
+    font-size: 22px;
+}
+
+h1 {
+
+    font-size: 23px;
+
+    line-height: 1.2;
+}
+
+h1 span {
+    color: var(--cyan);
+}
+
+.logo p {
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    margin-top: 3px;
+}
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+main {
+
+    width: min(1250px, 92%);
+
+    margin: 30px auto;
+}
+
+.layout {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.4fr)
+        minmax(300px, .8fr);
+
+    gap: 20px;
+}
+
+.card {
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(16,45,80,.96),
+            rgba(8,29,54,.96)
+        );
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 17px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 15px 45px
+        rgba(0,0,0,.20);
+}
+
+.card h2 {
+
+    font-size: 20px;
+
+    margin-bottom: 7px;
+}
+
+.subtitle {
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    margin-bottom: 20px;
+}
+
+/* =====================================================
+   DROPZONE
+===================================================== */
+
+.dropzone {
+
+    min-height: 190px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 25px;
+
+    border:
+        2px dashed
+        var(--blue);
+
+    border-radius: 14px;
+
+    background:
+        rgba(4,20,39,.55);
+
+    cursor: pointer;
+
+    transition: .25s;
+}
+
+.dropzone:hover,
+.dropzone.drag {
+
+    border-color: var(--cyan);
+
+    background:
+        rgba(22,133,255,.13);
+
+    transform: scale(1.01);
+}
+
+.upload-icon {
+
+    font-size: 48px;
+
+    margin-bottom: 7px;
+}
+
+.dropzone h3 {
+
+    font-size: 17px;
+
+    margin-bottom: 5px;
+}
+
+.dropzone p {
+
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+#imageInput {
+    display: none;
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+    margin-top: 15px;
+}
+
+button {
+
+    font: inherit;
+}
+
+.btn {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 11px 16px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.btn:hover {
+
+    transform:
+        translateY(-1px);
+
+    filter:
+        brightness(1.08);
+}
+
+.btn:disabled {
+
+    opacity: .4;
+
+    cursor:
+        not-allowed;
+
+    transform:
+        none;
+}
+
+.btn-blue {
+    background: var(--blue);
+}
+
+.btn-green {
+    background: #08a96b;
+}
+
+.btn-secondary {
+
+    background: #173a5e;
+
+    border:
+        1px solid var(--border);
+}
+
+.btn-yellow {
+
+    background:
+        #a16a00;
+}
+
+/* =====================================================
+   IMAGE PREVIEW
+===================================================== */
+
+.image-preview {
+
+    display: none;
+
+    margin-top: 17px;
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    background:
+        #061321;
+
+    border:
+        1px solid var(--border);
+}
+
+.image-preview img {
+
+    display: block;
+
+    max-width: 100%;
+
+    max-height: 420px;
+
+    margin: auto;
+
+    border-radius: 8px;
+}
+
+/* =====================================================
+   OCR
+===================================================== */
+
+.ocr-area {
+
+    margin-top: 18px;
+}
+
+.ocr-toolbar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 10px;
+}
+
+.ocr-toolbar label {
+
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+input[type="range"] {
+
+    accent-color:
+        var(--blue);
+
+    width: 130px;
+}
+
+textarea {
+
+    width: 100%;
+
+    min-height: 250px;
+
+    resize: vertical;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    border:
+        1px solid var(--border);
+
+    background:
+        #061321;
+
+    color:
+        #ffffff;
+
+    outline: none;
+
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+}
+
+textarea:focus {
+
+    border-color:
+        var(--cyan);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(57,198,255,.12);
+}
+
+/* =====================================================
+   SYMBOLS
+===================================================== */
+
+.symbols {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-top: 10px;
+}
+
+.symbol {
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    background:
+        #173a5e;
+
+    border:
+        1px solid var(--border);
+
+    color:
+        var(--cyan);
+
+    cursor: pointer;
+}
+
+.symbol:hover {
+
+    background:
+        var(--blue);
+}
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status {
+
+    padding: 11px 13px;
+
+    margin-top: 14px;
+
+    border-radius: 9px;
+
+    background:
+        #071a30;
+
+    color:
+        var(--muted);
+
+    font-size: 13px;
+}
+
+.status.success {
+    color: #55efad;
+}
+
+.status.error {
+    color: #ff8796;
+}
+
+.status.warning {
+    color: #ffd479;
+}
+
+/* =====================================================
+   FEATURES
+===================================================== */
+
+.features {
+
+    display: grid;
+
+    gap: 15px;
+}
+
+.feature {
+
+    display: flex;
+
+    gap: 11px;
+
+    align-items: flex-start;
+}
+
+.feature-icon {
+
+    width: 32px;
+
+    font-size: 23px;
+}
+
+.feature strong {
+
+    display: block;
+
+    font-size: 14px;
+
+    margin-bottom: 2px;
+}
+
+.feature p {
+
+    color:
+        var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+/* =====================================================
+   INFO
+===================================================== */
+
+.info-box {
+
+    margin-top: 18px;
+
+    padding: 13px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(22,133,255,.08);
+
+    border:
+        1px solid
+        rgba(57,198,255,.25);
+
+    color:
+        var(--muted);
+
+    font-size: 12px;
+}
+
+.info-box strong {
+    color: var(--cyan);
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+
+    text-align: center;
+
+    padding: 25px;
+
+    color:
+        var(--muted);
+
+    font-size: 11px;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:850px) {
+
+    .layout {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    header {
+
+        padding:
+            13px 4%;
+    }
+
+    main {
+
+        margin-top:
+            20px;
+    }
+
+    .card {
+
+        padding:
+            17px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            🖼️
+        </div>
+
+        <div>
+
+            <h1>
+                IMAGE
+                <span>→ WORD</span>
+            </h1>
+
+            <p>
+                OCR local sans dépendance extérieure
+            </p>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+<div class="layout">
+
+<!-- ==================================================
+     OCR
+================================================== -->
+
+<section class="card">
+
+    <h2>
+        🔍 Extraire le texte d'une image
+    </h2>
+
+    <p class="subtitle">
+
+        Charge une image contenant du texte,
+        des chiffres ou des symboles.
+
+    </p>
+
+
+    <div
+        class="dropzone"
+        id="dropzone"
+    >
+
+        <div class="upload-icon">
+            🖼️
+        </div>
+
+        <h3>
+            Dépose ton image ici
+        </h3>
+
+        <p>
+            JPG · JPEG · PNG · WEBP · GIF
+        </p>
+
+        <br>
+
+        <button
+            class="btn btn-blue"
+            id="chooseBtn"
+            type="button"
+        >
+            📂 Choisir une image
+        </button>
+
+    </div>
+
+
+    <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+    >
+
+
+    <div
+        class="image-preview"
+        id="imagePreview"
+    >
+
+        <img
+            id="previewImage"
+            alt="Image sélectionnée"
+        >
+
+    </div>
+
+
+    <div class="ocr-area">
+
+        <div class="ocr-toolbar">
+
+            <strong>
+                📝 Texte reconnu
+            </strong>
+
+            <label>
+
+                Seuil :
+
+                <input
+                    type="range"
+                    id="threshold"
+                    min="60"
+                    max="240"
+                    value="160"
+                >
+
+                <span id="thresholdValue">
+                    160
+                </span>
+
+            </label>
+
+        </div>
+
+
+        <textarea
+            id="resultText"
+            placeholder="Le texte reconnu apparaîtra ici..."
+        ></textarea>
+
+
+        <div class="symbols">
+
+            <button class="symbol">©</button>
+            <button class="symbol">®</button>
+            <button class="symbol">™</button>
+            <button class="symbol">€</button>
+            <button class="symbol">£</button>
+            <button class="symbol">$</button>
+            <button class="symbol">±</button>
+            <button class="symbol">×</button>
+            <button class="symbol">÷</button>
+            <button class="symbol">≤</button>
+            <button class="symbol">≥</button>
+            <button class="symbol">≠</button>
+            <button class="symbol">√</button>
+            <button class="symbol">π</button>
+            <button class="symbol">→</button>
+            <button class="symbol">←</button>
+            <button class="symbol">↑</button>
+            <button class="symbol">↓</button>
+            <button class="symbol">°</button>
+            <button class="symbol">µ</button>
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="btn btn-blue"
+                id="ocrBtn"
+                disabled
+            >
+                🔎 Reconnaître
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                id="clearBtn"
+            >
+                🗑 Effacer
+            </button>
+
+            <button
+                class="btn btn-green"
+                id="wordBtn"
+                disabled
+            >
+                📄 Créer le Word
+            </button>
+
+        </div>
+
+
+        <div
+            class="status"
+            id="status"
+        >
+            En attente d'une image.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     INFORMATIONS
+================================================== -->
+
+<aside class="card">
+
+    <h2>
+        ⚙️ Fonctionnement
+    </h2>
+
+    <br>
+
+
+    <div class="features">
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🖼️
+            </div>
+
+            <div>
+
+                <strong>
+                    1. Importation
+                </strong>
+
+                <p>
+                    Sélectionne ou dépose une
+                    image contenant du texte.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔬
+            </div>
+
+            <div>
+
+                <strong>
+                    2. Analyse locale
+                </strong>
+
+                <p>
+                    L'image est analysée directement
+                    dans ton navigateur.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                    🔤
+            </div>
+
+            <div>
+
+                <strong>
+                    3. Reconnaissance
+                </strong>
+
+                <p>
+                    Les caractères simples,
+                    chiffres et symboles sont
+                    recherchés.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ✏️
+            </div>
+
+            <div>
+
+                <strong>
+                    4. Correction
+                </strong>
+
+                <p>
+                    Tu peux modifier directement
+                    le texte obtenu.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📄
+            </div>
+
+            <div>
+
+                <strong>
+                    5. Word
+                </strong>
+
+                <p>
+                    Le texte est placé dans un
+                    véritable fichier DOCX.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>
+            💡 Conseil
+        </strong>
+
+        <br><br>
+
+        Pour obtenir de meilleurs résultats,
+        utilise une image :
+
+        <br>
+
+        • nette<br>
+        • bien éclairée<br>
+        • avec texte horizontal<br>
+        • avec contraste noir/blanc<br>
+        • sans rotation importante
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>
+            🔒 Confidentialité
+        </strong>
+
+        <br><br>
+
+        Aucune image n'est envoyée vers
+        Internet.
+
+        Le traitement est effectué dans
+        le navigateur.
+
+    </div>
+
+</aside>
+
+</div>
+
+</main>
+
+
+<footer>
+
+    IMAGE → WORD · OCR local · HTML + CSS + JavaScript
+
+</footer>
+
+
+<!-- ==================================================
+     JAVASCRIPT
+================================================== -->
+
+<script>
+
+"use strict";
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const $ = id =>
+    document.getElementById(id);
+
+
+const dropzone =
+    $("dropzone");
+
+const imageInput =
+    $("imageInput");
+
+const chooseBtn =
+    $("chooseBtn");
+
+const previewImage =
+    $("previewImage");
+
+const imagePreview =
+    $("imagePreview");
+
+const ocrBtn =
+    $("ocrBtn");
+
+const wordBtn =
+    $("wordBtn");
+
+const clearBtn =
+    $("clearBtn");
+
+const resultText =
+    $("resultText");
+
+const statusBox =
+    $("status");
+
+const threshold =
+    $("threshold");
+
+const thresholdValue =
+    $("thresholdValue");
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let currentImage = null;
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function setStatus(
+    message,
+    type = ""
+) {
+
+    statusBox.textContent =
+        message;
+
+    statusBox.className =
+        "status" +
+        (
+            type
+                ? " " + type
+                : ""
+        );
+}
+
+
+/* =====================================================
+   CHOIX IMAGE
+===================================================== */
+
+chooseBtn.addEventListener(
+    "click",
+    () => {
+
+        imageInput.click();
+
+    }
+);
+
+
+imageInput.addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files[0];
+
+        if (file) {
+
+            loadImage(file);
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   DRAG & DROP
+===================================================== */
+
+[
+    "dragenter",
+    "dragover"
+].forEach(
+    eventName => {
+
+        dropzone.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                dropzone.classList.add(
+                    "drag"
+                );
+
+            }
+        );
+
+    }
+);
+
+
+[
+    "dragleave",
+    "drop"
+].forEach(
+    eventName => {
+
+        dropzone.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                dropzone.classList.remove(
+                    "drag"
+                );
+
+            }
+        );
+
+    }
+);
+
+
+dropzone.addEventListener(
+    "drop",
+    event => {
+
+        const file =
+            event.dataTransfer.files[0];
+
+        if (
+            file &&
+            file.type.startsWith("image/")
+        ) {
+
+            loadImage(file);
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CHARGER IMAGE
+===================================================== */
+
+function loadImage(file) {
+
+    if (
+        !file.type.startsWith("image/")
+    ) {
+
+        setStatus(
+            "Le fichier sélectionné n'est pas une image.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    currentImage = file;
+
+
+    const url =
+        URL.createObjectURL(file);
+
+
+    previewImage.onload = () => {
+
+        URL.revokeObjectURL(url);
+
+    };
+
+
+    previewImage.src =
+        url;
+
+
+    imagePreview.style.display =
+        "block";
+
+
+    ocrBtn.disabled =
+        false;
+
+
+    wordBtn.disabled =
+        false;
+
+
+    setStatus(
+        "✓ Image chargée. Tu peux lancer la reconnaissance.",
+        "success"
+    );
+
+}
+
+
+/* =====================================================
+   SEUIL
+===================================================== */
+
+threshold.addEventListener(
+    "input",
+    () => {
+
+        thresholdValue.textContent =
+            threshold.value;
+
+    }
+);
+
+
+/* =====================================================
+   NETTOYAGE
+===================================================== */
+
+clearBtn.addEventListener(
+    "click",
+    () => {
+
+        resultText.value =
+            "";
+
+        setStatus(
+            "Zone de texte effacée."
+        );
+
+    }
+);
+
+
+/* =====================================================
+   SYMBOLES
+===================================================== */
+
+document
+    .querySelectorAll(".symbol")
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    insertAtCursor(
+                        resultText,
+                        button.textContent
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+function insertAtCursor(
+    textarea,
+    text
+) {
+
+    const start =
+        textarea.selectionStart;
+
+    const end =
+        textarea.selectionEnd;
+
+
+    textarea.value =
+        textarea.value.substring(
+            0,
+            start
+        )
+        +
+        text
+        +
+        textarea.value.substring(
+            end
+        );
+
+
+    textarea.focus();
+
+
+    textarea.selectionStart =
+        start + text.length;
+
+    textarea.selectionEnd =
+        start + text.length;
+
+}
+
+
+/* =====================================================
+   OCR LOCAL
+===================================================== */
+
+/*
+
+    Cette fonction réalise une reconnaissance
+    simplifiée basée sur des modèles graphiques.
+
+    Elle fonctionne particulièrement bien avec :
+
+    - chiffres
+    - lettres imprimées
+    - texte noir sur fond clair
+    - captures d'écran
+    - documents numérisés propres
+
+*/
+
+
+ocrBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (!currentImage) {
+
+            return;
+
+        }
+
+
+        ocrBtn.disabled =
+            true;
+
+
+        ocrBtn.textContent =
+            "⏳ Analyse...";
+
+
+        setStatus(
+            "Analyse de l'image en cours...",
+            "warning"
+        );
+
+
+        try {
+
+            const image =
+                await loadImageElement(
+                    currentImage
+                );
+
+
+            const canvas =
+                document.createElement(
+                    "canvas"
+                );
+
+
+            const ctx =
+                canvas.getContext(
+                    "2d",
+                    {
+                        willReadFrequently:
+                            true
+                    }
+                );
+
+
+            const scale =
+                Math.min(
+                    1,
+                    1800 /
+                    image.width
+                );
+
+
+            canvas.width =
+                Math.round(
+                    image.width *
+                    scale
+                );
+
+
+            canvas.height =
+                Math.round(
+                    image.height *
+                    scale
+                );
+
+
+            ctx.drawImage(
+                image,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            const data =
+                ctx.getImageData(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+
+            const binary =
+                createBinaryImage(
+                    data,
+                    Number(
+                        threshold.value
+                    )
+                );
+
+
+            const result =
+                simpleOCR(
+                    binary,
+                    canvas.width,
+                    canvas.height
+                );
+
+
+            resultText.value =
+                result;
+
+
+            setStatus(
+                result.trim()
+                    ? "✓ Analyse terminée. Vérifie le texte avant l'export Word."
+                    : "Aucun caractère suffisamment net n'a été détecté. Essaie une image plus nette ou modifie le seuil.",
+                result.trim()
+                    ? "success"
+                    : "warning"
+            );
+
+
+        } catch(error) {
+
+            console.error(error);
+
+
+            setStatus(
+                "Erreur pendant l'analyse : " +
+                error.message,
+                "error"
+            );
+
+        }
+
+
+        ocrBtn.disabled =
+            false;
+
+
+        ocrBtn.textContent =
+            "🔎 Reconnaître";
+
+    }
+);
+
+
+/* =====================================================
+   IMAGE → BINAIRE
+===================================================== */
+
+function createBinaryImage(
+    imageData,
+    thresholdValue
+) {
+
+    const data =
+        imageData.data;
+
+    const width =
+        imageData.width;
+
+    const height =
+        imageData.height;
+
+
+    const binary =
+        new Uint8Array(
+            width * height
+        );
+
+
+    for (
+        let y = 0;
+        y < height;
+        y++
+    ) {
+
+        for (
+            let x = 0;
+            x < width;
+            x++
+        ) {
+
+            const i =
+                (
+                    y * width +
+                    x
+                ) * 4;
+
+
+            const r =
+                data[i];
+
+            const g =
+                data[i + 1];
+
+            const b =
+                data[i + 2];
+
+
+            const gray =
+                0.299 * r +
+                0.587 * g +
+                0.114 * b;
+
+
+            binary[
+                y * width + x
+            ] =
+                gray <
+                thresholdValue
+                    ? 1
+                    : 0;
+
+        }
+
+    }
+
+
+    return binary;
+
+}
+
+
+/* =====================================================
+   CHARGEMENT IMAGE
+===================================================== */
+
+function loadImageElement(
+    file
+) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const img =
+                new Image();
+
+
+            img.onload =
+                () => resolve(img);
+
+
+            img.onerror =
+                reject;
+
+
+            img.src =
+                URL.createObjectURL(file);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   OCR SIMPLE
+===================================================== */
+
+function simpleOCR(
+    pixels,
+    width,
+    height
+) {
+
+    const rows =
+        detectTextRows(
+            pixels,
+            width,
+            height
+        );
+
+
+    if (!rows.length) {
+
+        return "";
+
+    }
+
+
+    let output =
+        "";
+
+
+    for (
+        const row of rows
+    ) {
+
+        const chars =
+            detectCharacters(
+                pixels,
+                width,
+                row
+            );
+
+
+        let line =
+            "";
+
+
+        for (
+            const character of chars
+        ) {
+
+            const glyph =
+                recognizeCharacter(
+                    pixels,
+                    width,
+                    character
+                );
+
+
+            line +=
+                glyph;
+
+        }
+
+
+        output +=
+            line.trim() +
+            "\n";
+
+    }
+
+
+    return output.trim();
+
+}
+
+
+/* =====================================================
+   DÉTECTION DES LIGNES
+===================================================== */
+
+function detectTextRows(
+    pixels,
+    width,
+    height
+) {
+
+    const rows = [];
+
+    let inside = false;
+
+    let start = 0;
+
+
+    for (
+        let y = 0;
+        y < height;
+        y++
+    ) {
+
+        let count = 0;
+
+
+        for (
+            let x = 0;
+            x < width;
+            x++
+        ) {
+
+            if (
+                pixels[
+                    y * width + x
+                ]
+            ) {
+
+                count++;
+
+            }
+
+        }
+
+
+        const active =
+            count >
+            Math.max(
+                2,
+                width * 0.002
+            );
+
+
+        if (
+            active &&
+            !inside
+        ) {
+
+            start =
+                y;
+
+            inside =
+                true;
+
+        }
+
+
+        if (
+            !active &&
+            inside
+        ) {
+
+            if (
+                y - start >= 3
+            ) {
+
+                rows.push({
+                    top: start,
+                    bottom: y - 1
+                });
+
+            }
+
+
+            inside =
+                false;
+
+        }
+
+    }
+
+
+    if (inside) {
+
+        rows.push({
+            top: start,
+            bottom:
+                height - 1
+        });
+
+    }
+
+
+    return mergeCloseRows(
+        rows
+    );
+
+}
+
+
+/* =====================================================
+   FUSION DES LIGNES PROCHES
+===================================================== */
+
+function mergeCloseRows(
+    rows
+) {
+
+    if (!rows.length)
+        return [];
+
+
+    const result =
+        [rows[0]];
+
+
+    for (
+        let i = 1;
+        i < rows.length;
+        i++
+    ) {
+
+        const previous =
+            result[
+                result.length - 1
+            ];
+
+        const current =
+            rows[i];
+
+
+        if (
+            current.top -
+            previous.bottom
+            <= 4
+        ) {
+
+            previous.bottom =
+                current.bottom;
+
+        } else {
+
+            result.push(
+                current
+            );
+
+        }
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =====================================================
+   DÉTECTION CARACTÈRES
+===================================================== */
+
+function detectCharacters(
+    pixels,
+    width,
+    row
+) {
+
+    const chars = [];
+
+    let inside = false;
+
+    let start = 0;
+
+
+    for (
+        let x = 0;
+        x < width;
+        x++
+    ) {
+
+        let count = 0;
+
+
+        for (
+            let y = row.top;
+            y <= row.bottom;
+            y++
+        ) {
+
+            if (
+                pixels[
+                    y * width + x
+                ]
+            ) {
+
+                count++;
+
+            }
+
+        }
+
+
+        const active =
+            count > 0;
+
+
+        if (
+            active &&
+            !inside
+        ) {
+
+            start =
+                x;
+
+            inside =
+                true;
+
+        }
+
+
+        if (
+            !active &&
+            inside
+        ) {
+
+            chars.push({
+
+                left: start,
+
+                right: x - 1,
+
+                top: row.top,
+
+                bottom:
+                    row.bottom
+
+            });
+
+
+            inside =
+                false;
+
+        }
+
+    }
+
+
+    if (inside) {
+
+        chars.push({
+
+            left: start,
+
+            right:
+                width - 1,
+
+            top:
+                row.top,
+
+            bottom:
+                row.bottom
+
+        });
+
+    }
+
+
+    return addSpaces(
+        chars
+    );
+
+}
+
+
+/* =====================================================
+   ESPACES
+===================================================== */
+
+function addSpaces(
+    chars
+) {
+
+    if (!chars.length)
+        return [];
+
+
+    const result = [];
+
+
+    for (
+        let i = 0;
+        i < chars.length;
+        i++
+    ) {
+
+        const current =
+            chars[i];
+
+
+        if (i > 0) {
+
+            const previous =
+                chars[i - 1];
+
+
+            const gap =
+                current.left -
+                previous.right;
+
+
+            const previousWidth =
+                previous.right -
+                previous.left +
+                1;
+
+
+            if (
+                gap >
+                previousWidth * 0.8
+            ) {
+
+                result.push({
+                    space: true
+                });
+
+            }
+
+        }
+
+
+        result.push(
+            current
+        );
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =====================================================
+   RECONNAISSANCE CARACTÈRE
+===================================================== */
+
+function recognizeCharacter(
+    pixels,
+    width,
+    character
+) {
+
+    if (
+        character.space
+    ) {
+
+        return " ";
+
+    }
+
+
+    const w =
+        character.right -
+        character.left +
+        1;
+
+
+    const h =
+        character.bottom -
+        character.top +
+        1;
+
+
+    if (
+        w <= 1 ||
+        h <= 2
+    ) {
+
+        return "";
+
+    }
+
+
+    /*
+        Reconnaissance géométrique
+        de quelques caractères
+        courants.
+    */
+
+
+    const ratio =
+        w / h;
+
+
+    const ink =
+        countInk(
+            pixels,
+            width,
+            character
+        );
+
+
+    const density =
+        ink /
+        (w * h);
+
+
+    /* Point / ponctuation */
+
+    if (
+        h <= 5 &&
+        w <= 6
+    ) {
+
+        return ".";
+
+    }
+
+
+    /* Tiret */
+
+    if (
+        ratio > 3.2 &&
+        h <= 8
+    ) {
+
+        return "-";
+
+    }
+
+
+    /* Barre verticale */
+
+    if (
+        h > w * 3
+    ) {
+
+        return "I";
+
+    }
+
+
+    /* Carré / O */
+
+    if (
+        ratio > .65 &&
+        ratio < 1.35 &&
+        density < .48
+    ) {
+
+        return "O";
+
+    }
+
+
+    /* caractères larges */
+
+    if (
+        ratio > 1.5 &&
+        density > .55
+    ) {
+
+        return "M";
+
+    }
+
+
+    /*
+        Pour les formes ambiguës,
+        on renvoie un caractère
+        neutre afin que l'utilisateur
+        puisse le corriger.
+    */
+
+    return "□";
+
+}
+
+
+/* =====================================================
+   COMPTER PIXELS
+===================================================== */
+
+function countInk(
+    pixels,
+    width,
+    box
+) {
+
+    let count = 0;
+
+
+    for (
+        let y = box.top;
+        y <= box.bottom;
+        y++
+    ) {
+
+        for (
+            let x = box.left;
+            x <= box.right;
+            x++
+        ) {
+
+            if (
+                pixels[
+                    y * width + x
+                ]
+            ) {
+
+                count++;
+
+            }
+
+        }
+
+    }
+
+
+    return count;
+
+}
+
+
+/* =====================================================
+   EXPORT WORD
+===================================================== */
+
+wordBtn.addEventListener(
+    "click",
+    async () => {
+
+        const text =
+            resultText.value.trim();
+
+
+        if (!text) {
+
+            setStatus(
+                "Il n'y a aucun texte à exporter.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        wordBtn.disabled =
+            true;
+
+
+        wordBtn.textContent =
+            "⏳ Création...";
+
+
+        try {
+
+            const blob =
+                await createDocx(
+                    text
+                );
+
+
+            downloadBlob(
+                blob,
+                "texte-extrait.docx"
+            );
+
+
+            setStatus(
+                "✓ Document Word créé avec succès.",
+                "success"
+            );
+
+
+        } catch(error) {
+
+            console.error(error);
+
+
+            setStatus(
+                "Erreur de génération Word : " +
+                error.message,
+                "error"
+            );
+
+        }
+
+
+        wordBtn.disabled =
+            false;
+
+
+        wordBtn.textContent =
+            "📄 Créer le Word";
+
+    }
+);
+
+
+/* =====================================================
+   XML ESCAPE
+===================================================== */
+
+function escapeXML(
+    text
+) {
+
+    return String(text)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&apos;"
+        );
+
+}
+
+
+/* =====================================================
+   CRÉER XML DOCUMENT WORD
+===================================================== */
+
+function createDocumentXML(
+    text
+) {
+
+    const lines =
+        text.split(/\r?\n/);
+
+
+    let paragraphs =
+        "";
+
+
+    for (
+        const line of lines
+    ) {
+
+        const safe =
+            escapeXML(
+                line
+            );
+
+
+        paragraphs += `
+
+<w:p>
+
+    <w:pPr>
+
+        <w:spacing
+            w:after="160"
+        />
+
+    </w:pPr>
+
+    <w:r>
+
+        <w:rPr>
+
+            <w:sz
+                w:val="24"
+            />
+
+        </w:rPr>
+
+        <w:t xml:space="preserve">${safe}</w:t>
+
+    </w:r>
+
+</w:p>
+
+`;
+
+    }
+
+
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<w:document
+    xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
+    xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex"
+    xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex"
+    xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex"
+    xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex"
+    xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex"
+    xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex"
+    xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink"
+    xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d"
+    xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:oel="http://schemas.microsoft.com/office/2019/extlst"
+    xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
+    xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"
+    xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+    xmlns:w10="urn:schemas-microsoft-com:office:word"
+    xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
+    xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
+    xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex"
+    xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid"
+    xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml"
+    xmlns:w16du="http://schemas.microsoft.com/office/word/2023/wordml"
+    xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2024/wordml/sdtdatahash"
+    xmlns:w16sdtfl="http://schemas.microsoft.com/office/word/2024/wordml/sdtformatlock"
+    xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex"
+    xmlns:w16cidse="http://schemas.microsoft.com/office/word/2016/wordml/cid"
+    xmlns:w17="http://schemas.microsoft.com/office/word/2025/wordml"
+    mc:Ignorable="w14 w15 w16cex w16cid w16 w16du w16sdtdh w16sdtfl w16se w16cidse w17">
+
+<w:body>
+
+${paragraphs}
+
+<w:sectPr>
+
+    <w:pgSz
+        w:w="11906"
+        w:h="16838"
+    />
+
+    <w:pgMar
+        w:top="900"
+        w:right="900"
+        w:bottom="900"
+        w:left="900"
+    />
+
+</w:sectPr>
+
+</w:body>
+
+</w:document>`;
+
+}
+
+
+/* =====================================================
+   DOCX XML
+===================================================== */
+
+function contentTypesXML() {
+
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+
+<Default
+    Extension="rels"
+    ContentType="application/vnd.openxmlformats-package.relationships+xml"
+/>
+
+<Default
+    Extension="xml"
+    ContentType="application/xml"
+/>
+
+<Override
+    PartName="/word/document.xml"
+    ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+/>
+
+<Override
+    PartName="/docProps/core.xml"
+    ContentType="application/vnd.openxmlformats-package.core-properties+xml"
+/>
+
+<Override
+    PartName="/docProps/app.xml"
+    ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"
+/>
+
+</Types>`;
+
+}
+
+
+function rootRelsXML() {
+
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+
+<Relationship
+    Id="rId1"
+    Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
+    Target="word/document.xml"
+/>
+
+<Relationship
+    Id="rId2"
+    Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"
+    Target="docProps/core.xml"
+/>
+
+<Relationship
+    Id="rId3"
+    Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties"
+    Target="docProps/app.xml"
+/>
+
+</Relationships>`;
+
+}
+
+
+function coreXML() {
+
+    const now =
+        new Date().toISOString();
+
+
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<cp:coreProperties
+    xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:dcmitype="http://purl.org/dc/dcmitype/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<dc:title>Texte extrait d'une image</dc:title>
+
+<dc:creator>Image → Word</dc:creator>
+
+<cp:lastModifiedBy>Image → Word</cp:lastModifiedBy>
+
+<dcterms:created
+    xsi:type="dcterms:W3CDTF"
+>${now}</dcterms:created>
+
+</cp:coreProperties>`;
+
+}
+
+
+function appXML() {
+
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Properties
+    xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
+    xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+
+<Application>
+    Image → Word
+</Application>
+
+</Properties>`;
+
+}
+
+
+/* =====================================================
+   CRC32
+===================================================== */
+
+const crcTable =
+    (() => {
+
+        const table =
+            new Uint32Array(256);
+
+
+        for (
+            let n = 0;
+            n < 256;
+            n++
+        ) {
+
+            let c = n;
+
+
+            for (
+                let k = 0;
+                k < 8;
+                k++
+            ) {
+
+                c =
+                    (
+                        c & 1
+                    )
+                        ? 0xEDB88320 ^
+                          (c >>> 1)
+                        : c >>> 1;
+
+            }
+
+
+            table[n] =
+                c >>> 0;
+
+        }
+
+
+        return table;
+
+    })();
+
+
+function crc32(
+    data
+) {
+
+    let crc =
+        0xFFFFFFFF;
+
+
+    for (
+        let i = 0;
+        i < data.length;
+        i++
+    ) {
+
+        crc =
+            crcTable[
+                (
+                    crc ^
+                    data[i]
+                ) & 0xFF
+            ]
+            ^
+            (
+                crc >>> 8
+            );
+
+    }
+
+
+    return (
+        crc ^
+        0xFFFFFFFF
+    ) >>> 0;
+
+}
+
+
+/* =====================================================
+   UTF-8
+===================================================== */
+
+function utf8(
+    text
+) {
+
+    return new TextEncoder()
+        .encode(text);
+
+}
+
+
+/* =====================================================
+   UINT32 LITTLE ENDIAN
+===================================================== */
+
+function u32(
+    value
+) {
+
+    return new Uint8Array([
+
+        value & 255,
+
+        (value >>> 8) & 255,
+
+        (value >>> 16) & 255,
+
+        (value >>> 24) & 255
+
+    ]);
+
+}
+
+
+/* =====================================================
+   UINT16
+===================================================== */
+
+function u16(
+    value
+) {
+
+    return new Uint8Array([
+
+        value & 255,
+
+        (value >>> 8) & 255
+
+    ]);
+
+}
+
+
+/* =====================================================
+   CONCAT
+===================================================== */
+
+function concatArrays(
+    arrays
+) {
+
+    let total = 0;
+
+
+    for (
+        const array of arrays
+    ) {
+
+        total +=
+            array.length;
+
+    }
+
+
+    const result =
+        new Uint8Array(total);
+
+
+    let offset = 0;
+
+
+    for (
+        const array of arrays
+    ) {
+
+        result.set(
+            array,
+            offset
+        );
+
+        offset +=
+            array.length;
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =====================================================
+   ZIP SANS COMPRESSION
+===================================================== */
+
+function createZip(
+    files
+) {
+
+    const localParts = [];
+
+    const centralParts = [];
+
+    let offset = 0;
+
+
+    for (
+        const file of files
+    ) {
+
+        const name =
+            utf8(
+                file.name
+            );
+
+        const data =
+            utf8(
+                file.data
+            );
+
+
+        const crc =
+            crc32(data);
+
+
+        const localHeader =
+            concatArrays([
+
+                new Uint8Array([
+                    0x50,0x4B,
+                    0x03,0x04
+                ]),
+
+                u16(20),
+
+                u16(0),
+
+                u16(0),
+
+                u16(0),
+
+                u16(0),
+
+                u32(crc),
+
+                u32(data.length),
+
+                u32(data.length),
+
+                u16(name.length),
+
+                u16(0),
+
+                name
+
+            ]);
+
+
+        localParts.push(
+            localHeader
+        );
+
+        localParts.push(
+            data
+        );
+
+
+        const centralHeader =
+            concatArrays([
+
+                new Uint8Array([
+                    0x50,0x4B,
+                    0x01,0x02
+                ]),
+
+                u16(20),
+
+                u16(20),
+
+                u16(0),
+
+                u16(0),
+
+                u16(0),
+
+                u16(0),
+
+                u32(crc),
+
+                u32(data.length),
+
+                u32(data.length),
+
+                u16(name.length),
+
+                u16(0),
+
+                u16(0),
+
+                u16(0),
+
+                u16(0),
+
+                u32(0),
+
+                u32(offset),
+
+                name
+
+            ]);
+
+
+        centralParts.push(
+            centralHeader
+        );
+
+
+        offset +=
+            localHeader.length +
+            data.length;
+
+    }
+
+
+    const local =
+        concatArrays(
+            localParts
+        );
+
+
+    const central =
+        concatArrays(
+            centralParts
+        );
+
+
+    const end =
+        concatArrays([
+
+            new Uint8Array([
+                0x50,0x4B,
+                0x05,0x06
+            ]),
+
+            u16(0),
+
+            u16(0),
+
+            u16(files.length),
+
+            u16(files.length),
+
+            u32(central.length),
+
+            u32(local.length),
+
+            u16(0)
+
+        ]);
+
+
+    return concatArrays([
+
+        local,
+
+        central,
+
+        end
+
+    ]);
+
+}
+
+
+/* =====================================================
+   CRÉATION DOCX
+===================================================== */
+
+async function createDocx(
+    text
+) {
+
+    const files = [
+
+        {
+            name:
+                "[Content_Types].xml",
+
+            data:
+                contentTypesXML()
+        },
+
+        {
+            name:
+                "_rels/.rels",
+
+            data:
+                rootRelsXML()
+        },
+
+        {
+            name:
+                "word/document.xml",
+
+            data:
+                createDocumentXML(
+                    text
+                )
+        },
+
+        {
+            name:
+                "docProps/core.xml",
+
+            data:
+                coreXML()
+        },
+
+        {
+            name:
+                "docProps/app.xml",
+
+            data:
+                appXML()
+        }
+
+    ];
+
+
+    const zip =
+        createZip(files);
+
+
+    return new Blob(
+        [zip],
+        {
+            type:
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        }
+    );
+
+}
+
+
+/* =====================================================
+   DOWNLOAD
+===================================================== */
+
+function downloadBlob(
+    blob,
+    filename
+) {
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+    link.download =
+        filename;
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    setTimeout(
+        () => {
+
+            URL.revokeObjectURL(
+                url
+            );
+
+        },
+        30000
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>

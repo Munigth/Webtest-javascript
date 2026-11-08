@@ -1,0 +1,3648 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#06152b"
+    >
+
+    <title>MD → DOCX | Convertisseur Markdown</title>
+
+    <!--
+        MARKED
+        Analyse du Markdown
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+
+    <!--
+        DOMPurify
+        Sécurisation de l'aperçu HTML
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
+    <!--
+        DOCX
+        Génération du document Word
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+
+
+    <style>
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        :root {
+
+            --bg: #06152b;
+
+            --bg2: #081d36;
+
+            --panel: #0d2747;
+
+            --panel2: #102f53;
+
+            --border: #24527f;
+
+            --blue: #1685ff;
+
+            --blue2: #0563c1;
+
+            --cyan: #39c6ff;
+
+            --green: #0ecb81;
+
+            --red: #ff6478;
+
+            --yellow: #ffc857;
+
+            --text: #eef6ff;
+
+            --muted: #a8bfd9;
+
+            --white: #ffffff;
+
+        }
+
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+
+                radial-gradient(
+                    circle at 85% 0%,
+                    #12488a 0%,
+                    transparent 38%
+                ),
+
+                radial-gradient(
+                    circle at 10% 30%,
+                    #0b315a 0%,
+                    transparent 35%
+                ),
+
+                var(--bg);
+
+            line-height: 1.6;
+        }
+
+
+        button,
+        input {
+            font: inherit;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 18px 5%;
+
+            background: rgba(6, 21, 43, .92);
+
+            border-bottom: 1px solid var(--border);
+
+            backdrop-filter: blur(12px);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+
+        .logo-icon {
+
+            width: 48px;
+
+            height: 48px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--blue),
+                    #0649a4
+                );
+
+            box-shadow:
+                0 8px 25px rgba(22, 133, 255, .25);
+
+            font-size: 13px;
+
+            font-weight: 900;
+        }
+
+
+        h1 {
+
+            font-size: 25px;
+
+            line-height: 1.2;
+        }
+
+
+        h1 span {
+            color: var(--cyan);
+        }
+
+
+        .logo p {
+
+            margin-top: 4px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .header-note {
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        main {
+
+            width: min(1180px, 92%);
+
+            margin: 32px auto;
+        }
+
+
+        .layout {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.75fr)
+                minmax(260px, .8fr);
+
+            gap: 20px;
+        }
+
+
+        .card {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(16, 45, 80, .96),
+                    rgba(8, 29, 54, .96)
+                );
+
+            border: 1px solid var(--border);
+
+            border-radius: 17px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, .18);
+        }
+
+
+        .card h2 {
+
+            font-size: 21px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .subtitle {
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            margin-bottom: 23px;
+        }
+
+
+        /* =====================================================
+           DROPZONE
+        ===================================================== */
+
+        .dropzone {
+
+            min-height: 235px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 25px;
+
+            border:
+
+                2px dashed
+
+                var(--blue);
+
+            border-radius: 13px;
+
+            background:
+                rgba(4, 20, 39, .55);
+
+            transition: .25s;
+        }
+
+
+        .dropzone.drag {
+
+            border-color: var(--cyan);
+
+            background:
+                rgba(22, 133, 255, .13);
+
+            transform: scale(1.01);
+        }
+
+
+        .upload-icon {
+
+            font-size: 48px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .dropzone h3 {
+
+            font-size: 17px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .dropzone p {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin: 4px 0;
+        }
+
+
+        #fileInput {
+
+            display: none;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 9px;
+
+            padding: 12px 18px;
+
+            border: 0;
+
+            border-radius: 9px;
+
+            background: var(--blue);
+
+            color: white;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+
+        .btn:hover {
+
+            transform: translateY(-1px);
+
+            filter: brightness(1.1);
+        }
+
+
+        .btn:disabled {
+
+            opacity: .45;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        .btn-green {
+            background: #08a96b;
+        }
+
+
+        .btn-secondary {
+
+            background: #173a5e;
+
+            border: 1px solid var(--border);
+        }
+
+
+        .btn-yellow {
+
+            background: #a16a00;
+        }
+
+
+        /* =====================================================
+           FILE INFORMATION
+        ===================================================== */
+
+        .file-info {
+
+            display: none;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-top: 14px;
+
+            padding: 14px;
+
+            border:
+
+                1px solid
+
+                var(--border);
+
+            border-radius: 11px;
+
+            background: var(--panel);
+        }
+
+
+        .file-icon {
+
+            font-size: 31px;
+        }
+
+
+        .file-name {
+
+            font-weight: 700;
+
+            overflow-wrap: anywhere;
+        }
+
+
+        .file-size {
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        .file-state {
+
+            margin-left: auto;
+
+            color: #55efad;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           ACTIONS
+        ===================================================== */
+
+        .actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 17px;
+        }
+
+
+        .actions .btn {
+
+            flex: 1;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+
+            padding: 12px 14px;
+
+            margin-top: 16px;
+
+            border-radius: 9px;
+
+            background: #071a30;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .status.success {
+            color: #55efad;
+        }
+
+
+        .status.error {
+            color: #ff8796;
+        }
+
+
+        .status.warning {
+            color: #ffd479;
+        }
+
+
+        /* =====================================================
+           FEATURES
+        ===================================================== */
+
+        .features {
+
+            display: grid;
+
+            gap: 16px;
+
+            margin-top: 18px;
+        }
+
+
+        .feature {
+
+            display: flex;
+
+            gap: 12px;
+
+            align-items: flex-start;
+        }
+
+
+        .feature-icon {
+
+            font-size: 25px;
+
+            width: 30px;
+        }
+
+
+        .feature strong {
+
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .feature p {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           IMAGE FILES
+        ===================================================== */
+
+        .image-list {
+
+            display: none;
+
+            margin-top: 16px;
+
+            padding: 14px;
+
+            border-radius: 10px;
+
+            background: rgba(5, 19, 36, .8);
+
+            border: 1px solid var(--border);
+        }
+
+
+        .image-list-title {
+
+            font-weight: 700;
+
+            font-size: 13px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .image-file {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 7px 0;
+
+            border-bottom: 1px solid rgba(255,255,255,.06);
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        .image-file:last-child {
+            border-bottom: 0;
+        }
+
+
+        /* =====================================================
+           PREVIEW
+        ===================================================== */
+
+        .preview-card {
+
+            margin-top: 22px;
+        }
+
+
+        .preview-toolbar {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+            margin-bottom: 15px;
+        }
+
+
+        .preview {
+
+            min-height: 180px;
+
+            max-height: 650px;
+
+            overflow: auto;
+
+            padding: 28px;
+
+            border-radius: 10px;
+
+            background: white;
+
+            color: #202a39;
+
+            line-height: 1.7;
+        }
+
+
+        .preview h1,
+        .preview h2,
+        .preview h3,
+        .preview h4,
+        .preview h5,
+        .preview h6 {
+
+            color: #163d70;
+
+            margin-top: 20px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .preview h1 {
+            font-size: 30px;
+        }
+
+
+        .preview h2 {
+            font-size: 25px;
+        }
+
+
+        .preview h3 {
+            font-size: 21px;
+        }
+
+
+        .preview p {
+            margin-bottom: 12px;
+        }
+
+
+        .preview ul,
+        .preview ol {
+
+            padding-left: 30px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .preview pre {
+
+            padding: 14px;
+
+            border-radius: 8px;
+
+            background: #edf2f8;
+
+            overflow: auto;
+        }
+
+
+        .preview code {
+
+            background: #e8eef7;
+
+            padding: 2px 5px;
+
+            border-radius: 4px;
+        }
+
+
+        .preview pre code {
+
+            background: transparent;
+
+            padding: 0;
+        }
+
+
+        .preview table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin: 15px 0;
+        }
+
+
+        .preview th,
+        .preview td {
+
+            padding: 8px;
+
+            border: 1px solid #b9c8d9;
+
+            text-align: left;
+        }
+
+
+        .preview th {
+
+            background: #e8eef7;
+        }
+
+
+        .preview blockquote {
+
+            border-left:
+                4px solid
+                var(--blue);
+
+            padding-left: 15px;
+
+            color: #52657a;
+        }
+
+
+        .preview img {
+
+            display: block;
+
+            max-width: 100%;
+
+            max-height: 600px;
+
+            height: auto;
+
+            margin: 15px auto;
+
+            border-radius: 7px;
+        }
+
+
+        .preview a {
+
+            color: #0563c1;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 800px) {
+
+            .layout {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            header {
+
+                padding: 15px 4%;
+            }
+
+
+            .header-note {
+
+                display: none;
+            }
+
+
+            main {
+
+                margin-top: 20px;
+            }
+
+
+            .card {
+
+                padding: 17px;
+            }
+
+
+            .actions .btn {
+
+                flex-basis: 100%;
+            }
+
+
+            .preview {
+
+                padding: 17px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            MD→W
+        </div>
+
+        <div>
+
+            <h1>
+                MD <span>→ DOCX</span>
+            </h1>
+
+            <p>
+                Convertisseur Markdown vers Word
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-note">
+        Images · Tableaux · Titres · Code
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+    <div class="layout">
+
+
+        <!-- =================================================
+             CONVERTISSEUR
+        ================================================== -->
+
+        <section class="card">
+
+            <h2>
+                Convertir Markdown en DOCX
+            </h2>
+
+
+            <p class="subtitle">
+
+                Sélectionnez votre fichier Markdown ainsi que
+                les images utilisées dans celui-ci.
+
+                Les images seront intégrées directement
+                dans le document Word.
+
+            </p>
+
+
+            <!-- DROPZONE -->
+
+            <div
+                class="dropzone"
+                id="dropzone"
+            >
+
+                <div class="upload-icon">
+                    📝
+                </div>
+
+
+                <h3>
+                    Glissez-déposez vos fichiers ici
+                </h3>
+
+
+                <p>
+                    Fichier .md + images utilisées
+                </p>
+
+
+                <button
+                    class="btn"
+                    id="chooseBtn"
+                    type="button"
+                >
+                    📂 Choisir les fichiers
+                </button>
+
+
+                <p>
+                    .md · .markdown · JPG · PNG · GIF · WEBP · SVG
+                </p>
+
+            </div>
+
+
+            <!-- INPUT MULTIPLE -->
+
+            <input
+                id="fileInput"
+                type="file"
+                multiple
+                accept="
+                    .md,
+                    .markdown,
+                    .jpg,
+                    .jpeg,
+                    .png,
+                    .gif,
+                    .webp,
+                    .svg
+                "
+            >
+
+
+            <!-- FICHIER MARKDOWN -->
+
+            <div
+                class="file-info"
+                id="fileInfo"
+            >
+
+                <div class="file-icon">
+                    📄
+                </div>
+
+
+                <div>
+
+                    <div
+                        class="file-name"
+                        id="fileName"
+                    ></div>
+
+
+                    <div
+                        class="file-size"
+                        id="fileSize"
+                    ></div>
+
+                </div>
+
+
+                <div class="file-state">
+                    ✓ Markdown chargé
+                </div>
+
+            </div>
+
+
+            <!-- LISTE DES IMAGES -->
+
+            <div
+                class="image-list"
+                id="imageList"
+            >
+
+                <div class="image-list-title">
+                    🖼️ Images disponibles
+                </div>
+
+                <div id="imageFiles"></div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <button
+                    class="btn btn-secondary"
+                    id="previewBtn"
+                    disabled
+                >
+                    👁 Prévisualiser
+                </button>
+
+
+                <button
+                    class="btn btn-green"
+                    id="convertBtn"
+                    disabled
+                >
+                    ⬇ Convertir en DOCX
+                </button>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div
+                class="status"
+                id="status"
+                role="status"
+                aria-live="polite"
+            >
+                En attente d'un fichier Markdown.
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             FONCTIONNALITÉS
+        ================================================== -->
+
+        <aside class="card">
+
+            <h2>
+                Fonctionnalités
+            </h2>
+
+
+            <div class="features">
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🖼️
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Images intégrées
+                        </strong>
+
+                        <p>
+                            Les images Markdown sont
+                            incorporées directement dans Word.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Tableaux
+                        </strong>
+
+                        <p>
+                            Conversion des tableaux Markdown
+                            vers des tableaux Word.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🔤
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Titres et listes
+                        </strong>
+
+                        <p>
+                            H1 à H6, listes numérotées
+                            et listes à puces.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        💻
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Code
+                        </strong>
+
+                        <p>
+                            Les blocs de code sont conservés
+                            dans le document Word.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🔒
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Traitement local
+                        </strong>
+
+                        <p>
+                            Le contenu est traité dans
+                            le navigateur.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="status">
+
+                <strong>
+                    💡 Exemple
+                </strong>
+
+                <br><br>
+
+                Dans ton Markdown :
+
+                <br><br>
+
+                <code>
+                    ![Mon image](images/photo.jpg)
+                </code>
+
+                <br><br>
+
+                Le fichier
+                <strong>
+                    photo.jpg
+                </strong>
+                sera intégré au document DOCX.
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         APERÇU
+    ====================================================== -->
+
+    <section
+        class="card preview-card"
+        id="previewCard"
+        hidden
+    >
+
+        <div class="preview-toolbar">
+
+            <h2>
+                Aperçu du document
+            </h2>
+
+
+            <button
+                class="btn btn-secondary"
+                id="closePreviewBtn"
+            >
+                Fermer
+            </button>
+
+        </div>
+
+
+        <div
+            class="preview"
+            id="preview"
+        ></div>
+
+    </section>
+
+</main>
+
+
+
+<footer>
+
+    MD → DOCX · Conversion Markdown vers Microsoft Word
+
+</footer>
+
+
+
+<script>
+
+"use strict";
+
+/* =========================================================
+   BIBLIOTHÈQUE DOCX
+========================================================= */
+
+const D = window.docx;
+
+
+/* =========================================================
+   RÉFÉRENCE AU DOCUMENT HTML
+   IMPORTANT :
+   On utilise window.document pour éviter tout conflit
+   avec une variable appelée "document".
+========================================================= */
+
+const DOM = window.document;
+
+
+/* =========================================================
+   VÉRIFICATION DES BIBLIOTHÈQUES
+========================================================= */
+
+if (!window.marked) {
+
+    console.error(
+        "La bibliothèque Marked.js est absente."
+    );
+
+}
+
+
+if (!window.DOMPurify) {
+
+    console.error(
+        "La bibliothèque DOMPurify est absente."
+    );
+
+}
+
+
+if (!window.docx) {
+
+    console.error(
+        "La bibliothèque docx est absente."
+    );
+
+}
+
+
+/* =========================================================
+   RÉFÉRENCES DOM
+========================================================= */
+
+const $ = id =>
+    DOM.getElementById(id);
+
+
+const fileInput =
+    $("fileInput");
+
+
+const dropzone =
+    $("dropzone");
+
+
+const fileInfo =
+    $("fileInfo");
+
+
+const statusBox =
+    $("status");
+
+
+const previewCard =
+    $("previewCard");
+
+
+const preview =
+    $("preview");
+
+
+const imageList =
+    $("imageList");
+
+
+const imageFiles =
+    $("imageFiles");
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let currentMarkdownFile = null;
+
+let markdownText = "";
+
+let selectedFiles = [];
+
+let imageMap = new Map();
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(message, type = "") {
+
+    if (!statusBox)
+        return;
+
+
+    statusBox.textContent =
+        message;
+
+
+    statusBox.className =
+        "status" +
+        (type ? " " + type : "");
+}
+
+
+/* =========================================================
+   TAILLE FICHIER
+========================================================= */
+
+function formatSize(bytes) {
+
+    if (bytes < 1024)
+        return bytes + " octets";
+
+
+    if (bytes < 1024 * 1024) {
+
+        return (
+            bytes / 1024
+        ).toFixed(1) + " Ko";
+
+    }
+
+
+    return (
+        bytes /
+        (1024 * 1024)
+    ).toFixed(2) + " Mo";
+}
+
+
+/* =========================================================
+   TEST MARKDOWN
+========================================================= */
+
+function isMarkdownFile(file) {
+
+    return /\.(md|markdown)$/i
+        .test(file.name);
+}
+
+
+/* =========================================================
+   TEST IMAGE
+========================================================= */
+
+function isImageFile(file) {
+
+    return /^image\//i
+        .test(file.type)
+        ||
+        /\.(jpg|jpeg|png|gif|webp|svg)$/i
+            .test(file.name);
+}
+
+
+/* =========================================================
+   NORMALISER UN CHEMIN D'IMAGE
+========================================================= */
+
+function normalizePath(path) {
+
+    if (!path)
+        return "";
+
+
+    let value;
+
+
+    try {
+
+        value =
+            decodeURIComponent(path);
+
+    } catch {
+
+        value =
+            String(path);
+
+    }
+
+
+    value = value
+        .replace(/^file:\/\//i, "")
+        .replace(/\\/g, "/");
+
+
+    const parts =
+        value.split("/");
+
+
+    const clean = [];
+
+
+    for (const part of parts) {
+
+        if (
+            !part ||
+            part === "."
+        ) {
+
+            continue;
+        }
+
+
+        if (part === "..") {
+
+            clean.pop();
+
+        } else {
+
+            clean.push(part);
+
+        }
+    }
+
+
+    return clean
+        .join("/")
+        .toLowerCase();
+}
+
+
+/* =========================================================
+   NOM DU FICHIER
+========================================================= */
+
+function basename(path) {
+
+    path =
+        String(path || "")
+            .replace(/\\/g, "/");
+
+
+    return path
+        .split("/")
+        .pop()
+        .toLowerCase();
+}
+
+
+/* =========================================================
+   CRÉER MAP DES IMAGES
+========================================================= */
+
+function buildImageMap() {
+
+    imageMap.clear();
+
+
+    for (const file of selectedFiles) {
+
+        if (!isImageFile(file))
+            continue;
+
+
+        const fullName =
+            normalizePath(
+                file.name
+            );
+
+
+        const base =
+            basename(
+                file.name
+            );
+
+
+        imageMap.set(
+            fullName,
+            file
+        );
+
+
+        imageMap.set(
+            base,
+            file
+        );
+    }
+}
+
+
+/* =========================================================
+   AFFICHER LES IMAGES DISPONIBLES
+========================================================= */
+
+function displayImageFiles() {
+
+    if (!imageFiles || !imageList)
+        return;
+
+
+    imageFiles.innerHTML = "";
+
+
+    const images =
+        selectedFiles.filter(
+            isImageFile
+        );
+
+
+    if (!images.length) {
+
+        imageList.style.display =
+            "none";
+
+        return;
+    }
+
+
+    imageList.style.display =
+        "block";
+
+
+    for (const file of images) {
+
+        const row =
+            DOM.createElement(
+                "div"
+            );
+
+
+        row.className =
+            "image-file";
+
+
+        row.innerHTML = `
+            <span>🖼️</span>
+            <span>${escapeHTML(file.name)}</span>
+            <span>(${formatSize(file.size)})</span>
+        `;
+
+
+        imageFiles.appendChild(
+            row
+        );
+    }
+}
+
+
+/* =========================================================
+   ÉCHAPPEMENT HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   CHARGER LES FICHIERS
+========================================================= */
+
+function loadFiles(files) {
+
+    selectedFiles =
+        Array.from(
+            files || []
+        );
+
+
+    const markdownFiles =
+        selectedFiles.filter(
+            isMarkdownFile
+        );
+
+
+    if (!markdownFiles.length) {
+
+        setStatus(
+            "Sélectionnez au moins un fichier Markdown (.md).",
+            "error"
+        );
+
+        return;
+    }
+
+
+    currentMarkdownFile =
+        markdownFiles[0];
+
+
+    if (
+        currentMarkdownFile.size >
+        10 * 1024 * 1024
+    ) {
+
+        setStatus(
+            "Le fichier Markdown dépasse 10 Mo.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = () => {
+
+        markdownText =
+            String(
+                reader.result || ""
+            );
+
+
+        buildImageMap();
+
+        displayImageFiles();
+
+
+        $("fileName").textContent =
+            currentMarkdownFile.name;
+
+
+        $("fileSize").textContent =
+            "Taille : " +
+            formatSize(
+                currentMarkdownFile.size
+            );
+
+
+        fileInfo.style.display =
+            "flex";
+
+
+        $("previewBtn").disabled =
+            false;
+
+
+        $("convertBtn").disabled =
+            false;
+
+
+        const count =
+            selectedFiles.filter(
+                isImageFile
+            ).length;
+
+
+        if (count > 0) {
+
+            setStatus(
+                `Markdown chargé avec ${count} image(s) disponible(s).`,
+                "success"
+            );
+
+        } else {
+
+            setStatus(
+                "Markdown chargé. Aucune image locale supplémentaire n'a été sélectionnée.",
+                "warning"
+            );
+        }
+
+
+        if (
+            previewCard &&
+            !previewCard.hidden
+        ) {
+
+            renderPreview();
+
+        }
+    };
+
+
+    reader.onerror = () => {
+
+        setStatus(
+            "Impossible de lire le fichier Markdown.",
+            "error"
+        );
+    };
+
+
+    reader.readAsText(
+        currentMarkdownFile,
+        "UTF-8"
+    );
+}
+
+
+/* =========================================================
+   BOUTON CHOISIR
+========================================================= */
+
+$("chooseBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            fileInput.click();
+
+        }
+    );
+
+
+/* =========================================================
+   INPUT FICHIERS
+========================================================= */
+
+fileInput.addEventListener(
+    "change",
+    event => {
+
+        loadFiles(
+            event.target.files
+        );
+
+
+        fileInput.value = "";
+
+    }
+);
+
+
+/* =========================================================
+   DRAG & DROP
+========================================================= */
+
+[
+    "dragenter",
+    "dragover"
+].forEach(
+    eventName => {
+
+        dropzone.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                dropzone.classList.add(
+                    "drag"
+                );
+
+            }
+        );
+
+    }
+);
+
+
+[
+    "dragleave",
+    "drop"
+].forEach(
+    eventName => {
+
+        dropzone.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                dropzone.classList.remove(
+                    "drag"
+                );
+
+            }
+        );
+
+    }
+);
+
+
+dropzone.addEventListener(
+    "drop",
+    event => {
+
+        loadFiles(
+            event.dataTransfer.files
+        );
+
+    }
+);
+
+
+/* =========================================================
+   APERÇU MARKDOWN
+========================================================= */
+
+function renderPreview() {
+
+    if (!currentMarkdownFile)
+        return;
+
+
+    if (!window.marked) {
+
+        setStatus(
+            "Marked.js est indisponible.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!window.DOMPurify) {
+
+        setStatus(
+            "DOMPurify est indisponible.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const html =
+        window.marked.parse(
+            markdownText
+        );
+
+
+    preview.innerHTML =
+        window.DOMPurify.sanitize(
+            html
+        );
+
+
+    previewCard.hidden =
+        false;
+}
+
+
+$("previewBtn")
+    .addEventListener(
+        "click",
+        renderPreview
+    );
+
+
+$("closePreviewBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            previewCard.hidden =
+                true;
+
+        }
+    );
+
+
+/* =========================================================
+   IMAGE → ARRAYBUFFER
+========================================================= */
+
+async function fileToData(file) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                () => resolve(
+                    reader.result
+                );
+
+
+            reader.onerror =
+                reject;
+
+
+            reader.readAsArrayBuffer(
+                file
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   DATA URL → ARRAYBUFFER
+========================================================= */
+
+async function dataUrlToArrayBuffer(
+    dataUrl
+) {
+
+    const response =
+        await fetch(
+            dataUrl
+        );
+
+
+    return await response.arrayBuffer();
+}
+
+
+/* =========================================================
+   RÉCUPÉRER UNE IMAGE
+========================================================= */
+
+async function getImageData(
+    source
+) {
+
+    if (!source)
+        return null;
+
+
+    /*
+       IMAGE DATA URI
+    */
+
+    if (
+        /^data:image\//i
+            .test(source)
+    ) {
+
+        return await dataUrlToArrayBuffer(
+            source
+        );
+
+    }
+
+
+    /*
+       IMAGE LOCALE
+    */
+
+    const normalized =
+        normalizePath(
+            source
+        );
+
+
+    const base =
+        basename(
+            source
+        );
+
+
+    let file =
+        imageMap.get(
+            normalized
+        );
+
+
+    if (!file) {
+
+        file =
+            imageMap.get(
+                base
+            );
+
+    }
+
+
+    if (file) {
+
+        return await fileToData(
+            file
+        );
+
+    }
+
+
+    /*
+       IMAGE DISTANTE
+    */
+
+    if (
+        /^https?:\/\//i
+            .test(source)
+    ) {
+
+        try {
+
+            const response =
+                await fetch(
+                    source,
+                    {
+                        mode: "cors"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            return await response.arrayBuffer();
+
+        } catch (error) {
+
+            console.warn(
+                "Image distante inaccessible :",
+                source,
+                error
+            );
+
+
+            return null;
+        }
+    }
+
+
+    return null;
+}
+
+
+/* =========================================================
+   OBTENIR DIMENSIONS IMAGE
+========================================================= */
+
+async function getImageDimensions(
+    data
+) {
+
+    const blob =
+        new Blob(
+            [data]
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    return new Promise(
+        resolve => {
+
+            const img =
+                new Image();
+
+
+            img.onload =
+                () => {
+
+                    const width =
+                        img.naturalWidth ||
+                        800;
+
+
+                    const height =
+                        img.naturalHeight ||
+                        500;
+
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+
+                    resolve({
+
+                        width,
+
+                        height
+
+                    });
+
+                };
+
+
+            img.onerror =
+                () => {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+
+                    resolve({
+
+                        width: 800,
+
+                        height: 500
+
+                    });
+
+                };
+
+
+            img.src =
+                url;
+
+        }
+    );
+}
+
+
+/* =========================================================
+   REDIMENSIONNEMENT IMAGE
+========================================================= */
+
+function calculateImageSize(
+    width,
+    height
+) {
+
+    const MAX_WIDTH =
+        600;
+
+
+    const MAX_HEIGHT =
+        700;
+
+
+    let w =
+        width;
+
+
+    let h =
+        height;
+
+
+    const ratio =
+        w / h;
+
+
+    if (w > MAX_WIDTH) {
+
+        w =
+            MAX_WIDTH;
+
+
+        h =
+            w / ratio;
+    }
+
+
+    if (h > MAX_HEIGHT) {
+
+        h =
+            MAX_HEIGHT;
+
+
+        w =
+            h * ratio;
+    }
+
+
+    return {
+
+        width:
+            Math.round(w),
+
+        height:
+            Math.round(h)
+
+    };
+}
+
+
+/* =========================================================
+   CRÉER IMAGE DOCX
+========================================================= */
+
+async function createImageRun(
+    source
+) {
+
+    const data =
+        await getImageData(
+            source
+        );
+
+
+    if (!data) {
+
+        return new D.TextRun({
+
+            text:
+                "[Image non disponible : " +
+                source +
+                "]",
+
+            color:
+                "C62828"
+
+        });
+    }
+
+
+    const dimensions =
+        await getImageDimensions(
+            data
+        );
+
+
+    const size =
+        calculateImageSize(
+            dimensions.width,
+            dimensions.height
+        );
+
+
+    return new D.ImageRun({
+
+        data:
+            data,
+
+        transformation: {
+
+            width:
+                size.width,
+
+            height:
+                size.height
+
+        }
+
+    });
+}
+
+
+/* =========================================================
+   RUNS INLINE
+========================================================= */
+
+async function inlineRuns(
+    tokens,
+    inherited = {}
+) {
+
+    const runs = [];
+
+
+    for (
+        const token of
+        tokens || []
+    ) {
+
+        switch (token.type) {
+
+            case "text":
+
+            case "escape":
+
+                if (token.tokens) {
+
+                    runs.push(
+                        ...await inlineRuns(
+                            token.tokens,
+                            inherited
+                        )
+                    );
+
+                } else {
+
+                    runs.push(
+
+                        new D.TextRun({
+
+                            text:
+                                token.text || "",
+
+                            ...inherited
+
+                        })
+
+                    );
+                }
+
+                break;
+
+
+            case "strong":
+
+                runs.push(
+
+                    ...await inlineRuns(
+                        token.tokens,
+                        {
+                            ...inherited,
+
+                            bold:
+                                true
+                        }
+                    )
+
+                );
+
+                break;
+
+
+            case "em":
+
+                runs.push(
+
+                    ...await inlineRuns(
+                        token.tokens,
+                        {
+                            ...inherited,
+
+                            italics:
+                                true
+                        }
+                    )
+
+                );
+
+                break;
+
+
+            case "del":
+
+                runs.push(
+
+                    ...await inlineRuns(
+                        token.tokens,
+                        {
+                            ...inherited,
+
+                            strike:
+                                true
+                        }
+                    )
+
+                );
+
+                break;
+
+
+            case "codespan":
+
+                runs.push(
+
+                    new D.TextRun({
+
+                        text:
+                            token.text || "",
+
+                        font:
+                            "Consolas",
+
+                        color:
+                            "C2410C",
+
+                        ...inherited
+
+                    })
+
+                );
+
+                break;
+
+
+            case "br":
+
+                runs.push(
+
+                    new D.TextRun({
+
+                        text:
+                            "",
+
+                        break:
+                            1
+
+                    })
+
+                );
+
+                break;
+
+
+            case "link":
+
+                runs.push(
+
+                    ...await inlineRuns(
+                        token.tokens,
+                        {
+                            ...inherited,
+
+                            color:
+                                "0563C1",
+
+                            underline:
+                                {}
+
+                        }
+                    )
+
+                );
+
+                break;
+
+
+            case "image":
+
+                {
+
+                    const image =
+                        await createImageRun(
+                            token.href
+                        );
+
+
+                    runs.push(
+                        image
+                    );
+
+                }
+
+                break;
+
+
+            case "html":
+
+                {
+
+                    const clean =
+                        String(
+                            token.text || ""
+                        )
+                        .replace(
+                            /<[^>]*>/g,
+                            ""
+                        );
+
+
+                    if (clean.trim()) {
+
+                        runs.push(
+
+                            new D.TextRun({
+
+                                text:
+                                    clean,
+
+                                ...inherited
+
+                            })
+
+                        );
+
+                    }
+
+                }
+
+                break;
+
+
+            default:
+
+                if (token.tokens) {
+
+                    runs.push(
+
+                        ...await inlineRuns(
+                            token.tokens,
+                            inherited
+                        )
+
+                    );
+
+                } else if (token.text) {
+
+                    runs.push(
+
+                        new D.TextRun({
+
+                            text:
+                                token.text,
+
+                            ...inherited
+
+                        })
+
+                    );
+
+                }
+
+        }
+    }
+
+
+    return runs;
+}
+
+
+/* =========================================================
+   PARAGRAPHE
+========================================================= */
+
+async function paragraphFromInline(
+    tokens,
+    options = {}
+) {
+
+    return new D.Paragraph({
+
+        ...options,
+
+        children:
+            await inlineRuns(
+                tokens
+            )
+
+    });
+}
+
+
+/* =========================================================
+   TITRE
+========================================================= */
+
+async function makeHeading(
+    token
+) {
+
+    const levels = {
+
+        1:
+            D.HeadingLevel.HEADING_1,
+
+        2:
+            D.HeadingLevel.HEADING_2,
+
+        3:
+            D.HeadingLevel.HEADING_3,
+
+        4:
+            D.HeadingLevel.HEADING_4,
+
+        5:
+            D.HeadingLevel.HEADING_5,
+
+        6:
+            D.HeadingLevel.HEADING_6
+
+    };
+
+
+    return await paragraphFromInline(
+
+        token.tokens || [],
+
+        {
+
+            heading:
+                levels[token.depth] ||
+                D.HeadingLevel.HEADING_1,
+
+            spacing: {
+
+                before:
+                    220,
+
+                after:
+                    120
+
+            }
+
+        }
+
+    );
+}
+
+
+/* =========================================================
+   LISTE
+========================================================= */
+
+async function convertList(
+    token,
+    output,
+    depth = 0
+) {
+
+    let index = 0;
+
+
+    for (
+        const item of
+        token.items || []
+    ) {
+
+        index++;
+
+
+        const prefix =
+            token.ordered
+
+                ? (
+                    (token.start || 1)
+                    +
+                    index
+                    -
+                    1
+                ) + ". "
+
+                : "• ";
+
+
+        const children =
+            item.tokens || [];
+
+
+        const paragraph =
+            children.find(
+                t =>
+                    t.type === "text" ||
+                    t.type === "paragraph"
+            );
+
+
+        if (paragraph) {
+
+            const inline =
+                paragraph.type === "paragraph"
+
+                    ? paragraph.tokens
+
+                    : paragraph.tokens ||
+                        [
+                            {
+
+                                type:
+                                    "text",
+
+                                text:
+                                    paragraph.text
+
+                            }
+
+                        ];
+
+
+            const runs =
+                await inlineRuns(
+                    inline
+                );
+
+
+            output.push(
+
+                new D.Paragraph({
+
+                    indent: {
+
+                        left:
+                            360 *
+                            (depth + 1)
+
+                    },
+
+                    spacing: {
+
+                        after:
+                            60
+
+                    },
+
+                    children: [
+
+                        new D.TextRun({
+
+                            text:
+                                prefix,
+
+                            bold:
+                                token.ordered
+
+                        }),
+
+                        ...runs
+
+                    ]
+
+                })
+
+            );
+        }
+
+
+        for (
+            const child of
+            children
+        ) {
+
+            if (
+                child.type ===
+                "list"
+            ) {
+
+                await convertList(
+                    child,
+                    output,
+                    depth + 1
+                );
+
+            } else if (
+
+                child.type !==
+                    "text"
+
+                &&
+
+                child.type !==
+                    "paragraph"
+
+            ) {
+
+                await convertBlock(
+                    child,
+                    output
+                );
+
+            }
+
+        }
+    }
+}
+
+
+/* =========================================================
+   TABLEAU
+========================================================= */
+
+async function convertTable(
+    token,
+    output
+) {
+
+    const rows = [];
+
+
+    if (
+        token.header &&
+        token.header.length
+    ) {
+
+        const cells = [];
+
+
+        for (
+            const cell of
+            token.header
+        ) {
+
+            cells.push(
+
+                new D.TableCell({
+
+                    shading: {
+
+                        fill:
+                            "DCEAF7"
+
+                    },
+
+                    children: [
+
+                        await paragraphFromInline(
+
+                            cell.tokens ||
+
+                            [
+
+                                {
+
+                                    type:
+                                        "text",
+
+                                    text:
+                                        cell.text ||
+                                        ""
+
+                                }
+
+                            ]
+
+                        )
+
+                    ]
+
+                })
+
+            );
+        }
+
+
+        rows.push(
+
+            new D.TableRow({
+
+                tableHeader:
+                    true,
+
+                children:
+                    cells
+
+            })
+
+        );
+    }
+
+
+    for (
+        const row of
+        token.rows || []
+    ) {
+
+        const cells = [];
+
+
+        for (
+            const cell of
+            row
+        ) {
+
+            cells.push(
+
+                new D.TableCell({
+
+                    children: [
+
+                        await paragraphFromInline(
+
+                            cell.tokens ||
+
+                            [
+
+                                {
+
+                                    type:
+                                        "text",
+
+                                    text:
+                                        cell.text ||
+                                        ""
+
+                                }
+
+                            ]
+
+                        )
+
+                    ]
+
+                })
+
+            );
+        }
+
+
+        rows.push(
+
+            new D.TableRow({
+
+                children:
+                    cells
+
+            })
+
+        );
+    }
+
+
+    if (rows.length) {
+
+        output.push(
+
+            new D.Table({
+
+                width: {
+
+                    size:
+                        100,
+
+                    type:
+                        D.WidthType.PERCENTAGE
+
+                },
+
+                rows:
+                    rows
+
+            })
+
+        );
+    }
+}
+
+
+/* =========================================================
+   CONVERSION BLOC
+========================================================= */
+
+async function convertBlock(
+    token,
+    output
+) {
+
+    switch (token.type) {
+
+        case "space":
+
+            break;
+
+
+        case "heading":
+
+            output.push(
+
+                await makeHeading(
+                    token
+                )
+
+            );
+
+            break;
+
+
+        case "paragraph":
+
+            output.push(
+
+                await paragraphFromInline(
+
+                    token.tokens || [],
+
+                    {
+
+                        spacing: {
+
+                            after:
+                                140
+
+                        }
+
+                    }
+
+                )
+
+            );
+
+            break;
+
+
+        case "text":
+
+            if (token.tokens) {
+
+                output.push(
+
+                    await paragraphFromInline(
+                        token.tokens
+                    )
+
+                );
+
+            } else if (token.text) {
+
+                output.push(
+
+                    new D.Paragraph({
+
+                        children: [
+
+                            new D.TextRun({
+
+                                text:
+                                    token.text
+
+                            })
+
+                        ]
+
+                    })
+
+                );
+
+            }
+
+            break;
+
+
+        case "list":
+
+            await convertList(
+                token,
+                output
+            );
+
+            break;
+
+
+        case "blockquote":
+
+            for (
+                const child of
+                token.tokens || []
+            ) {
+
+                if (
+                    child.type ===
+                    "paragraph"
+                ) {
+
+                    output.push(
+
+                        await paragraphFromInline(
+
+                            child.tokens,
+
+                            {
+
+                                indent: {
+
+                                    left:
+                                        500
+
+                                },
+
+                                border: {
+
+                                    left: {
+
+                                        color:
+                                            "1685FF",
+
+                                        space:
+                                            8,
+
+                                        style:
+                                            D.BorderStyle.SINGLE,
+
+                                        size:
+                                            12
+
+                                    }
+
+                                }
+
+                            }
+
+                        )
+
+                    );
+
+                } else {
+
+                    await convertBlock(
+                        child,
+                        output
+                    );
+
+                }
+
+            }
+
+            break;
+
+
+        case "code":
+
+            output.push(
+
+                new D.Paragraph({
+
+                    shading: {
+
+                        fill:
+                            "F0F3F8"
+
+                    },
+
+                    spacing: {
+
+                        before:
+                            100,
+
+                        after:
+                            160
+
+                    },
+
+                    children: [
+
+                        new D.TextRun({
+
+                            text:
+                                token.text || "",
+
+                            font:
+                                "Consolas",
+
+                            size:
+                                20,
+
+                            color:
+                                "24364B"
+
+                        })
+
+                    ]
+
+                })
+
+            );
+
+            break;
+
+
+        case "table":
+
+            await convertTable(
+                token,
+                output
+            );
+
+            break;
+
+
+        case "hr":
+
+            output.push(
+
+                new D.Paragraph({
+
+                    thematicBreak:
+                        true,
+
+                    spacing: {
+
+                        before:
+                            150,
+
+                        after:
+                            150
+
+                    }
+
+                })
+
+            );
+
+            break;
+
+
+        case "html":
+
+            /*
+                HTML brut ignoré.
+            */
+
+            break;
+
+
+        default:
+
+            if (token.tokens) {
+
+                for (
+                    const child of
+                    token.tokens
+                ) {
+
+                    await convertBlock(
+                        child,
+                        output
+                    );
+
+                }
+
+            }
+
+    }
+}
+
+
+/* =========================================================
+   MARKDOWN → DOCX
+========================================================= */
+
+async function markdownToDocxBlocks(
+    markdown
+) {
+
+    const tokens =
+        window.marked.lexer(
+            markdown
+        );
+
+
+    const blocks = [];
+
+
+    for (
+        const token of
+        tokens
+    ) {
+
+        await convertBlock(
+            token,
+            blocks
+        );
+
+    }
+
+
+    if (!blocks.length) {
+
+        blocks.push(
+
+            new D.Paragraph({
+
+                text:
+                    ""
+
+            })
+
+        );
+
+    }
+
+
+    return blocks;
+}
+
+
+/* =========================================================
+   NOM DOCX
+========================================================= */
+
+function outputName(
+    filename
+) {
+
+    return filename
+
+        .replace(
+            /\.(md|markdown)$/i,
+            ""
+        )
+
+        + ".docx";
+}
+
+
+/* =========================================================
+   CONVERSION DOCX
+========================================================= */
+
+$("convertBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            if (!currentMarkdownFile) {
+
+                setStatus(
+                    "Veuillez choisir un fichier Markdown.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                !window.docx ||
+                !window.marked ||
+                !window.DOMPurify
+            ) {
+
+                setStatus(
+                    "Une bibliothèque JavaScript est indisponible. Vérifiez votre connexion Internet.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const button =
+                $("convertBtn");
+
+
+            button.disabled =
+                true;
+
+
+            button.textContent =
+                "⏳ Conversion...";
+
+
+            try {
+
+                setStatus(
+                    "Analyse du Markdown et intégration des images...",
+                    "warning"
+                );
+
+
+                const blocks =
+                    await markdownToDocxBlocks(
+                        markdownText
+                    );
+
+
+                /* =================================================
+                   IMPORTANT :
+                   On utilise "docxDocument" et non "document".
+                   Cela évite de remplacer window.document.
+                ================================================= */
+
+                const docxDocument =
+                    new D.Document({
+
+                        creator:
+                            "MD → DOCX",
+
+                        title:
+                            currentMarkdownFile
+                                .name
+                                .replace(
+                                    /\.(md|markdown)$/i,
+                                    ""
+                                ),
+
+                        description:
+                            "Document converti depuis Markdown",
+
+                        sections: [
+
+                            {
+
+                                properties: {
+
+                                    page: {
+
+                                        margin: {
+
+                                            top:
+                                                900,
+
+                                            right:
+                                                900,
+
+                                            bottom:
+                                                900,
+
+                                            left:
+                                                900
+
+                                        }
+
+                                    }
+
+                                },
+
+                                children:
+                                    blocks
+
+                            }
+
+                        ]
+
+                    });
+
+
+                setStatus(
+                    "Génération du document Word...",
+                    "warning"
+                );
+
+
+                const blob =
+                    await D.Packer.toBlob(
+                        docxDocument
+                    );
+
+
+                /* =================================================
+                   TÉLÉCHARGEMENT
+                ================================================= */
+
+                const url =
+                    URL.createObjectURL(
+                        blob
+                    );
+
+
+                /*
+                   IMPORTANT :
+                   window.document = véritable DOM HTML
+                   du navigateur.
+                */
+
+                const downloadLink =
+                    DOM.createElement(
+                        "a"
+                    );
+
+
+                downloadLink.href =
+                    url;
+
+
+                downloadLink.download =
+                    outputName(
+                        currentMarkdownFile.name
+                    );
+
+
+                downloadLink.style.display =
+                    "none";
+
+
+                DOM.body.appendChild(
+                    downloadLink
+                );
+
+
+                downloadLink.click();
+
+
+                DOM.body.removeChild(
+                    downloadLink
+                );
+
+
+                setTimeout(
+                    () => {
+
+                        URL.revokeObjectURL(
+                            url
+                        );
+
+                    },
+                    30000
+                );
+
+
+                setStatus(
+                    "✓ Conversion terminée ! Le fichier DOCX a été téléchargé.",
+                    "success"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erreur conversion :",
+                    error
+                );
+
+
+                setStatus(
+
+                    "Erreur pendant la conversion : " +
+
+                    (
+                        error.message ||
+                        "erreur inconnue"
+                    ),
+
+                    "error"
+
+                );
+
+            } finally {
+
+                button.disabled =
+                    !currentMarkdownFile;
+
+
+                button.textContent =
+                    "⬇ Convertir en DOCX";
+
+            }
+
+        }
+    );
+
+
+</script>
+
+</body>
+</html>
+

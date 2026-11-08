@@ -1,0 +1,6213 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               viewport-fit=cover">
+
+<meta name="theme-color" content="#061525">
+
+<title>Run Tracker — GPS & Podomètre</title>
+
+<style>
+
+:root{
+    --bg:#eef8ff;
+    --bg2:#f7fcff;
+    --card:rgba(255,255,255,.94);
+    --text:#102a43;
+    --text2:#486581;
+    --muted:#829ab1;
+
+    --blue:#087ea4;
+    --blue2:#0ea5e9;
+    --cyan:#22d3ee;
+
+    --yellow:#fbbf24;
+    --green:#16a34a;
+    --red:#dc2626;
+    --orange:#f97316;
+
+    --border:rgba(8,126,164,.14);
+    --shadow:0 15px 45px rgba(8,78,110,.10);
+    --radius:22px;
+}
+
+body.dark{
+    --bg:#020817;
+    --bg2:#071426;
+    --card:rgba(9,27,45,.95);
+    --text:#e6f7ff;
+    --text2:#a9c7d8;
+    --muted:#718da0;
+    --border:rgba(34,211,238,.12);
+    --shadow:0 18px 50px rgba(0,0,0,.28);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    color:var(--text);
+
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(14,165,233,.14),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(251,191,36,.12),
+            transparent 28%
+        ),
+        var(--bg);
+
+    transition:.25s ease;
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button{
+    border:none;
+    cursor:pointer;
+}
+
+.app{
+    width:min(1180px,100%);
+    margin:auto;
+    padding:18px 18px 80px;
+}
+
+/* HEADER */
+
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:18px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-logo{
+    width:48px;
+    height:48px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:16px;
+
+    font-size:25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue2),
+            var(--blue)
+        );
+
+    box-shadow:
+        0 10px 30px rgba(14,165,233,.28);
+}
+
+.brand-text strong{
+    display:block;
+    font-size:17px;
+}
+
+.brand-text span{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+/* BADGES */
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+
+    padding:8px 12px;
+
+    border-radius:999px;
+
+    font-size:11px;
+    font-weight:800;
+
+    background:rgba(148,163,184,.12);
+    color:var(--muted);
+}
+
+.badge::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:currentColor;
+}
+
+.badge.gps{
+    color:var(--green);
+    background:rgba(22,163,74,.10);
+}
+
+.badge.error{
+    color:var(--red);
+    background:rgba(220,38,38,.10);
+}
+
+/* CARDS */
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+}
+
+.section{
+    margin-top:18px;
+}
+
+.section-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.section-title h2{
+    font-size:17px;
+}
+
+.section-title span{
+    font-size:12px;
+    color:var(--muted);
+}
+
+/* HERO */
+
+.hero{
+    padding:25px;
+    overflow:hidden;
+    position:relative;
+}
+
+.hero::after{
+    content:"";
+
+    position:absolute;
+
+    width:220px;
+    height:220px;
+
+    right:-90px;
+    top:-100px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(34,211,238,.18),
+            transparent 68%
+        );
+
+    pointer-events:none;
+}
+
+.run-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    color:var(--text2);
+
+    font-size:13px;
+    font-weight:700;
+}
+
+.run-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--muted);
+}
+
+.run-dot.running{
+    background:var(--green);
+    box-shadow:0 0 0 5px rgba(22,163,74,.12);
+    animation:pulse 1.5s infinite;
+}
+
+.run-dot.paused{
+    background:var(--yellow);
+}
+
+@keyframes pulse{
+    0%,100%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+    50%{
+        transform:scale(.75);
+        opacity:.55;
+    }
+}
+
+.timer{
+    margin-top:12px;
+
+    font-size:clamp(42px,8vw,72px);
+
+    line-height:1;
+
+    font-weight:850;
+
+    letter-spacing:-3px;
+}
+
+.main-stats{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin-top:25px;
+}
+
+.main-stat{
+    padding:15px;
+    border-radius:17px;
+
+    background:rgba(14,165,233,.065);
+
+    border:1px solid rgba(14,165,233,.10);
+}
+
+.main-stat small{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.main-stat strong{
+    font-size:22px;
+}
+
+.main-stat em{
+    font-style:normal;
+    color:var(--muted);
+    font-size:11px;
+}
+
+/* BUTTONS */
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:20px;
+}
+
+.btn{
+    min-height:44px;
+
+    padding:10px 16px;
+
+    border-radius:13px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    font-size:13px;
+    font-weight:800;
+
+    color:var(--text);
+
+    background:rgba(148,163,184,.10);
+
+    border:1px solid var(--border);
+
+    transition:.15s ease;
+}
+
+.btn:hover{
+    transform:translateY(-1px);
+}
+
+.btn:active{
+    transform:translateY(1px);
+}
+
+.btn-primary{
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue2),
+            var(--blue)
+        );
+
+    border-color:transparent;
+
+    box-shadow:
+        0 10px 25px rgba(14,165,233,.25);
+}
+
+.btn-yellow{
+    color:#1f2937;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fcd34d,
+            var(--yellow)
+        );
+
+    border-color:transparent;
+}
+
+.btn-danger{
+    color:white;
+    background:var(--red);
+    border-color:transparent;
+}
+
+.btn-success{
+    color:white;
+    background:var(--green);
+    border-color:transparent;
+}
+
+.btn-small{
+    min-height:36px;
+    padding:8px 12px;
+    font-size:11px;
+}
+
+.btn:disabled{
+    cursor:not-allowed;
+    opacity:.45;
+    transform:none;
+}
+
+/* SENSOR BUTTON */
+
+.sensor-panel{
+    margin-top:18px;
+    padding:15px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:12px;
+
+    border-radius:16px;
+
+    background:
+        rgba(34,211,238,.07);
+
+    border:
+        1px solid rgba(34,211,238,.15);
+}
+
+.sensor-status{
+    min-width:0;
+}
+
+.sensor-status strong{
+    display:block;
+    font-size:13px;
+}
+
+.sensor-status span{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:11px;
+}
+
+/* METRICS */
+
+.metrics{
+    display:grid;
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:10px;
+}
+
+.metric{
+    padding:16px;
+    min-height:120px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    border-radius:18px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+}
+
+.metric-icon{
+    width:34px;
+    height:34px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:11px;
+
+    background:rgba(14,165,233,.10);
+
+    font-size:17px;
+}
+
+.metric small{
+    color:var(--muted);
+    font-size:10px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.metric strong{
+    font-size:21px;
+}
+
+/* ROUTE */
+
+.route-card{
+    padding:18px;
+}
+
+.canvas-wrapper{
+    position:relative;
+    overflow:hidden;
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #071a2c,
+            #082a3d
+        );
+
+    border:
+        1px solid rgba(34,211,238,.13);
+}
+
+#routeCanvas{
+    width:100%;
+    height:auto;
+    display:block;
+}
+
+.route-empty{
+    position:absolute;
+    inset:0;
+
+    display:grid;
+    place-items:center;
+
+    text-align:center;
+
+    color:rgba(255,255,255,.55);
+
+    pointer-events:none;
+}
+
+.route-empty strong{
+    display:block;
+    color:white;
+    margin-bottom:5px;
+}
+
+/* MUSIC */
+
+.music-card{
+    padding:20px;
+}
+
+.music-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.music-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.album{
+    width:50px;
+    height:50px;
+    flex:0 0 50px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            #071a2c
+        );
+
+    font-size:22px;
+}
+
+.track-name{
+    min-width:0;
+}
+
+.track-name strong{
+    display:block;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+    max-width:500px;
+}
+
+.track-name span{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.music-controls{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin-top:15px;
+}
+
+.music-btn{
+    width:42px;
+    height:42px;
+
+    border-radius:13px;
+
+    color:var(--text);
+
+    background:rgba(148,163,184,.10);
+
+    border:1px solid var(--border);
+
+    font-size:16px;
+}
+
+.music-btn.play{
+    width:52px;
+    height:52px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue2),
+            var(--blue)
+        );
+}
+
+.volume{
+    margin-left:auto;
+    width:120px;
+}
+
+audio{
+    width:100%;
+    margin-top:14px;
+}
+
+.playlist{
+    display:grid;
+    gap:7px;
+    margin-top:14px;
+    max-height:240px;
+    overflow:auto;
+}
+
+.playlist-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:10px 12px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    background:rgba(148,163,184,.06);
+
+    border:1px solid transparent;
+}
+
+.playlist-item.active{
+    border-color:rgba(14,165,233,.35);
+    background:rgba(14,165,233,.10);
+}
+
+.playlist-item span{
+    min-width:0;
+    flex:1;
+
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+
+    font-size:12px;
+}
+
+/* INFO */
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+}
+
+.info-box{
+    padding:17px;
+
+    border-radius:17px;
+
+    background:rgba(148,163,184,.055);
+
+    border:1px solid var(--border);
+}
+
+.info-box h3{
+    font-size:13px;
+    margin-bottom:12px;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:15px;
+
+    padding:8px 0;
+
+    border-bottom:1px solid var(--border);
+
+    font-size:12px;
+}
+
+.info-row:last-child{
+    border-bottom:none;
+}
+
+.info-row span:first-child{
+    color:var(--muted);
+}
+
+.info-row strong{
+    text-align:right;
+}
+
+/* SETTINGS */
+
+.settings{
+    padding:20px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px;
+}
+
+.field label{
+    display:block;
+    margin-bottom:7px;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:800;
+}
+
+.field input{
+    width:100%;
+
+    padding:12px 13px;
+
+    color:var(--text);
+
+    background:rgba(148,163,184,.08);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    outline:none;
+}
+
+.field input:focus{
+    border-color:var(--blue2);
+}
+
+/* HISTORY */
+
+.history{
+    padding:20px;
+}
+
+.history-list{
+    display:grid;
+    gap:10px;
+}
+
+.history-item{
+    padding:15px;
+
+    border-radius:16px;
+
+    background:rgba(148,163,184,.055);
+
+    border:1px solid var(--border);
+}
+
+.history-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.history-head strong{
+    font-size:13px;
+}
+
+.history-head span{
+    color:var(--muted);
+    font-size:10px;
+}
+
+.history-stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin-top:12px;
+}
+
+.history-stat{
+    padding:9px;
+
+    border-radius:10px;
+
+    background:rgba(14,165,233,.06);
+}
+
+.history-stat small{
+    display:block;
+    color:var(--muted);
+    font-size:9px;
+}
+
+.history-stat strong{
+    font-size:12px;
+}
+
+/* NOTICE */
+
+.notice{
+    padding:13px 15px;
+
+    border-radius:14px;
+
+    background:rgba(251,191,36,.09);
+
+    border:1px solid rgba(251,191,36,.18);
+
+    color:var(--text2);
+
+    font-size:11px;
+
+    line-height:1.6;
+}
+
+/* TOAST */
+
+#toastContainer{
+    position:fixed;
+
+    left:50%;
+    bottom:20px;
+
+    transform:translateX(-50%);
+
+    z-index:9999;
+
+    width:min(420px,calc(100% - 30px));
+
+    display:grid;
+    gap:8px;
+
+    pointer-events:none;
+}
+
+.toast{
+    padding:13px 15px;
+
+    border-radius:14px;
+
+    color:white;
+
+    background:#102a43;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.25);
+
+    font-size:12px;
+
+    animation:toastIn .25s ease;
+}
+
+.toast.success{
+    background:var(--green);
+}
+
+.toast.error{
+    background:var(--red);
+}
+
+@keyframes toastIn{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+
+@media(max-width:950px){
+
+    .metrics{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .form-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(max-width:650px){
+
+    .app{
+        padding:12px 12px 50px;
+    }
+
+    .topbar{
+        align-items:flex-start;
+    }
+
+    .badge{
+        display:none;
+    }
+
+    .hero{
+        padding:19px;
+    }
+
+    .timer{
+        font-size:48px;
+    }
+
+    .main-stats{
+        grid-template-columns:1fr;
+    }
+
+    .metrics{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .info-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .history-stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .music-top{
+        align-items:flex-start;
+    }
+
+    .volume{
+        width:80px;
+    }
+
+    .actions .btn{
+        flex:1 1 45%;
+    }
+
+    .sensor-panel{
+        align-items:stretch;
+        flex-direction:column;
+    }
+
+    .sensor-panel .btn{
+        width:100%;
+    }
+}
+
+
+/* =========================================================
+   IMPRESSION / PDF
+========================================================= */
+
+@media print{
+
+    body{
+        background:white !important;
+        color:#111 !important;
+    }
+
+    body.dark{
+        --text:#111;
+        --text2:#444;
+        --muted:#666;
+    }
+
+    .app{
+        width:100%;
+        padding:0;
+    }
+
+    .topbar,
+    .actions,
+    .music-card,
+    .route-card,
+    .sensor-panel,
+    #clearHistoryBtn,
+    #exportHistoryBtn,
+    #clearDataBtn,
+    #exportRouteBtn,
+    #themeBtn,
+    #addMusicBtn,
+    #toastContainer{
+        display:none !important;
+    }
+
+    .card,
+    .metric,
+    .info-box,
+    .history-item{
+        box-shadow:none !important;
+        background:white !important;
+        color:#111 !important;
+        border:1px solid #ddd !important;
+    }
+
+    .section{
+        margin-top:15px;
+        break-inside:avoid;
+    }
+
+    .history{
+        padding:10px;
+    }
+
+    .history-item{
+        break-inside:avoid;
+    }
+
+    .print-header{
+        display:block !important;
+        margin-bottom:20px;
+    }
+}
+
+.print-header{
+    display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="toastContainer"></div>
+
+<div class="app">
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            🏃
+        </div>
+
+        <div class="brand-text">
+            <strong>Run Tracker</strong>
+            <span>GPS • Podomètre • Musique</span>
+        </div>
+
+    </div>
+
+    <div class="top-actions">
+
+        <span id="gpsBadge"
+              class="badge">
+            GPS hors service
+        </span>
+
+        <button id="themeBtn"
+                class="btn btn-small">
+            🌙
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     EN-TÊTE RAPPORT PDF
+====================================================== -->
+
+<div class="print-header">
+
+    <h1>🏃 Run Tracker</h1>
+
+    <p>
+        Rapport d'activité — généré le
+        <span id="printDate"></span>
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     COURSE
+====================================================== -->
+
+<section class="hero card">
+
+    <div class="run-status">
+
+        <span id="runDot"
+              class="run-dot"></span>
+
+        <span id="runState">
+            Prêt pour la course
+        </span>
+
+    </div>
+
+
+    <div id="timer"
+         class="timer">
+        00:00:00
+    </div>
+
+
+    <div class="main-stats">
+
+        <div class="main-stat">
+            <small>Distance</small>
+            <strong id="distance">0.00</strong>
+            <em>km</em>
+        </div>
+
+        <div class="main-stat">
+            <small>Allure</small>
+            <strong id="pace">--:--</strong>
+            <em>/km</em>
+        </div>
+
+        <div class="main-stat">
+            <small>Vitesse</small>
+            <strong id="speed">0.0</strong>
+            <em>km/h</em>
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button id="startBtn"
+                class="btn btn-primary">
+            ▶️ Démarrer
+        </button>
+
+        <button id="pauseBtn"
+                class="btn"
+                disabled>
+            ⏸️ Pause
+        </button>
+
+        <button id="stopBtn"
+                class="btn btn-danger"
+                disabled>
+            ⏹️ Arrêter
+        </button>
+
+        <button id="resetBtn"
+                class="btn">
+            🔄 Réinitialiser
+        </button>
+
+    </div>
+
+
+    <!-- NOUVEAU : activation explicite -->
+
+    <div class="sensor-panel">
+
+        <div class="sensor-status">
+
+            <strong id="sensorTitle">
+                👣 Podomètre non activé
+            </strong>
+
+            <span id="sensorDescription">
+                Appuyez sur le bouton pour tester
+                l'accéléromètre de votre téléphone.
+            </span>
+
+        </div>
+
+        <button id="enableMotionBtn"
+                class="btn btn-primary">
+            👣 Activer le podomètre
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     METRICS
+====================================================== -->
+
+<section class="section">
+
+<div class="metrics">
+
+    <div class="metric">
+        <div class="metric-icon">👣</div>
+
+        <div>
+            <small>Pas</small>
+            <strong id="steps">0</strong>
+        </div>
+    </div>
+
+
+    <div class="metric">
+        <div class="metric-icon">⚡</div>
+
+        <div>
+            <small>Cadence</small>
+            <strong id="cadence">0</strong>
+            <small> pas/min</small>
+        </div>
+    </div>
+
+
+    <div class="metric">
+        <div class="metric-icon">🚀</div>
+
+        <div>
+            <small>Vitesse moy.</small>
+            <strong id="avgSpeed">0.0</strong>
+            <small> km/h</small>
+        </div>
+    </div>
+
+
+    <div class="metric">
+        <div class="metric-icon">🔥</div>
+
+        <div>
+            <small>Calories</small>
+            <strong id="calories">0</strong>
+            <small> kcal</small>
+        </div>
+    </div>
+
+
+    <div class="metric">
+        <div class="metric-icon">📡</div>
+
+        <div>
+            <small>Précision GPS</small>
+            <strong id="accuracy">--</strong>
+            <small> m</small>
+        </div>
+    </div>
+
+
+    <div class="metric">
+        <div class="metric-icon">🏆</div>
+
+        <div>
+            <small>Vitesse max</small>
+            <strong id="maxSpeed">0.0</strong>
+            <small> km/h</small>
+        </div>
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     GPS
+====================================================== -->
+
+<section class="section">
+
+<div class="section-title">
+
+    <h2>📍 Parcours GPS</h2>
+
+    <span id="routePointCount">
+        0 points
+    </span>
+
+</div>
+
+
+<div class="route-card card">
+
+    <div class="canvas-wrapper">
+
+        <canvas id="routeCanvas"
+                width="1000"
+                height="480"></canvas>
+
+        <div id="routeEmpty"
+             class="route-empty">
+
+            <div>
+
+                <strong>
+                    Votre parcours apparaîtra ici
+                </strong>
+
+                <span>
+                    Démarrez la course et autorisez le GPS.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="notice"
+         style="margin-top:12px;">
+
+        Le tracé GPS est conservé dans la session
+        et peut être exporté avec les données.
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     MUSIQUE
+====================================================== -->
+
+<section class="section">
+
+<div class="section-title">
+
+    <h2>🎵 Musique</h2>
+
+    <span>
+        Fichiers audio locaux
+    </span>
+
+</div>
+
+
+<div class="music-card card">
+
+    <div class="music-top">
+
+        <div class="music-info">
+
+            <div class="album">
+                🎧
+            </div>
+
+            <div class="track-name">
+
+                <strong id="trackName">
+                    Aucune musique sélectionnée
+                </strong>
+
+                <span id="trackNumber">
+                    Ajoutez vos fichiers audio
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button id="addMusicBtn"
+                class="btn btn-yellow btn-small">
+            ＋ Musique
+        </button>
+
+
+        <input id="musicInput"
+               type="file"
+               accept="audio/*"
+               multiple
+               hidden>
+
+    </div>
+
+
+    <div class="music-controls">
+
+        <button id="prevBtn"
+                class="music-btn">
+            ⏮️
+        </button>
+
+        <button id="playBtn"
+                class="music-btn play">
+            ▶️
+        </button>
+
+        <button id="nextBtn"
+                class="music-btn">
+            ⏭️
+        </button>
+
+        <button id="shuffleBtn"
+                class="music-btn">
+            🔀
+        </button>
+
+        <button id="repeatBtn"
+                class="music-btn">
+            🔁
+        </button>
+
+        <input id="musicVolume"
+               class="volume"
+               type="range"
+               min="0"
+               max="1"
+               step="0.01"
+               value="0.8">
+
+    </div>
+
+
+    <audio id="audioPlayer"
+           controls
+           preload="metadata">
+    </audio>
+
+
+    <div id="playlist"
+         class="playlist">
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     CAPTEURS
+====================================================== -->
+
+<section class="section">
+
+<div class="section-title">
+
+    <h2>📡 Analyse des capteurs</h2>
+
+    <span id="stepMode">
+        Mode : en attente
+    </span>
+
+</div>
+
+
+<div class="info-grid">
+
+<div class="info-box">
+
+    <h3>📍 Informations GPS</h3>
+
+    <div class="info-row">
+        <span>Latitude</span>
+        <strong id="latitude">--</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Longitude</span>
+        <strong id="longitude">--</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Précision</span>
+        <strong id="gpsAccuracy">--</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Direction</span>
+        <strong id="heading">--</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Vitesse GPS</span>
+        <strong id="gpsSpeed">--</strong>
+    </div>
+
+</div>
+
+
+<div class="info-box">
+
+    <h3>👣 Podomètre</h3>
+
+    <div class="info-row">
+        <span>Capteur</span>
+        <strong id="motionStatus">
+            Non activé
+        </strong>
+    </div>
+
+    <div class="info-row">
+        <span>Pas capteur</span>
+        <strong id="sensorSteps">
+            0
+        </strong>
+    </div>
+
+    <div class="info-row">
+        <span>Pas estimés GPS</span>
+        <strong id="estimatedSteps">
+            0
+        </strong>
+    </div>
+
+    <div class="info-row">
+        <span>Longueur foulée</span>
+        <strong id="stepLengthDisplay">
+            0.75 m
+        </strong>
+    </div>
+
+    <div class="info-row">
+        <span>État mouvement</span>
+        <strong id="movementState">
+            Immobile
+        </strong>
+    </div>
+
+    <div class="info-row">
+        <span>Intensité capteur</span>
+        <strong id="motionValue">
+            0.00
+        </strong>
+    </div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     REGLAGES
+====================================================== -->
+
+<section class="section">
+
+<div class="section-title">
+
+    <h2>⚙️ Réglages</h2>
+
+    <span>
+        Sauvegardés automatiquement
+    </span>
+
+</div>
+
+
+<div class="settings card">
+
+<div class="form-grid">
+
+    <div class="field">
+
+        <label for="weight">
+            Poids
+        </label>
+
+        <input id="weight"
+               type="number"
+               min="20"
+               max="250"
+               step="0.1"
+               value="70">
+
+    </div>
+
+
+    <div class="field">
+
+        <label for="stepLength">
+            Longueur de foulée
+        </label>
+
+        <input id="stepLength"
+               type="number"
+               min="0.3"
+               max="1.5"
+               step="0.01"
+               value="0.75">
+
+    </div>
+
+
+    <div class="field">
+
+        <label for="gpsThreshold">
+            Précision GPS max.
+        </label>
+
+        <input id="gpsThreshold"
+               type="number"
+               min="10"
+               max="200"
+               step="5"
+               value="80">
+
+    </div>
+
+</div>
+
+
+<div class="actions">
+
+    <button id="resetStepsBtn"
+            class="btn btn-yellow">
+        👣 Remettre les pas à zéro
+    </button>
+
+    <button id="testSensorBtn"
+            class="btn">
+        🧪 Tester le capteur
+    </button>
+
+</div>
+
+
+<div class="notice"
+     style="margin-top:15px;">
+
+    <strong>Conseil :</strong>
+    gardez le téléphone dans une poche ou près de la taille
+    pendant la marche. Le podomètre analyse les variations
+    d'accélération sur les trois axes. Une secousse unique
+    n'est pas considérée comme un pas.
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     HISTORIQUE
+====================================================== -->
+
+<section class="section">
+
+<div class="section-title">
+
+    <h2>📊 Historique</h2>
+
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+
+        <button id="exportPdfBtn"
+                class="btn btn-small btn-primary">
+            📄 PDF
+        </button>
+
+        <button id="exportHistoryBtn"
+                class="btn btn-small">
+            📥 CSV
+        </button>
+
+        <button id="clearHistoryBtn"
+                class="btn btn-small">
+            🗑️ Effacer
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="history card">
+
+    <div id="historyList"
+         class="history-list">
+
+        <div class="notice"
+             style="text-align:center;">
+
+            Aucune course enregistrée.
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     DONNEES
+====================================================== -->
+
+<section class="section">
+
+<div class="card"
+     style="padding:18px;">
+
+    <div class="section-title">
+
+        <h2>💾 Données</h2>
+
+        <span>
+            Conservation locale
+        </span>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button id="exportRouteBtn"
+                class="btn">
+            📍 Exporter parcours GPS
+        </button>
+
+        <button id="exportJsonBtn"
+                class="btn">
+            🗂️ Sauvegarde JSON
+        </button>
+
+        <button id="importJsonBtn"
+                class="btn">
+            📂 Restaurer JSON
+        </button>
+
+        <button id="clearDataBtn"
+                class="btn btn-danger">
+            🗑️ Tout supprimer
+        </button>
+
+        <input id="jsonInput"
+               type="file"
+               accept="application/json,.json"
+               hidden>
+
+    </div>
+
+
+    <div class="notice"
+         style="margin-top:15px;">
+
+        Les données sont conservées localement dans le navigateur.
+        Le bouton <strong>PDF</strong> génère un rapport imprimable
+        que tu peux enregistrer directement comme
+        <strong>PDF</strong> sur Android, Windows ou iPhone.
+
+    </div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<script>
+
+(() => {
+
+"use strict";
+
+/* =========================================================
+   OUTILS
+========================================================= */
+
+const $ = id => document.getElementById(id);
+
+const STORAGE = {
+    history:"runHistory",
+    weight:"runWeight",
+    stepLength:"runStepLength",
+    gpsThreshold:"runGpsThreshold",
+    theme:"runTheme",
+    volume:"runVolume"
+};
+
+
+/* =========================================================
+   ETAT
+========================================================= */
+
+const state = {
+
+    running:false,
+    paused:false,
+
+    watchId:null,
+    wakeLock:null,
+
+    startTimestamp:0,
+    elapsedBeforePause:0,
+
+    lastPosition:null,
+
+    totalDistance:0,
+
+    speedKmh:0,
+    avgSpeedKmh:0,
+    maxSpeedKmh:0,
+
+    gpsAccuracy:null,
+
+    routePoints:[],
+
+    /* PODOMETRE */
+
+    sensorSteps:0,
+
+    motionAvailable:false,
+    motionListening:false,
+
+    lastMotionAt:0,
+    lastStepAt:0,
+
+    motionBaseline:0,
+    motionFiltered:0,
+
+    motionPeak:0,
+
+    stepIntervals:[],
+
+    stepTimes:[],
+
+    /* REGLAGES */
+
+    weightKg:
+        Number(
+            localStorage.getItem(
+                STORAGE.weight
+            )
+        ) || 70,
+
+    stepLength:
+        Number(
+            localStorage.getItem(
+                STORAGE.stepLength
+            )
+        ) || 0.75,
+
+    gpsThreshold:
+        Number(
+            localStorage.getItem(
+                STORAGE.gpsThreshold
+            )
+        ) || 80,
+
+    /* MUSIQUE */
+
+    trackIndex:-1,
+    tracks:[],
+    shuffle:false,
+    repeat:false
+};
+
+
+let timerAnimation = null;
+
+
+let history =
+    JSON.parse(
+        localStorage.getItem(
+            STORAGE.history
+        ) || "[]"
+    );
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function toast(message,type=""){
+
+    const container =
+        $("toastContainer");
+
+    const item =
+        document.createElement("div");
+
+    item.className =
+        "toast" +
+        (
+            type
+                ? " " + type
+                : ""
+        );
+
+    item.textContent =
+        message;
+
+    container.appendChild(item);
+
+    setTimeout(() => {
+
+        item.style.opacity="0";
+
+        item.style.transform=
+            "translateY(10px)";
+
+        setTimeout(
+            () => item.remove(),
+            250
+        );
+
+    },3000);
+}
+
+
+/* =========================================================
+   FORMAT
+========================================================= */
+
+function formatNumber(
+    value,
+    decimals=2
+){
+
+    return Number(value || 0)
+        .toLocaleString(
+            "fr-FR",
+            {
+                minimumFractionDigits:decimals,
+                maximumFractionDigits:decimals
+            }
+        );
+}
+
+
+function formatTime(ms){
+
+    const totalSeconds =
+        Math.max(
+            0,
+            Math.floor(ms / 1000)
+        );
+
+    const hours =
+        Math.floor(
+            totalSeconds / 3600
+        );
+
+    const minutes =
+        Math.floor(
+            (totalSeconds % 3600) / 60
+        );
+
+    const seconds =
+        totalSeconds % 60;
+
+    return [
+        String(hours).padStart(2,"0"),
+        String(minutes).padStart(2,"0"),
+        String(seconds).padStart(2,"0")
+    ].join(":");
+}
+
+
+function formatDate(date){
+
+    return new Date(date)
+        .toLocaleString(
+            "fr-FR",
+            {
+                dateStyle:"medium",
+                timeStyle:"short"
+            }
+        );
+}
+
+
+function getElapsedMs(){
+
+    if(!state.running)
+        return state.elapsedBeforePause;
+
+    if(state.paused)
+        return state.elapsedBeforePause;
+
+    return (
+        state.elapsedBeforePause +
+        (
+            Date.now() -
+            state.startTimestamp
+        )
+    );
+}
+
+
+function formatPace(
+    distanceKm,
+    elapsedMs
+){
+
+    if(
+        distanceKm <= 0 ||
+        elapsedMs <= 0
+    ){
+
+        return "--:--";
+    }
+
+    const minutesPerKm =
+        (
+            elapsedMs / 60000
+        ) /
+        distanceKm;
+
+    if(
+        !Number.isFinite(
+            minutesPerKm
+        ) ||
+        minutesPerKm > 99
+    ){
+
+        return "--:--";
+    }
+
+    const minutes =
+        Math.floor(
+            minutesPerKm
+        );
+
+    const seconds =
+        Math.round(
+            (
+                minutesPerKm -
+                minutes
+            ) * 60
+        );
+
+    return (
+        String(minutes).padStart(2,"0") +
+        ":" +
+        String(seconds).padStart(2,"0")
+    );
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function updateTimer(){
+
+    $("timer").textContent =
+        formatTime(
+            getElapsedMs()
+        );
+
+    if(
+        state.running &&
+        !state.paused
+    ){
+
+        timerAnimation =
+            requestAnimationFrame(
+                updateTimer
+            );
+    }
+}
+
+
+function startTimer(){
+
+    cancelAnimationFrame(
+        timerAnimation
+    );
+
+    state.startTimestamp =
+        Date.now();
+
+    timerAnimation =
+        requestAnimationFrame(
+            updateTimer
+        );
+}
+
+
+function pauseTimer(){
+
+    if(
+        !state.running ||
+        state.paused
+    )
+        return;
+
+    state.elapsedBeforePause +=
+        Date.now() -
+        state.startTimestamp;
+
+    state.paused=true;
+
+    cancelAnimationFrame(
+        timerAnimation
+    );
+
+    updateTimer();
+}
+
+
+function resumeTimer(){
+
+    if(
+        !state.running ||
+        !state.paused
+    )
+        return;
+
+    state.startTimestamp =
+        Date.now();
+
+    state.paused=false;
+
+    timerAnimation =
+        requestAnimationFrame(
+            updateTimer
+        );
+}
+
+
+/* =========================================================
+   HAVERSINE
+========================================================= */
+
+function haversine(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+){
+
+    const R=6371000;
+
+    const dLat =
+        (
+            lat2-lat1
+        ) *
+        Math.PI / 180;
+
+    const dLon =
+        (
+            lon2-lon1
+        ) *
+        Math.PI / 180;
+
+    const a =
+        Math.sin(dLat/2)**2 +
+        Math.cos(
+            lat1*Math.PI/180
+        ) *
+        Math.cos(
+            lat2*Math.PI/180
+        ) *
+        Math.sin(dLon/2)**2;
+
+    return (
+        2 *
+        R *
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1-a)
+        )
+    );
+}
+
+
+/* =========================================================
+   GPS
+========================================================= */
+
+function startGPS(){
+
+    if(
+        !("geolocation" in navigator)
+    ){
+
+        toast(
+            "La géolocalisation n'est pas disponible.",
+            "error"
+        );
+
+        return false;
+    }
+
+    try{
+
+        state.watchId =
+            navigator.geolocation.watchPosition(
+                handlePosition,
+                handleGeoError,
+                {
+                    enableHighAccuracy:true,
+                    timeout:15000,
+                    maximumAge:1000
+                }
+            );
+
+        setGPSBadge(
+            "Recherche GPS...",
+            "gps"
+        );
+
+        return true;
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Impossible de démarrer le GPS.",
+            "error"
+        );
+
+        return false;
+    }
+}
+
+
+function stopGPS(){
+
+    if(
+        state.watchId !== null
+    ){
+
+        navigator.geolocation.clearWatch(
+            state.watchId
+        );
+
+        state.watchId=null;
+    }
+}
+
+
+function setGPSBadge(
+    text,
+    type=""
+){
+
+    const badge =
+        $("gpsBadge");
+
+    badge.textContent=text;
+
+    badge.className=
+        "badge " + type;
+}
+
+
+function handleGeoError(error){
+
+    console.warn(
+        "GPS:",
+        error
+    );
+
+    if(
+        error.code===1
+    ){
+
+        setGPSBadge(
+            "GPS refusé",
+            "error"
+        );
+
+        toast(
+            "Autorisation GPS refusée.",
+            "error"
+        );
+
+    }else if(
+        error.code===2
+    ){
+
+        setGPSBadge(
+            "GPS indisponible",
+            "error"
+        );
+
+    }else if(
+        error.code===3
+    ){
+
+        setGPSBadge(
+            "GPS trop lent",
+            "error"
+        );
+    }
+}
+
+
+function handlePosition(position){
+
+    const coords =
+        position.coords;
+
+    const lat =
+        Number(
+            coords.latitude
+        );
+
+    const lon =
+        Number(
+            coords.longitude
+        );
+
+    const accuracy =
+        Number(
+            coords.accuracy
+        );
+
+    state.gpsAccuracy=
+        accuracy;
+
+
+    $("latitude").textContent =
+        lat.toFixed(6);
+
+    $("longitude").textContent =
+        lon.toFixed(6);
+
+    $("gpsAccuracy").textContent =
+        Math.round(
+            accuracy
+        );
+
+    $("accuracy").textContent =
+        Math.round(
+            accuracy
+        );
+
+
+    if(
+        Number.isFinite(
+            coords.heading
+        ) &&
+        coords.heading>=0
+    ){
+
+        $("heading").textContent =
+            Math.round(
+                coords.heading
+            ) + "°";
+    }
+
+
+    if(
+        Number.isFinite(
+            coords.speed
+        ) &&
+        coords.speed>=0
+    ){
+
+        $("gpsSpeed").textContent =
+            formatNumber(
+                coords.speed*3.6,
+                1
+            ) +
+            " km/h";
+    }
+
+
+    if(
+        accuracy<=state.gpsThreshold
+    ){
+
+        setGPSBadge(
+            "GPS actif",
+            "gps"
+        );
+
+    }else{
+
+        setGPSBadge(
+            "GPS imprécis",
+            "error"
+        );
+    }
+
+
+    if(!state.running)
+        return;
+
+    if(
+        accuracy >
+        state.gpsThreshold
+    )
+        return;
+
+
+    const current={
+        lat,
+        lon,
+        timestamp:
+            position.timestamp ||
+            Date.now()
+    };
+
+
+    if(!state.lastPosition){
+
+        state.lastPosition=
+            current;
+
+        state.routePoints.push(
+            current
+        );
+
+        drawRoute();
+
+        return;
+    }
+
+
+    const previous=
+        state.lastPosition;
+
+
+    const dt=
+        (
+            current.timestamp -
+            previous.timestamp
+        ) / 1000;
+
+
+    if(
+        dt<=0 ||
+        dt>120
+    ){
+
+        state.lastPosition=
+            current;
+
+        return;
+    }
+
+
+    const distance=
+        haversine(
+            previous.lat,
+            previous.lon,
+            current.lat,
+            current.lon
+        );
+
+
+    const noiseThreshold=
+        Math.max(
+            1.5,
+            Math.min(
+                8,
+                accuracy*0.08
+            )
+        );
+
+
+    const impossibleJump=
+        distance >
+        15*dt;
+
+
+    if(
+        !impossibleJump &&
+        distance>=noiseThreshold
+    ){
+
+        state.totalDistance+=
+            distance;
+
+        state.routePoints.push(
+            current
+        );
+
+
+        if(dt>0){
+
+            const calculatedSpeed=
+                (
+                    distance/dt
+                )*3.6;
+
+
+            if(
+                Number.isFinite(
+                    coords.speed
+                ) &&
+                coords.speed>=0
+            ){
+
+                state.speedKmh=
+                    coords.speed*3.6;
+
+            }else{
+
+                state.speedKmh=
+                    calculatedSpeed;
+            }
+
+
+            state.maxSpeedKmh=
+                Math.max(
+                    state.maxSpeedKmh,
+                    state.speedKmh
+                );
+        }
+
+
+        drawRoute();
+    }
+
+
+    state.lastPosition=
+        current;
+
+    updateMetrics();
+}
+
+
+/* =========================================================
+   PODOMETRE AMELIORE
+========================================================= */
+
+/*
+    Cette fonction demande explicitement
+    l'autorisation au navigateur.
+
+    Sur iPhone/iPad :
+    DeviceMotionEvent.requestPermission()
+
+    Sur Android :
+    certains navigateurs n'ont pas besoin
+    de cette demande mais nécessitent HTTPS.
+*/
+
+async function enableMotion(){
+
+    if(
+        typeof DeviceMotionEvent==="undefined"
+    ){
+
+        state.motionAvailable=false;
+
+        $("motionStatus").textContent=
+            "Non disponible";
+
+        $("sensorTitle").textContent=
+            "❌ Accéléromètre indisponible";
+
+        $("sensorDescription").textContent=
+            "Ce navigateur ne fournit pas DeviceMotion.";
+
+        $("stepMode").textContent=
+            "Mode : estimation GPS";
+
+        return false;
+    }
+
+
+    try{
+
+        if(
+            typeof DeviceMotionEvent.requestPermission===
+            "function"
+        ){
+
+            const permission=
+                await DeviceMotionEvent.requestPermission();
+
+
+            if(
+                permission!=="granted"
+            ){
+
+                $("motionStatus").textContent=
+                    "Refusé";
+
+                $("sensorTitle").textContent=
+                    "❌ Autorisation refusée";
+
+                $("sensorDescription").textContent=
+                    "Autorisez les mouvements dans les réglages du navigateur.";
+
+                toast(
+                    "Autorisation du capteur refusée.",
+                    "error"
+                );
+
+                return false;
+            }
+        }
+
+
+        if(
+            !state.motionListening
+        ){
+
+            window.addEventListener(
+                "devicemotion",
+                handleMotion,
+                {
+                    passive:true
+                }
+            );
+
+            state.motionListening=true;
+        }
+
+
+        $("motionStatus").textContent=
+            "En attente";
+
+        $("sensorTitle").textContent=
+            "📱 Accéléromètre activé";
+
+        $("sensorDescription").textContent=
+            "Marchez avec le téléphone dans une poche pour tester.";
+
+        $("stepMode").textContent=
+            "Mode : capteur en attente";
+
+        toast(
+            "Capteur activé. Marchez maintenant 👣",
+            "success"
+        );
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Motion:",
+            error
+        );
+
+        $("motionStatus").textContent=
+            "Erreur";
+
+        $("sensorTitle").textContent=
+            "❌ Erreur capteur";
+
+        $("sensorDescription").textContent=
+            error.message ||
+            "Le capteur n'a pas pu être activé.";
+
+        return false;
+    }
+}
+
+
+/*
+    NOUVEL ALGORITHME
+
+    1. Calcul de la magnitude.
+    2. Suppression de la gravité / mouvement lent.
+    3. Lissage.
+    4. Détection du pic.
+    5. Temps minimum entre deux pas.
+    6. Vérification de la fréquence de marche.
+*/
+
+function handleMotion(event){
+
+    const acceleration=
+        event.acceleration;
+
+    const gravity=
+        event.accelerationIncludingGravity;
+
+
+    /*
+        acceleration est préférable.
+
+        Sur certains appareils,
+        acceleration est null.
+        Dans ce cas on utilise
+        accelerationIncludingGravity.
+    */
+
+    let source=null;
+    let includesGravity=false;
+
+
+    if(
+        acceleration &&
+        (
+            acceleration.x!==null ||
+            acceleration.y!==null ||
+            acceleration.z!==null
+        )
+    ){
+
+        source=acceleration;
+
+    }else if(
+        gravity &&
+        (
+            gravity.x!==null ||
+            gravity.y!==null ||
+            gravity.z!==null
+        )
+    ){
+
+        source=gravity;
+        includesGravity=true;
+    }
+
+
+    if(!source)
+        return;
+
+
+    const x=
+        Number(source.x || 0);
+
+    const y=
+        Number(source.y || 0);
+
+    const z=
+        Number(source.z || 0);
+
+
+    let magnitude=
+        Math.sqrt(
+            x*x+y*y+z*z
+        );
+
+
+    if(
+        !Number.isFinite(
+            magnitude
+        )
+    )
+        return;
+
+
+    /*
+        Si les données comprennent la gravité,
+        on mesure l'écart par rapport à 9.81.
+
+        Cela évite que la gravité permanente
+        soit interprétée comme une marche.
+    */
+
+    let dynamic;
+
+
+    if(includesGravity){
+
+        /*
+            Filtre adaptatif de la composante lente.
+        */
+
+        if(
+            state.motionBaseline===0
+        ){
+
+            state.motionBaseline=
+                magnitude;
+        }
+
+
+        state.motionBaseline=
+            (
+                state.motionBaseline*.92
+            )+
+            (
+                magnitude*.08
+            );
+
+
+        dynamic=
+            Math.abs(
+                magnitude -
+                state.motionBaseline
+            );
+
+    }else{
+
+        /*
+            Acceleration sans gravité.
+        */
+
+        dynamic=
+            magnitude;
+    }
+
+
+    /*
+        Lissage plus léger que dans
+        l'ancien code.
+
+        Le problème de l'ancien
+        algorithme était notamment
+        que les pics pouvaient être
+        trop fortement amortis.
+    */
+
+    state.motionFiltered=
+        (
+            state.motionFiltered*.70
+        )+
+        (
+            dynamic*.30
+        );
+
+
+    const now=
+        performance.now();
+
+
+    state.motionPeak=
+        Math.max(
+            state.motionPeak*.96,
+            state.motionFiltered
+        );
+
+
+    $("motionValue").textContent=
+        state.motionFiltered.toFixed(2);
+
+
+    /*
+        Le capteur doit envoyer
+        régulièrement des données.
+    */
+
+    state.lastMotionAt=
+        now;
+
+    state.motionAvailable=true;
+
+
+    $("motionStatus").textContent=
+        "Actif";
+
+    $("sensorTitle").textContent=
+        "🟢 Accéléromètre actif";
+
+    $("sensorDescription").textContent=
+        "Mouvement détecté — marchez normalement.";
+
+    $("stepMode").textContent=
+        "Mode : podomètre capteur";
+
+
+    /*
+        Seuil dynamique.
+
+        On ne veut pas un seuil
+        trop élevé qui empêcherait
+        la détection sur un téléphone
+        placé dans une poche.
+
+        Mais on ne veut pas non plus
+        compter chaque vibration.
+    */
+
+    const threshold=
+        includesGravity
+            ? 0.85
+            : 1.05;
+
+
+    /*
+        Temps minimum entre deux pas.
+
+        220 ms correspond à environ
+        273 pas/minute.
+
+        C'est suffisamment rapide
+        pour ne pas bloquer une course.
+    */
+
+    const minStepInterval=220;
+
+
+    /*
+        Détection de passage
+        au-dessus du seuil.
+    */
+
+    const crossed=
+        state.motionFiltered >
+        threshold;
+
+
+    /*
+        Évite de compter plusieurs
+        fois le même mouvement.
+    */
+
+    if(
+        crossed &&
+        (
+            now-state.lastStepAt
+        ) >
+        minStepInterval
+    ){
+
+        /*
+            On exige également
+            une petite variation
+            significative.
+        */
+
+        if(
+            state.motionPeak >=
+            threshold*1.05
+        ){
+
+            registerStep(now);
+        }
+    }
+
+
+    updateMetrics();
+}
+
+
+/*
+    Enregistrement d'un pas.
+*/
+
+function registerStep(now){
+
+    state.sensorSteps++;
+
+    state.lastStepAt=
+        now;
+
+
+    state.stepTimes.push(
+        now
+    );
+
+
+    /*
+        On conserve seulement
+        les 12 derniers pas.
+    */
+
+    if(
+        state.stepTimes.length>12
+    ){
+
+        state.stepTimes.shift();
+    }
+
+
+    /*
+        Calcul de l'intervalle
+        entre les pas.
+    */
+
+    if(
+        state.stepTimes.length>=2
+    ){
+
+        const last=
+            state.stepTimes[
+                state.stepTimes.length-1
+            ];
+
+        const previous=
+            state.stepTimes[
+                state.stepTimes.length-2
+            ];
+
+
+        const interval=
+            last-previous;
+
+
+        if(
+            interval>=220 &&
+            interval<=2500
+        ){
+
+            state.stepIntervals.push(
+                interval
+            );
+
+
+            if(
+                state.stepIntervals.length>10
+            ){
+
+                state.stepIntervals.shift();
+            }
+        }
+    }
+
+
+    $("sensorSteps").textContent=
+        state.sensorSteps
+            .toLocaleString("fr-FR");
+
+
+    /*
+        Petit retour visuel.
+    */
+
+    $("steps").textContent=
+        state.sensorSteps
+            .toLocaleString("fr-FR");
+
+
+    /*
+        Réduction du pic après
+        un pas pour éviter
+        les doubles détections.
+    */
+
+    state.motionPeak*=.45;
+}
+
+
+/*
+    Cadence réelle du capteur.
+*/
+
+function getSensorCadence(){
+
+    if(
+        state.stepIntervals.length===0
+    )
+        return 0;
+
+
+    const average=
+        state.stepIntervals.reduce(
+            (sum,value) =>
+                sum+value,
+            0
+        ) /
+        state.stepIntervals.length;
+
+
+    if(
+        average<=0
+    )
+        return 0;
+
+
+    return (
+        60000/average
+    );
+}
+
+
+/*
+    Si le capteur n'est pas disponible,
+    on utilise la distance GPS.
+*/
+
+function getStepCount(){
+
+    const recentMotion=
+        state.motionAvailable &&
+        (
+            performance.now() -
+            state.lastMotionAt
+        ) <
+        10000;
+
+
+    if(
+        recentMotion
+    ){
+
+        return state.sensorSteps;
+    }
+
+
+    return Math.round(
+        state.totalDistance /
+        state.stepLength
+    );
+}
+
+
+/* =========================================================
+   CALORIES
+========================================================= */
+
+function calculateMET(
+    speedKmh
+){
+
+    if(speedKmh<4)
+        return 2.5;
+
+    if(speedKmh<5.5)
+        return 3.5;
+
+    if(speedKmh<7)
+        return 5;
+
+    if(speedKmh<8)
+        return 7;
+
+    if(speedKmh<9.7)
+        return 8.3;
+
+    if(speedKmh<11.3)
+        return 9.8;
+
+    return 11;
+}
+
+
+function calculateCalories(){
+
+    const elapsedHours=
+        getElapsedMs()/
+        3600000;
+
+    return Math.max(
+        0,
+        calculateMET(
+            state.avgSpeedKmh
+        ) *
+        state.weightKg *
+        elapsedHours
+    );
+}
+
+
+/* =========================================================
+   METRIQUES
+========================================================= */
+
+function updateMetrics(){
+
+    const elapsed=
+        getElapsedMs();
+
+    const distanceKm=
+        state.totalDistance/1000;
+
+
+    if(
+        elapsed>0 &&
+        distanceKm>0
+    ){
+
+        state.avgSpeedKmh=
+            distanceKm/
+            (
+                elapsed/
+                3600000
+            );
+
+    }else{
+
+        state.avgSpeedKmh=0;
+    }
+
+
+    const steps=
+        getStepCount();
+
+
+    $("distance").textContent=
+        formatNumber(
+            distanceKm,
+            2
+        );
+
+
+    $("pace").textContent=
+        formatPace(
+            distanceKm,
+            elapsed
+        );
+
+
+    $("speed").textContent=
+        formatNumber(
+            state.speedKmh,
+            1
+        );
+
+
+    $("avgSpeed").textContent=
+        formatNumber(
+            state.avgSpeedKmh,
+            1
+        );
+
+
+    $("maxSpeed").textContent=
+        formatNumber(
+            state.maxSpeedKmh,
+            1
+        );
+
+
+    $("steps").textContent=
+        steps.toLocaleString(
+            "fr-FR"
+        );
+
+
+    $("sensorSteps").textContent=
+        state.sensorSteps
+            .toLocaleString(
+                "fr-FR"
+            );
+
+
+    $("estimatedSteps").textContent=
+        Math.round(
+            state.totalDistance/
+            state.stepLength
+        ).toLocaleString(
+            "fr-FR"
+        );
+
+
+    const sensorCadence=
+        getSensorCadence();
+
+
+    let cadence=
+        sensorCadence;
+
+
+    /*
+        Si le capteur n'a pas encore
+        suffisamment de pas, on utilise
+        le temps global.
+    */
+
+    if(
+        cadence===0 &&
+        elapsed>0
+    ){
+
+        cadence=
+            steps/
+            (
+                elapsed/60000
+            );
+    }
+
+
+    $("cadence").textContent=
+        Math.round(
+            cadence
+        );
+
+
+    $("calories").textContent=
+        Math.round(
+            calculateCalories()
+        );
+
+
+    if(
+        state.motionAvailable &&
+        (
+            performance.now() -
+            state.lastMotionAt
+        ) <
+        1500
+    ){
+
+        $("movementState").textContent=
+            "En mouvement";
+
+    }else if(
+        state.speedKmh>1
+    ){
+
+        $("movementState").textContent=
+            "En déplacement";
+
+    }else{
+
+        $("movementState").textContent=
+            "Immobile";
+    }
+}
+
+
+/* =========================================================
+   ROUTE
+========================================================= */
+
+const canvas=
+    $("routeCanvas");
+
+const ctx=
+    canvas.getContext("2d");
+
+
+function drawRoute(){
+
+    const width=
+        canvas.width;
+
+    const height=
+        canvas.height;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    ctx.strokeStyle=
+        "rgba(34,211,238,.07)";
+
+    ctx.lineWidth=1;
+
+
+    for(
+        let x=0;
+        x<=width;
+        x+=50
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(x,0);
+
+        ctx.lineTo(
+            x,
+            height
+        );
+
+        ctx.stroke();
+    }
+
+
+    for(
+        let y=0;
+        y<=height;
+        y+=50
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(0,y);
+
+        ctx.lineTo(
+            width,
+            y
+        );
+
+        ctx.stroke();
+    }
+
+
+    const points=
+        state.routePoints;
+
+
+    $("routePointCount").textContent=
+        points.length+
+        (
+            points.length>1
+                ? " points"
+                : " point"
+        );
+
+
+    if(
+        points.length===0
+    ){
+
+        $("routeEmpty").style.display=
+            "grid";
+
+        return;
+    }
+
+
+    $("routeEmpty").style.display=
+        "none";
+
+
+    if(
+        points.length===1
+    ){
+
+        drawPoint(
+            width/2,
+            height/2,
+            "#22d3ee",
+            7
+        );
+
+        return;
+    }
+
+
+    let minLat=Infinity;
+    let maxLat=-Infinity;
+    let minLon=Infinity;
+    let maxLon=-Infinity;
+
+
+    for(
+        const point of points
+    ){
+
+        minLat=
+            Math.min(
+                minLat,
+                point.lat
+            );
+
+        maxLat=
+            Math.max(
+                maxLat,
+                point.lat
+            );
+
+        minLon=
+            Math.min(
+                minLon,
+                point.lon
+            );
+
+        maxLon=
+            Math.max(
+                maxLon,
+                point.lon
+            );
+    }
+
+
+    const padding=55;
+
+    const latRange=
+        maxLat-minLat ||
+        .00001;
+
+    const lonRange=
+        maxLon-minLon ||
+        .00001;
+
+
+    const mapX=
+        lon =>
+            padding+
+            (
+                (lon-minLon)/
+                lonRange
+            )*
+            (
+                width-
+                padding*2
+            );
+
+
+    const mapY=
+        lat =>
+            height-
+            padding-
+            (
+                (lat-minLat)/
+                latRange
+            )*
+            (
+                height-
+                padding*2
+            );
+
+
+    ctx.beginPath();
+
+
+    points.forEach(
+        (point,index)=>{
+
+            const x=
+                mapX(point.lon);
+
+            const y=
+                mapY(point.lat);
+
+
+            if(index===0){
+
+                ctx.moveTo(x,y);
+
+            }else{
+
+                ctx.lineTo(x,y);
+            }
+        }
+    );
+
+
+    ctx.strokeStyle=
+        "#22d3ee";
+
+    ctx.lineWidth=6;
+
+    ctx.lineJoin="round";
+
+    ctx.lineCap="round";
+
+    ctx.shadowColor=
+        "rgba(34,211,238,.55)";
+
+    ctx.shadowBlur=12;
+
+    ctx.stroke();
+
+    ctx.shadowBlur=0;
+
+
+    const start=
+        points[0];
+
+    drawPoint(
+        mapX(start.lon),
+        mapY(start.lat),
+        "#22c55e",
+        8
+    );
+
+
+    const end=
+        points[points.length-1];
+
+    drawPoint(
+        mapX(end.lon),
+        mapY(end.lat),
+        "#fbbf24",
+        9
+    );
+}
+
+
+function drawPoint(
+    x,
+    y,
+    color,
+    radius
+){
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fillStyle=color;
+
+    ctx.fill();
+
+    ctx.strokeStyle="#fff";
+
+    ctx.lineWidth=3;
+
+    ctx.stroke();
+}
+
+
+/* =========================================================
+   WAKE LOCK
+========================================================= */
+
+async function requestWakeLock(){
+
+    if(
+        !("wakeLock" in navigator)
+    )
+        return;
+
+    try{
+
+        state.wakeLock=
+            await navigator.wakeLock.request(
+                "screen"
+            );
+
+    }catch(error){
+
+        console.warn(
+            "WakeLock:",
+            error
+        );
+    }
+}
+
+
+async function releaseWakeLock(){
+
+    if(
+        state.wakeLock
+    ){
+
+        try{
+            await state.wakeLock.release();
+        }catch{}
+
+        state.wakeLock=null;
+    }
+}
+
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if(
+            !document.hidden &&
+            state.running &&
+            !state.paused
+        ){
+
+            requestWakeLock();
+        }
+    }
+);
+
+
+/* =========================================================
+   COURSE
+========================================================= */
+
+async function startRun(){
+
+    if(
+        state.running &&
+        state.paused
+    ){
+
+        resumeRun();
+        return;
+    }
+
+
+    if(state.running)
+        return;
+
+
+    state.running=true;
+    state.paused=false;
+
+
+    state.startTimestamp=
+        Date.now();
+
+
+    $("runState").textContent=
+        "Course en cours";
+
+    $("runDot").className=
+        "run-dot running";
+
+
+    $("startBtn").disabled=true;
+
+    $("pauseBtn").disabled=false;
+
+    $("stopBtn").disabled=false;
+
+
+    startGPS();
+
+    /*
+        On demande également le capteur
+        au démarrage.
+
+        Si l'utilisateur l'a déjà activé,
+        aucune nouvelle demande n'est faite.
+    */
+
+    if(
+        !state.motionListening
+    ){
+
+        await enableMotion();
+    }
+
+
+    await requestWakeLock();
+
+    startTimer();
+
+    updateMetrics();
+
+
+    toast(
+        "Course démarrée 🏃",
+        "success"
+    );
+}
+
+
+function pauseRun(){
+
+    if(
+        !state.running ||
+        state.paused
+    )
+        return;
+
+
+    pauseTimer();
+
+
+    $("runState").textContent=
+        "Course en pause";
+
+    $("runDot").className=
+        "run-dot paused";
+
+    $("pauseBtn").textContent=
+        "▶️ Reprendre";
+
+
+    toast(
+        "Course mise en pause."
+    );
+}
+
+
+function resumeRun(){
+
+    if(
+        !state.running ||
+        !state.paused
+    )
+        return;
+
+
+    resumeTimer();
+
+
+    $("runState").textContent=
+        "Course en cours";
+
+    $("runDot").className=
+        "run-dot running";
+
+    $("pauseBtn").textContent=
+        "⏸️ Pause";
+
+
+    requestWakeLock();
+
+
+    toast(
+        "Course reprise 🏃",
+        "success"
+    );
+}
+
+
+function stopRun(){
+
+    if(!state.running)
+        return;
+
+
+    const elapsed=
+        getElapsedMs();
+
+
+    state.elapsedBeforePause=
+        elapsed;
+
+    state.running=false;
+    state.paused=false;
+
+
+    stopGPS();
+
+    releaseWakeLock();
+
+    cancelAnimationFrame(
+        timerAnimation
+    );
+
+
+    updateTimer();
+
+    updateMetrics();
+
+
+    $("runState").textContent=
+        "Course terminée";
+
+    $("runDot").className=
+        "run-dot";
+
+
+    $("startBtn").disabled=false;
+
+    $("pauseBtn").disabled=true;
+
+    $("pauseBtn").textContent=
+        "⏸️ Pause";
+
+    $("stopBtn").disabled=true;
+
+
+    saveSession();
+
+
+    toast(
+        "Course enregistrée 📊",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetRun(){
+
+    stopGPS();
+
+    releaseWakeLock();
+
+    cancelAnimationFrame(
+        timerAnimation
+    );
+
+
+    state.running=false;
+    state.paused=false;
+
+    state.startTimestamp=0;
+    state.elapsedBeforePause=0;
+
+    state.lastPosition=null;
+
+    state.totalDistance=0;
+
+    state.speedKmh=0;
+    state.avgSpeedKmh=0;
+    state.maxSpeedKmh=0;
+
+    state.gpsAccuracy=null;
+
+    state.routePoints=[];
+
+    state.sensorSteps=0;
+
+    state.lastMotionAt=0;
+    state.lastStepAt=0;
+
+    state.motionBaseline=0;
+    state.motionFiltered=0;
+    state.motionPeak=0;
+
+    state.stepIntervals=[];
+    state.stepTimes=[];
+
+
+    $("runState").textContent=
+        "Prêt pour la course";
+
+    $("runDot").className=
+        "run-dot";
+
+
+    $("startBtn").disabled=false;
+
+    $("pauseBtn").disabled=true;
+
+    $("stopBtn").disabled=true;
+
+    $("pauseBtn").textContent=
+        "⏸️ Pause";
+
+
+    setGPSBadge(
+        "GPS hors service"
+    );
+
+
+    $("latitude").textContent="--";
+    $("longitude").textContent="--";
+    $("gpsAccuracy").textContent="--";
+    $("heading").textContent="--";
+    $("gpsSpeed").textContent="--";
+
+
+    $("motionStatus").textContent=
+        state.motionListening
+            ? "Actif"
+            : "Non activé";
+
+
+    $("stepMode").textContent=
+        state.motionListening
+            ? "Mode : capteur prêt"
+            : "Mode : en attente";
+
+
+    $("sensorSteps").textContent="0";
+
+
+    updateTimer();
+    updateMetrics();
+    drawRoute();
+
+
+    toast(
+        "Nouvelle course prête."
+    );
+}
+
+
+/* =========================================================
+   RESET PAS UNIQUEMENT
+========================================================= */
+
+function resetSteps(){
+
+    if(
+        !confirm(
+            "Remettre le compteur de pas de cette course à zéro ?"
+        )
+    )
+        return;
+
+
+    state.sensorSteps=0;
+
+    state.stepIntervals=[];
+    state.stepTimes=[];
+
+    state.lastStepAt=0;
+
+    $("sensorSteps").textContent="0";
+
+    updateMetrics();
+
+    toast(
+        "Compteur de pas réinitialisé.",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   TEST CAPTEUR
+========================================================= */
+
+async function testSensor(){
+
+    const enabled=
+        await enableMotion();
+
+    if(enabled){
+
+        toast(
+            "Bougez le téléphone pendant quelques secondes.",
+            "success"
+        );
+    }
+}
+
+
+/* =========================================================
+   HISTORIQUE
+========================================================= */
+
+function saveSession(){
+
+    const elapsed=
+        state.elapsedBeforePause;
+
+    const distanceKm=
+        state.totalDistance/1000;
+
+    const steps=
+        getStepCount();
+
+
+    if(
+        elapsed<3000 &&
+        distanceKm<.01 &&
+        steps<10
+    ){
+
+        return;
+    }
+
+
+    const session={
+
+        id:Date.now(),
+
+        date:
+            new Date().toISOString(),
+
+        duration:
+            elapsed,
+
+        distance:
+            distanceKm,
+
+        steps,
+
+        sensorSteps:
+            state.sensorSteps,
+
+        pace:
+            formatPace(
+                distanceKm,
+                elapsed
+            ),
+
+        avgSpeed:
+            state.avgSpeedKmh,
+
+        maxSpeed:
+            state.maxSpeedKmh,
+
+        calories:
+            Math.round(
+                calculateCalories()
+            )
+    };
+
+
+    history.unshift(
+        session
+    );
+
+
+    history=
+        history.slice(
+            0,
+            50
+        );
+
+
+    localStorage.setItem(
+        STORAGE.history,
+        JSON.stringify(history)
+    );
+
+
+    renderHistory();
+}
+
+
+function renderHistory(){
+
+    const container=
+        $("historyList");
+
+
+    if(
+        history.length===0
+    ){
+
+        container.innerHTML=`
+            <div class="notice"
+                 style="text-align:center;">
+                Aucune course enregistrée.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML=
+        history
+            .map(
+                session=>`
+
+                <div class="history-item">
+
+                    <div class="history-head">
+
+                        <strong>
+                            🏃 ${formatDate(session.date)}
+                        </strong>
+
+                        <span>
+                            ${formatTime(session.duration)}
+                        </span>
+
+                    </div>
+
+                    <div class="history-stats">
+
+                        <div class="history-stat">
+                            <small>Distance</small>
+                            <strong>
+                                ${formatNumber(
+                                    session.distance,
+                                    2
+                                )} km
+                            </strong>
+                        </div>
+
+                        <div class="history-stat">
+                            <small>Pas</small>
+                            <strong>
+                                ${Number(
+                                    session.steps
+                                ).toLocaleString(
+                                    "fr-FR"
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="history-stat">
+                            <small>Allure</small>
+                            <strong>
+                                ${session.pace} /km
+                            </strong>
+                        </div>
+
+                        <div class="history-stat">
+                            <small>Calories</small>
+                            <strong>
+                                ${session.calories} kcal
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `
+            )
+            .join("");
+}
+
+
+/* =========================================================
+   EXPORT CSV
+========================================================= */
+
+function exportHistoryCSV(){
+
+    if(
+        history.length===0
+    ){
+
+        toast(
+            "Aucune course à exporter."
+        );
+
+        return;
+    }
+
+
+    const rows=[
+
+        [
+            "Date",
+            "Duree",
+            "Distance_km",
+            "Pas",
+            "Pas_capteur",
+            "Allure_min_km",
+            "Vitesse_moy_kmh",
+            "Vitesse_max_kmh",
+            "Calories"
+        ],
+
+        ...history.map(
+            session=>[
+
+                formatDate(
+                    session.date
+                ),
+
+                formatTime(
+                    session.duration
+                ),
+
+                session.distance
+                    .toFixed(2),
+
+                session.steps,
+
+                session.sensorSteps || 0,
+
+                session.pace,
+
+                session.avgSpeed
+                    .toFixed(2),
+
+                session.maxSpeed
+                    .toFixed(2),
+
+                session.calories
+            ]
+        )
+    ];
+
+
+    const csv=
+        "\uFEFF"+
+        rows
+            .map(
+                row =>
+                    row
+                        .map(
+                            value =>
+                                `"${String(value)
+                                    .replaceAll(
+                                        '"',
+                                        '""'
+                                    )}"`
+                        )
+                        .join(";")
+            )
+            .join("\n");
+
+
+    downloadFile(
+        csv,
+        "historique-course.csv",
+        "text/csv;charset=utf-8"
+    );
+
+
+    toast(
+        "Historique CSV exporté.",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   EXPORT GPS
+========================================================= */
+
+function exportRouteCSV(){
+
+    if(
+        state.routePoints.length===0
+    ){
+
+        toast(
+            "Aucun point GPS à exporter."
+        );
+
+        return;
+    }
+
+
+    const rows=[
+
+        [
+            "Point",
+            "Date",
+            "Latitude",
+            "Longitude"
+        ],
+
+        ...state.routePoints.map(
+            (point,index)=>[
+
+                index+1,
+
+                new Date(
+                    point.timestamp
+                ).toISOString(),
+
+                point.lat.toFixed(7),
+
+                point.lon.toFixed(7)
+            ]
+        )
+    ];
+
+
+    const csv=
+        "\uFEFF"+
+        rows
+            .map(
+                row =>
+                    row.join(";")
+            )
+            .join("\n");
+
+
+    downloadFile(
+        csv,
+        "parcours-gps.csv",
+        "text/csv;charset=utf-8"
+    );
+
+
+    toast(
+        "Parcours GPS exporté.",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   EXPORT JSON
+========================================================= */
+
+function exportJSON(){
+
+    const data={
+
+        version:2,
+
+        exportedAt:
+            new Date().toISOString(),
+
+        settings:{
+
+            weightKg:
+                state.weightKg,
+
+            stepLength:
+                state.stepLength,
+
+            gpsThreshold:
+                state.gpsThreshold
+        },
+
+        history,
+
+        currentSession:{
+
+            duration:
+                getElapsedMs(),
+
+            distance:
+                state.totalDistance/1000,
+
+            steps:
+                getStepCount(),
+
+            sensorSteps:
+                state.sensorSteps,
+
+            avgSpeed:
+                state.avgSpeedKmh,
+
+            maxSpeed:
+                state.maxSpeedKmh,
+
+            calories:
+                Math.round(
+                    calculateCalories()
+                ),
+
+            routePoints:
+                state.routePoints
+        }
+    };
+
+
+    const json=
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
+
+
+    downloadFile(
+        json,
+        "run-tracker-sauvegarde.json",
+        "application/json;charset=utf-8"
+    );
+
+
+    toast(
+        "Sauvegarde JSON créée.",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   IMPORT JSON
+========================================================= */
+
+function importJSON(file){
+
+    const reader=
+        new FileReader();
+
+
+    reader.onload=
+        event=>{
+
+            try{
+
+                const data=
+                    JSON.parse(
+                        event.target.result
+                    );
+
+
+                if(
+                    !data ||
+                    typeof data!=="object"
+                ){
+
+                    throw new Error(
+                        "Fichier invalide"
+                    );
+                }
+
+
+                if(
+                    Array.isArray(
+                        data.history
+                    )
+                ){
+
+                    history=
+                        data.history;
+
+                    localStorage.setItem(
+                        STORAGE.history,
+                        JSON.stringify(
+                            history
+                        )
+                    );
+                }
+
+
+                if(
+                    data.settings
+                ){
+
+                    if(
+                        Number.isFinite(
+                            Number(
+                                data.settings.weightKg
+                            )
+                        )
+                    ){
+
+                        state.weightKg=
+                            Number(
+                                data.settings.weightKg
+                            );
+
+                        localStorage.setItem(
+                            STORAGE.weight,
+                            state.weightKg
+                        );
+                    }
+
+
+                    if(
+                        Number.isFinite(
+                            Number(
+                                data.settings.stepLength
+                            )
+                        )
+                    ){
+
+                        state.stepLength=
+                            Number(
+                                data.settings.stepLength
+                            );
+
+                        localStorage.setItem(
+                            STORAGE.stepLength,
+                            state.stepLength
+                        );
+                    }
+
+
+                    if(
+                        Number.isFinite(
+                            Number(
+                                data.settings.gpsThreshold
+                            )
+                        )
+                    ){
+
+                        state.gpsThreshold=
+                            Number(
+                                data.settings.gpsThreshold
+                            );
+
+                        localStorage.setItem(
+                            STORAGE.gpsThreshold,
+                            state.gpsThreshold
+                        );
+                    }
+                }
+
+
+                loadSettings();
+
+                renderHistory();
+
+
+                toast(
+                    "Sauvegarde restaurée.",
+                    "success"
+                );
+
+
+            }catch(error){
+
+                console.error(error);
+
+                toast(
+                    "Fichier JSON invalide.",
+                    "error"
+                );
+            }
+        };
+
+
+    reader.readAsText(file);
+}
+
+
+/* =========================================================
+   TELECHARGEMENT
+========================================================= */
+
+function downloadFile(
+    content,
+    filename,
+    type
+){
+
+    const blob=
+        new Blob(
+            [content],
+            {type}
+        );
+
+
+    const url=
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link=
+        document.createElement("a");
+
+
+    link.href=url;
+
+    link.download=filename;
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+    link.remove();
+
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(url),
+        1000
+    );
+}
+
+
+/* =========================================================
+   PDF
+========================================================= */
+
+/*
+    Le navigateur ne permet pas de générer
+    directement un PDF universel sans bibliothèque.
+
+    La solution la plus fiable est donc :
+
+    1. création d'une page de rapport ;
+    2. ouverture de la boîte d'impression ;
+    3. choix "Enregistrer au format PDF".
+
+    Cela fonctionne avec Chrome, Edge,
+    Firefox, Android et beaucoup de navigateurs mobiles.
+*/
+
+function exportPDF(){
+
+    $("printDate").textContent=
+        new Date().toLocaleString(
+            "fr-FR"
+        );
+
+
+    const last=
+        history.length>0
+            ? history[0]
+            : null;
+
+
+    const totalDistance=
+        history.reduce(
+            (sum,item)=>
+                sum+
+                Number(item.distance||0),
+            0
+        );
+
+
+    const totalSteps=
+        history.reduce(
+            (sum,item)=>
+                sum+
+                Number(item.steps||0),
+            0
+        );
+
+
+    const totalCalories=
+        history.reduce(
+            (sum,item)=>
+                sum+
+                Number(item.calories||0),
+            0
+        );
+
+
+    const rows=
+        history.length
+            ? history
+                .map(
+                    item=>`
+
+                    <tr>
+
+                        <td>
+                            ${escapeHTML(
+                                formatDate(
+                                    item.date
+                                )
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatTime(
+                                item.duration
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatNumber(
+                                item.distance,
+                                2
+                            )} km
+                        </td>
+
+                        <td>
+                            ${Number(
+                                item.steps||0
+                            ).toLocaleString(
+                                "fr-FR"
+                            )}
+                        </td>
+
+                        <td>
+                            ${item.pace}
+                        </td>
+
+                        <td>
+                            ${formatNumber(
+                                item.avgSpeed,
+                                1
+                            )} km/h
+                        </td>
+
+                        <td>
+                            ${item.calories} kcal
+                        </td>
+
+                    </tr>
+                `
+                )
+                .join("")
+            : `
+                <tr>
+                    <td colspan="7">
+                        Aucune course enregistrée.
+                    </td>
+                </tr>
+            `;
+
+
+    const report=
+`
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Rapport Run Tracker</title>
+
+<style>
+
+@page{
+    size:A4;
+    margin:14mm;
+}
+
+body{
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color:#172033;
+
+    background:#fff;
+
+    font-size:12px;
+}
+
+h1{
+    color:#087ea4;
+    margin-bottom:4px;
+}
+
+h2{
+    color:#087ea4;
+    margin-top:25px;
+}
+
+.header{
+    border-bottom:
+        3px solid #087ea4;
+
+    padding-bottom:12px;
+}
+
+.date{
+    color:#667085;
+}
+
+.summary{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:10px;
+
+    margin-top:18px;
+}
+
+.box{
+    border:
+        1px solid #d9e2ec;
+
+    border-radius:10px;
+
+    padding:12px;
+
+    background:#f8fbfd;
+}
+
+.box small{
+    display:block;
+
+    color:#667085;
+
+    margin-bottom:5px;
+}
+
+.box strong{
+    font-size:20px;
+    color:#102a43;
+}
+
+table{
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:12px;
+}
+
+th{
+    background:#087ea4;
+    color:white;
+
+    text-align:left;
+
+    padding:8px;
+}
+
+td{
+    border-bottom:
+        1px solid #e5e7eb;
+
+    padding:8px;
+}
+
+.footer{
+    margin-top:30px;
+
+    padding-top:10px;
+
+    border-top:
+        1px solid #ddd;
+
+    color:#667085;
+
+    font-size:10px;
+}
+
+.settings{
+    display:grid;
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:10px;
+}
+
+@media(max-width:700px){
+
+    .summary,
+    .settings{
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+    <h1>🏃 Run Tracker</h1>
+
+    <div class="date">
+        Rapport généré le
+        ${new Date().toLocaleString("fr-FR")}
+    </div>
+
+</div>
+
+
+<h2>Résumé général</h2>
+
+<div class="summary">
+
+    <div class="box">
+        <small>Courses</small>
+        <strong>
+            ${history.length}
+        </strong>
+    </div>
+
+    <div class="box">
+        <small>Distance totale</small>
+        <strong>
+            ${formatNumber(
+                totalDistance,
+                2
+            )} km
+        </strong>
+    </div>
+
+    <div class="box">
+        <small>Pas totaux</small>
+        <strong>
+            ${totalSteps.toLocaleString(
+                "fr-FR"
+            )}
+        </strong>
+    </div>
+
+    <div class="box">
+        <small>Calories</small>
+        <strong>
+            ${totalCalories.toLocaleString(
+                "fr-FR"
+            )} kcal
+        </strong>
+    </div>
+
+</div>
+
+
+<h2>Dernière activité</h2>
+
+<div class="summary">
+
+    <div class="box">
+        <small>Durée</small>
+        <strong>
+            ${
+                last
+                    ? formatTime(
+                        last.duration
+                    )
+                    : "--"
+            }
+        </strong>
+    </div>
+
+    <div class="box">
+        <small>Distance</small>
+        <strong>
+            ${
+                last
+                    ? formatNumber(
+                        last.distance,
+                        2
+                    )+" km"
+                    : "--"
+            }
+        </strong>
+    </div>
+
+    <div class="box">
+        <small>Pas</small>
+        <strong>
+            ${
+                last
+                    ? Number(
+                        last.steps||0
+                    ).toLocaleString(
+                        "fr-FR"
+                    )
+                    : "--"
+            }
+        </strong>
+    </div>
+
+    <div class="box">
+        <small>Calories</small>
+        <strong>
+            ${
+                last
+                    ? last.calories+
+                      " kcal"
+                    : "--"
+            }
+        </strong>
+    </div>
+
+</div>
+
+
+<h2>Historique des activités</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+    <th>Date</th>
+    <th>Durée</th>
+    <th>Distance</th>
+    <th>Pas</th>
+    <th>Allure</th>
+    <th>Vitesse</th>
+    <th>Calories</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+
+
+<h2>Réglages du podomètre</h2>
+
+<div class="settings">
+
+    <div class="box">
+
+        <small>Poids</small>
+
+        <strong>
+            ${state.weightKg} kg
+        </strong>
+
+    </div>
+
+    <div class="box">
+
+        <small>Longueur de foulée</small>
+
+        <strong>
+            ${state.stepLength} m
+        </strong>
+
+    </div>
+
+    <div class="box">
+
+        <small>Précision GPS max.</small>
+
+        <strong>
+            ${state.gpsThreshold} m
+        </strong>
+
+    </div>
+
+</div>
+
+
+<div class="footer">
+
+    Run Tracker — Rapport généré localement.
+    Les données proviennent du navigateur,
+    du GPS et/ou de l'accéléromètre du téléphone.
+
+</div>
+
+</body>
+
+</html>
+`;
+
+
+    const win=
+        window.open(
+            "",
+            "_blank",
+            "width=1000,height=800"
+        );
+
+
+    if(!win){
+
+        toast(
+            "La fenêtre PDF a été bloquée par le navigateur.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    win.document.open();
+
+    win.document.write(
+        report
+    );
+
+    win.document.close();
+
+
+    setTimeout(
+        () => {
+
+            win.focus();
+
+            win.print();
+
+        },
+        500
+    );
+
+
+    toast(
+        "Rapport PDF prêt. Choisissez « Enregistrer au format PDF ».",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   MUSIQUE
+========================================================= */
+
+const audio=
+    $("audioPlayer");
+
+
+function addMusicFiles(
+    fileList
+){
+
+    const files=
+        Array.from(fileList);
+
+
+    for(
+        const file of files
+    ){
+
+        if(
+            !file.type.startsWith(
+                "audio/"
+            )
+        )
+            continue;
+
+
+        const url=
+            URL.createObjectURL(
+                file
+            );
+
+
+        state.tracks.push({
+            name:file.name,
+            url,
+            file
+        });
+    }
+
+
+    renderPlaylist();
+
+
+    if(
+        state.trackIndex===-1 &&
+        state.tracks.length>0
+    ){
+
+        loadTrack(
+            0,
+            false
+        );
+    }
+
+
+    toast(
+        files.length+
+        " fichier(s) ajouté(s) 🎵",
+        "success"
+    );
+}
+
+
+function loadTrack(
+    index,
+    autoplay=false
+){
+
+    if(
+        state.tracks.length===0
+    )
+        return;
+
+
+    index=
+        (
+            index+
+            state.tracks.length
+        )%
+        state.tracks.length;
+
+
+    state.trackIndex=index;
+
+
+    const track=
+        state.tracks[index];
+
+
+    audio.src=
+        track.url;
+
+    audio.load();
+
+
+    $("trackName").textContent=
+        track.name;
+
+    $("trackNumber").textContent=
+        "Piste "+
+        (index+1)+
+        " / "+
+        state.tracks.length;
+
+
+    renderPlaylist();
+
+
+    if(autoplay){
+
+        audio.play()
+            .catch(
+                console.warn
+            );
+    }
+}
+
+
+function playPauseMusic(){
+
+    if(!audio.src){
+
+        toast(
+            "Ajoutez d'abord une musique."
+        );
+
+        return;
+    }
+
+
+    if(audio.paused){
+
+        audio.play()
+            .catch(
+                () =>
+                    toast(
+                        "Lecture impossible."
+                    )
+            );
+
+    }else{
+
+        audio.pause();
+    }
+}
+
+
+function nextTrack(
+    autoplay=true
+){
+
+    if(
+        state.tracks.length===0
+    )
+        return;
+
+
+    let next;
+
+
+    if(
+        state.shuffle &&
+        state.tracks.length>1
+    ){
+
+        do{
+
+            next=
+                Math.floor(
+                    Math.random()*
+                    state.tracks.length
+                );
+
+        }while(
+            next===state.trackIndex
+        );
+
+    }else{
+
+        next=
+            state.trackIndex+1;
+    }
+
+
+    if(
+        next>=
+        state.tracks.length
+    ){
+
+        if(state.repeat){
+
+            next=0;
+
+        }else{
+
+            next=
+                state.tracks.length-1;
+
+            autoplay=false;
+        }
+    }
+
+
+    loadTrack(
+        next,
+        autoplay
+    );
+}
+
+
+function previousTrack(){
+
+    if(
+        state.tracks.length===0
+    )
+        return;
+
+
+    if(
+        audio.currentTime>3
+    ){
+
+        audio.currentTime=0;
+
+        return;
+    }
+
+
+    loadTrack(
+        state.trackIndex-1,
+        true
+    );
+}
+
+
+function renderPlaylist(){
+
+    const container=
+        $("playlist");
+
+
+    if(
+        state.tracks.length===0
+    ){
+
+        container.innerHTML=`
+            <div class="notice">
+                Votre playlist locale est vide.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML=
+        state.tracks
+            .map(
+                (track,index)=>`
+
+                <div
+                    class="playlist-item
+                    ${
+                        index===state.trackIndex
+                            ? "active"
+                            : ""
+                    }"
+                    data-index="${index}"
+                >
+
+                    <span>
+                        ${index+1}.
+                        ${escapeHTML(track.name)}
+                    </span>
+
+                    <button
+                        class="btn btn-small remove-track"
+                        data-remove="${index}"
+                    >
+                        ×
+                    </button>
+
+                </div>
+            `
+            )
+            .join("");
+
+
+    container
+        .querySelectorAll(
+            ".playlist-item"
+        )
+        .forEach(
+            item=>{
+
+                item.addEventListener(
+                    "click",
+                    event=>{
+
+                        if(
+                            event.target.closest(
+                                ".remove-track"
+                            )
+                        )
+                            return;
+
+
+                        loadTrack(
+                            Number(
+                                item.dataset.index
+                            ),
+                            true
+                        );
+                    }
+                );
+            }
+        );
+
+
+    container
+        .querySelectorAll(
+            ".remove-track"
+        )
+        .forEach(
+            button=>{
+
+                button.addEventListener(
+                    "click",
+                    event=>{
+
+                        event.stopPropagation();
+
+                        removeTrack(
+                            Number(
+                                button.dataset.remove
+                            )
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+function removeTrack(index){
+
+    if(
+        !state.tracks[index]
+    )
+        return;
+
+
+    URL.revokeObjectURL(
+        state.tracks[index].url
+    );
+
+
+    state.tracks.splice(
+        index,
+        1
+    );
+
+
+    if(
+        state.tracks.length===0
+    ){
+
+        state.trackIndex=-1;
+
+        audio.pause();
+
+        audio.removeAttribute(
+            "src"
+        );
+
+        audio.load();
+
+        $("trackName").textContent=
+            "Aucune musique sélectionnée";
+
+        $("trackNumber").textContent=
+            "Ajoutez vos fichiers audio";
+
+    }else{
+
+        if(
+            index<
+            state.trackIndex
+        ){
+
+            state.trackIndex--;
+
+        }else if(
+            index===
+            state.trackIndex
+        ){
+
+            state.trackIndex=
+                Math.min(
+                    state.trackIndex,
+                    state.tracks.length-1
+                );
+
+            loadTrack(
+                state.trackIndex,
+                false
+            );
+        }
+    }
+
+
+    renderPlaylist();
+}
+
+
+function updateMusicButton(){
+
+    $("playBtn").textContent=
+        audio.paused
+            ? "▶️"
+            : "⏸️";
+}
+
+
+audio.addEventListener(
+    "play",
+    updateMusicButton
+);
+
+audio.addEventListener(
+    "pause",
+    updateMusicButton
+);
+
+
+audio.addEventListener(
+    "ended",
+    () => {
+
+        if(state.repeat){
+
+            loadTrack(
+                state.trackIndex,
+                true
+            );
+
+        }else{
+
+            nextTrack(true);
+        }
+    }
+);
+
+
+/* =========================================================
+   UTILITAIRE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function loadTheme(){
+
+    const theme=
+        localStorage.getItem(
+            STORAGE.theme
+        );
+
+
+    if(theme==="dark"){
+
+        document.body.classList.add(
+            "dark"
+        );
+
+        $("themeBtn").textContent=
+            "☀️";
+    }
+}
+
+
+function toggleTheme(){
+
+    document.body.classList.toggle(
+        "dark"
+    );
+
+
+    const dark=
+        document.body.classList.contains(
+            "dark"
+        );
+
+
+    localStorage.setItem(
+        STORAGE.theme,
+        dark
+            ? "dark"
+            : "light"
+    );
+
+
+    $("themeBtn").textContent=
+        dark
+            ? "☀️"
+            : "🌙";
+}
+
+
+/* =========================================================
+   REGLAGES
+========================================================= */
+
+function loadSettings(){
+
+    $("weight").value=
+        state.weightKg;
+
+    $("stepLength").value=
+        state.stepLength;
+
+    $("gpsThreshold").value=
+        state.gpsThreshold;
+
+
+    $("stepLengthDisplay").textContent=
+        formatNumber(
+            state.stepLength,
+            2
+        )+
+        " m";
+}
+
+
+$("weight").addEventListener(
+    "input",
+    () => {
+
+        const value=
+            Number(
+                $("weight").value
+            );
+
+
+        if(
+            value>=20 &&
+            value<=250
+        ){
+
+            state.weightKg=value;
+
+            localStorage.setItem(
+                STORAGE.weight,
+                value
+            );
+
+            updateMetrics();
+        }
+    }
+);
+
+
+$("stepLength").addEventListener(
+    "input",
+    () => {
+
+        const value=
+            Number(
+                $("stepLength").value
+            );
+
+
+        if(
+            value>=.3 &&
+            value<=1.5
+        ){
+
+            state.stepLength=value;
+
+            localStorage.setItem(
+                STORAGE.stepLength,
+                value
+            );
+
+
+            $("stepLengthDisplay")
+                .textContent=
+                formatNumber(
+                    value,
+                    2
+                )+
+                " m";
+
+
+            updateMetrics();
+        }
+    }
+);
+
+
+$("gpsThreshold").addEventListener(
+    "input",
+    () => {
+
+        const value=
+            Number(
+                $("gpsThreshold").value
+            );
+
+
+        if(
+            value>=10 &&
+            value<=200
+        ){
+
+            state.gpsThreshold=value;
+
+            localStorage.setItem(
+                STORAGE.gpsThreshold,
+                value
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   EVENTS COURSE
+========================================================= */
+
+$("startBtn").addEventListener(
+    "click",
+    startRun
+);
+
+
+$("pauseBtn").addEventListener(
+    "click",
+    () => {
+
+        if(state.paused)
+            resumeRun();
+        else
+            pauseRun();
+    }
+);
+
+
+$("stopBtn").addEventListener(
+    "click",
+    stopRun
+);
+
+
+$("resetBtn").addEventListener(
+    "click",
+    () => {
+
+        if(state.running){
+
+            if(
+                !confirm(
+                    "Une course est en cours. Réinitialiser quand même ?"
+                )
+            )
+                return;
+        }
+
+
+        resetRun();
+    }
+);
+
+
+/* =========================================================
+   PODOMETRE
+========================================================= */
+
+$("enableMotionBtn").addEventListener(
+    "click",
+    enableMotion
+);
+
+
+$("testSensorBtn").addEventListener(
+    "click",
+    testSensor
+);
+
+
+$("resetStepsBtn").addEventListener(
+    "click",
+    resetSteps
+);
+
+
+/* =========================================================
+   MUSIQUE
+========================================================= */
+
+$("addMusicBtn").addEventListener(
+    "click",
+    () =>
+        $("musicInput").click()
+);
+
+
+$("musicInput").addEventListener(
+    "change",
+    event=>{
+
+        addMusicFiles(
+            event.target.files
+        );
+
+        event.target.value="";
+    }
+);
+
+
+$("playBtn").addEventListener(
+    "click",
+    playPauseMusic
+);
+
+
+$("prevBtn").addEventListener(
+    "click",
+    previousTrack
+);
+
+
+$("nextBtn").addEventListener(
+    "click",
+    () =>
+        nextTrack(true)
+);
+
+
+$("shuffleBtn").addEventListener(
+    "click",
+    () => {
+
+        state.shuffle=
+            !state.shuffle;
+
+        $("shuffleBtn").style.background=
+            state.shuffle
+                ? "rgba(14,165,233,.20)"
+                : "";
+
+        toast(
+            state.shuffle
+                ? "Lecture aléatoire activée."
+                : "Lecture aléatoire désactivée."
+        );
+    }
+);
+
+
+$("repeatBtn").addEventListener(
+    "click",
+    () => {
+
+        state.repeat=
+            !state.repeat;
+
+        $("repeatBtn").style.background=
+            state.repeat
+                ? "rgba(251,191,36,.20)"
+                : "";
+
+        toast(
+            state.repeat
+                ? "Répétition activée."
+                : "Répétition désactivée."
+        );
+    }
+);
+
+
+$("musicVolume").addEventListener(
+    "input",
+    event=>{
+
+        audio.volume=
+            Number(
+                event.target.value
+            );
+
+        localStorage.setItem(
+            STORAGE.volume,
+            event.target.value
+        );
+    }
+);
+
+
+/* =========================================================
+   HISTORIQUE
+========================================================= */
+
+$("exportHistoryBtn").addEventListener(
+    "click",
+    exportHistoryCSV
+);
+
+
+$("exportPdfBtn").addEventListener(
+    "click",
+    exportPDF
+);
+
+
+$("exportRouteBtn").addEventListener(
+    "click",
+    exportRouteCSV
+);
+
+
+$("exportJsonBtn").addEventListener(
+    "click",
+    exportJSON
+);
+
+
+$("importJsonBtn").addEventListener(
+    "click",
+    () =>
+        $("jsonInput").click()
+);
+
+
+$("jsonInput").addEventListener(
+    "change",
+    event=>{
+
+        const file=
+            event.target.files[0];
+
+        if(file)
+            importJSON(file);
+
+        event.target.value="";
+    }
+);
+
+
+$("clearHistoryBtn").addEventListener(
+    "click",
+    () => {
+
+        if(
+            history.length===0
+        )
+            return;
+
+
+        if(
+            !confirm(
+                "Supprimer tout l'historique des courses ?"
+            )
+        )
+            return;
+
+
+        history=[];
+
+
+        localStorage.removeItem(
+            STORAGE.history
+        );
+
+
+        renderHistory();
+
+
+        toast(
+            "Historique supprimé."
+        );
+    }
+);
+
+
+/* =========================================================
+   TOUT SUPPRIMER
+========================================================= */
+
+$("clearDataBtn").addEventListener(
+    "click",
+    () => {
+
+        if(
+            !confirm(
+                "Supprimer toutes les données locales, l'historique et les réglages ?"
+            )
+        )
+            return;
+
+
+        Object.values(
+            STORAGE
+        ).forEach(
+            key =>
+                localStorage.removeItem(
+                    key
+                )
+        );
+
+
+        history=[];
+
+
+        state.weightKg=70;
+        state.stepLength=.75;
+        state.gpsThreshold=80;
+
+
+        loadSettings();
+
+        renderHistory();
+
+        resetRun();
+
+
+        toast(
+            "Toutes les données locales ont été supprimées.",
+            "success"
+        );
+    }
+);
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+$("themeBtn").addEventListener(
+    "click",
+    toggleTheme
+);
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+function init(){
+
+    loadTheme();
+
+    loadSettings();
+
+    renderHistory();
+
+    renderPlaylist();
+
+    drawRoute();
+
+    updateTimer();
+
+    updateMetrics();
+
+
+    const savedVolume=
+        Number(
+            localStorage.getItem(
+                STORAGE.volume
+            )
+        );
+
+
+    if(
+        Number.isFinite(
+            savedVolume
+        ) &&
+        savedVolume>=0 &&
+        savedVolume<=1
+    ){
+
+        audio.volume=
+            savedVolume;
+
+        $("musicVolume").value=
+            savedVolume;
+
+    }else{
+
+        audio.volume=.8;
+    }
+
+
+    /*
+        Vérification du support
+        dès le chargement.
+    */
+
+    if(
+        typeof DeviceMotionEvent==="undefined"
+    ){
+
+        $("motionStatus").textContent=
+            "Non disponible";
+
+        $("sensorTitle").textContent=
+            "❌ Accéléromètre indisponible";
+
+        $("sensorDescription").textContent=
+            "Votre navigateur ne fournit pas le capteur de mouvement.";
+
+        $("enableMotionBtn").disabled=true;
+
+    }else{
+
+        $("motionStatus").textContent=
+            "Disponible";
+
+        $("stepMode").textContent=
+            "Mode : capteur disponible";
+    }
+
+
+    $("printDate").textContent=
+        new Date().toLocaleString(
+            "fr-FR"
+        );
+}
+
+
+init();
+
+})();
+
+</script>
+
+</body>
+</html>

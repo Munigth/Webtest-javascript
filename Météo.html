@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#087ea4">
+<title>Météo Blue & Yellow</title>
+<style>
+:root{--bg:#eef8ff;--card:#fff;--text:#102a43;--muted:#627d98;--blue:#087ea4;--blue2:#0ea5e9;--yellow:#fbbf24;--border:#d9edf7;--shadow:0 12px 30px #0b5f7a18}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(180deg,#e8f7ff,#f8fbfd);color:var(--text)}
+body.dark{--bg:#061421;--card:#0b1f2d;--text:#e8f7ff;--muted:#9bb5c5;--border:#163b4e;--shadow:0 12px 30px #0006;background:linear-gradient(180deg,#04101a,#071c29)}
+button,input{font:inherit}.app{max-width:1250px;margin:auto;padding:16px 16px 92px}.top{position:sticky;top:0;z-index:10;background:#087ea4ee;backdrop-filter:blur(12px);color:white;border-radius:0 0 22px 22px;padding:14px 18px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 25px #075a7625}.logo{font-weight:900;letter-spacing:.3px;margin-right:auto}.iconbtn,.unit{border:0;border-radius:12px;padding:9px 11px;background:#ffffff20;color:white;cursor:pointer}.search{margin:18px 0;display:flex;gap:8px;position:relative}.search input{flex:1;padding:14px 16px;border:1px solid var(--border);border-radius:16px;background:var(--card);color:var(--text);outline:0;box-shadow:var(--shadow)}.search button{border:0;border-radius:16px;padding:0 16px;background:var(--yellow);color:#3b2b00;font-weight:800;cursor:pointer}.suggestions{position:absolute;top:58px;left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;z-index:20;box-shadow:var(--shadow)}.suggestions button{display:block;width:100%;text-align:left;padding:12px 14px;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}.suggestions button:hover{background:#0ea5e914}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.action{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 13px;border-radius:12px;cursor:pointer}.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}.card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:18px;box-shadow:var(--shadow)}.hero{background:linear-gradient(135deg,#087ea4,#0ea5e9);color:white;border:0;min-height:300px}.place{font-size:20px;font-weight:800}.time{opacity:.85;font-size:13px;margin-top:4px}.temp{font-size:72px;font-weight:900;line-height:1;margin:25px 0 8px}.condition{font-size:18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.stat{padding:12px;border-radius:15px;background:#ffffff18}.stat b{display:block;font-size:17px;margin-top:5px}.section{margin-top:16px}.section h2{font-size:18px;margin:0 0 12px}.row{display:flex;gap:10px;overflow:auto;padding-bottom:5px}.hour,.day{min-width:105px;padding:13px;border:1px solid var(--border);border-radius:16px;text-align:center;background:var(--card)}.hour .wi,.day .wi{font-size:28px;margin:8px 0}.day{min-width:135px}.muted{color:var(--muted)}.details{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail{padding:14px;border:1px solid var(--border);border-radius:16px}.detail span{display:block;color:var(--muted);font-size:12px}.detail strong{font-size:16px}.favorites{display:flex;gap:8px;flex-wrap:wrap}.fav{padding:9px 12px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}.chartbox{height:230px}.chartbox canvas{width:100%;height:100%}.sun{height:12px;background:linear-gradient(90deg,#0b5e7a,#fbbf24,#0b5e7a);border-radius:20px;position:relative;margin:18px 0}.sun i{position:absolute;top:50%;transform:translate(-50%,-50%);width:25px;height:25px;background:var(--yellow);border:4px solid white;border-radius:50%;box-shadow:0 0 20px #fbbf24}.footer{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:10;background:#082c3bdd;color:white;border-radius:18px;padding:9px 13px;display:flex;gap:7px;backdrop-filter:blur(10px)}.footer button{border:0;background:transparent;color:white;padding:8px 10px;border-radius:10px;cursor:pointer}.loading{opacity:.6;pointer-events:none}.error{padding:12px;border-radius:14px;background:#fee2e2;color:#991b1b;margin-bottom:14px}.hidden{display:none!important}@media(max-width:850px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.details{grid-template-columns:repeat(2,1fr)}.temp{font-size:60px}}@media(max-width:500px){.app{padding:10px 10px 90px}.top{margin:0 -10px;border-radius:0 0 18px 18px}.details{grid-template-columns:1fr 1fr}.search button{padding:0 12px}.temp{font-size:54px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo">☀️ Météo Blue & Yellow</div><button class="unit" id="unitBtn">°C</button><button class="iconbtn" id="themeBtn">🌙</button></header>
+
+<div class="search">
+<input id="searchInput" placeholder="Rechercher une ville..." autocomplete="off">
+<button id="searchBtn">🔎</button>
+<div id="suggestions" class="suggestions hidden"></div>
+</div>
+
+<div id="error" class="error hidden"></div>
+<div class="actions">
+<button class="action" id="locBtn">📍 Ma position</button>
+<button class="action" id="refreshBtn">↻ Actualiser</button>
+<button class="action" id="favBtn">☆ Ajouter aux favoris</button>
+<button class="action" id="shareBtn">↗ Partager</button>
+<button class="action" id="printBtn">🖨️ Imprimer</button>
+</div>
+
+<main class="grid">
+<section>
+<div class="card hero">
+<div class="place" id="place">Douala, Cameroun</div>
+<div class="time" id="localTime">--</div>
+<div class="temp" id="temp">--°</div>
+<div class="condition" id="condition">Chargement...</div>
+<div class="stats">
+<div class="stat">🌡️ Ressenti<b id="feels">--</b></div>
+<div class="stat">💧 Humidité<b id="humidity">--</b></div>
+<div class="stat">💨 Vent<b id="wind">--</b></div>
+<div class="stat">🌧️ Pluie<b id="rain">--</b></div>
+</div>
+</div>
+
+<div class="section card">
+<h2>Prévisions horaires — 24 h</h2><div id="hourly" class="row"></div>
+</div>
+
+<div class="section card">
+<h2>Prévisions — 7 jours</h2><div id="daily" class="row"></div>
+</div>
+</section>
+
+<aside>
+<div class="card">
+<h2>📊 Détails météo</h2>
+<div class="details">
+<div class="detail"><span>Pression</span><strong id="pressure">--</strong></div>
+<div class="detail"><span>Visibilité</span><strong id="visibility">--</strong></div>
+<div class="detail"><span>Nuages</span><strong id="clouds">--</strong></div>
+<div class="detail"><span>Point de rosée</span><strong id="dew">--</strong></div>
+<div class="detail"><span>Rafales</span><strong id="gust">--</strong></div>
+<div class="detail"><span>Précipitations</span><strong id="precip">--</strong></div>
+<div class="detail"><span>Indice UV max</span><strong id="uv">--</strong></div>
+<div class="detail"><span>Lever du soleil</span><strong id="sunrise">--</strong></div>
+<div class="detail"><span>Coucher du soleil</span><strong id="sunset">--</strong></div>
+</div>
+</div>
+
+<div class="section card"><h2>🌡️ Évolution de la température</h2><div class="chartbox"><canvas id="chart"></canvas></div></div>
+<div class="section card"><h2>☀️ Cycle solaire</h2><div class="sun"><i id="sunDot"></i></div><div class="muted" id="sunText">--</div></div>
+<div class="section card"><h2>⭐ Villes favorites</h2><div id="favorites" class="favorites"></div></div>
+</aside>
+</main>
+</div>
+<nav class="footer"><button id="homeBtn">⌂ Accueil</button><button id="shareBtn2">↗ Partager</button><button id="themeBtn2">◐ Thème</button></nav>
+
+<script>
+const API='https://api.open-meteo.com/v1/forecast';
+const GEO='https://geocoding-api.open-meteo.com/v1/search';
+const WMO={0:['☀️','Ciel dégagé'],1:['🌤️','Principalement dégagé'],2:['⛅','Partiellement nuageux'],3:['☁️','Couvert'],45:['🌫️','Brouillard'],48:['🌫️','Brouillard givrant'],51:['🌦️','Bruine faible'],53:['🌦️','Bruine modérée'],55:['🌧️','Bruine forte'],61:['🌧️','Pluie faible'],63:['🌧️','Pluie modérée'],65:['🌧️','Pluie forte'],71:['🌨️','Neige faible'],73:['🌨️','Neige modérée'],75:['❄️','Neige forte'],80:['🌦️','Averses faibles'],81:['🌧️','Averses modérées'],82:['⛈️','Averses fortes'],95:['⛈️','Orage'],96:['⛈️','Orage avec grêle'],99:['⛈️','Orage fort']};
+let state={city:'Douala',country:'Cameroun',lat:4.0511,lon:9.7679,timezone:'Africa/Douala',unit:localStorage.unit||'c',data:null};
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function temp(v){return state.unit==='c'?`${Math.round(v)}°C`:`${Math.round(v*9/5+32)}°F`;}
+function wind(v){return state.unit==='c'?`${Math.round(v)} km/h`:`${Math.round(v/1.60934)} mph`;}
+function pressure(v){return `${Math.round(v)} hPa`;}
+function timeIn(iso,tz,withDate=false){try{return new Intl.DateTimeFormat('fr-FR',{timeZone:tz,hour:'2-digit',minute:'2-digit',...(withDate?{weekday:'short',day:'2-digit',month:'short'}:{})}).format(new Date(iso));}catch{return iso;}}
+function dayName(iso,tz){try{return new Intl.DateTimeFormat('fr-FR',{timeZone:tz,weekday:'long'}).format(new Date(iso+'T12:00:00'));}catch{return iso;}}
+function showError(e){$('error').textContent='⚠️ '+e;$('error').classList.remove('hidden');}
+function clearError(){$('error').classList.add('hidden');}
+function save(){localStorage.setItem('weatherState',JSON.stringify({city:state.city,country:state.country,lat:state.lat,lon:state.lon,timezone:state.timezone}));localStorage.unit=state.unit;}
+function load(){try{let s=JSON.parse(localStorage.weatherState);if(s)Object.assign(state,s)}catch{} if(localStorage.theme==='dark')document.body.classList.add('dark');}
+async function geocode(q){
+ const r=await fetch(`${GEO}?name=${encodeURIComponent(q)}&count=8&language=fr&format=json`);
+ if(!r.ok)throw new Error('Recherche de ville indisponible.');
+ const d=await r.json(); return d.results||[];
+}
+async function suggest(){
+ const q=$('searchInput').value.trim(); if(q.length<2){$('suggestions').classList.add('hidden');return}
+ try{
+  const rs=await geocode(q);
+  $('suggestions').innerHTML=rs.map((x,i)=>`<button data-i="${i}">📍 <b>${esc(x.name)}</b> — ${esc(x.country||'')} ${x.admin1?`· ${esc(x.admin1)}`:''}</button>`).join('');
+  $('suggestions').classList.toggle('hidden',!rs.length);
+  [...$('suggestions').querySelectorAll('button')].forEach((b,i)=>b.onclick=()=>choose(rs[i]));
+ }catch{}
+}
+function choose(x){state.city=x.name;state.country=x.country||'';state.lat=x.latitude;state.lon=x.longitude;state.timezone=x.timezone||'UTC';$('searchInput').value='';$('suggestions').classList.add('hidden');save();loadWeather();}
+async function search(){const q=$('searchInput').value.trim();if(!q)return;try{const rs=await geocode(q);if(!rs.length)throw new Error('Ville introuvable.');choose(rs[0]);}catch(e){showError(e.message)}}
+async function getLocation(){
+ if(!navigator.geolocation)return showError('La géolocalisation n’est pas supportée par ce navigateur.');
+ navigator.geolocation.getCurrentPosition(async p=>{state.city='Ma position';state.country='';state.lat=p.coords.latitude;state.lon=p.coords.longitude;state.timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';save();loadWeather()},()=>showError('Autorisation de géolocalisation refusée ou indisponible.'));
+}
+async function loadWeather(){
+ clearError();document.body.classList.add('loading');
+ try{
+  const params=new URLSearchParams({latitude:state.lat,longitude:state.lon,current:'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,cloud_cover,visibility,dew_point_2m,wind_gusts_10m,is_day',hourly:'temperature_2m,precipitation_probability,weather_code,wind_speed_10m,is_day',daily:'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,sunrise,sunset,uv_index_max,wind_speed_10m_max',timezone:'auto',forecast_days:'7',wind_speed_unit:'kmh'});
+  const r=await fetch(`${API}?${params}`);if(!r.ok)throw new Error('Impossible de récupérer la météo.');
+  state.data=await r.json();state.timezone=state.data.timezone||state.timezone;save();render();
+ }catch(e){showError(e.message||'Erreur réseau.')}finally{document.body.classList.remove('loading')}
+}
+function render(){
+ const d=state.data,c=d.current,h=d.hourly,dy=d.daily;
+ const [ico,desc]=WMO[c.weather_code]||['🌡️','Conditions météo'];
+ $('place').textContent=state.city+(state.country?`, ${state.country}`:'');
+ $('localTime').textContent=`Dernière mesure : ${timeIn(c.time,state.timezone,true)}`;
+ $('temp').textContent=temp(c.temperature_2m);$('condition').textContent=`${ico} ${desc}`;
+ $('feels').textContent=temp(c.apparent_temperature);$('humidity').textContent=`${c.relative_humidity_2m}%`;
+ $('wind').textContent=wind(c.wind_speed_10m);$('rain').textContent=`${h.precipitation_probability[currentHourIndex(d)]??0}%`;
+ $('pressure').textContent=pressure(c.surface_pressure);$('visibility').textContent=`${(c.visibility/1000).toFixed(1)} km`;
+ $('clouds').textContent=`${c.cloud_cover}%`;$('dew').textContent=temp(c.dew_point_2m);$('gust').textContent=wind(c.wind_gusts_10m);$('precip').textContent=`${c.precipitation} mm`;
+ $('uv').textContent=dy.uv_index_max?.[0]??'--';$('sunrise').textContent=timeIn(dy.sunrise[0],state.timezone);$('sunset').textContent=timeIn(dy.sunset[0],state.timezone);
+ renderHourly();renderDaily();drawChart();renderSun();renderFav();$('unitBtn').textContent=state.unit==='c'?'°C':'°F';updateFavButton();
+}
+function currentHourIndex(d){let target=d.current.time.slice(0,13);return d.hourly.time.findIndex(t=>t.slice(0,13)===target);}
+function renderHourly(){
+ const d=state.data,h=d.hourly,idx=Math.max(0,currentHourIndex(d));
+ $('hourly').innerHTML=Array.from({length:24},(_,j)=>{let i=idx+j;if(i>=h.time.length)return '';let [ic]=WMO[h.weather_code[i]]||['🌡️'];return `<div class="hour"><b>${j===0?'Maint.':timeIn(h.time[i],state.timezone)}</b><div class="wi">${ic}</div><strong>${temp(h.temperature_2m[i])}</strong><div class="muted">🌧️ ${h.precipitation_probability[i]??0}%</div><div class="muted">💨 ${wind(h.wind_speed_10m[i])}</div></div>`}).join('');
+}
+function renderDaily(){
+ const d=state.data,dy=d.daily;
+ $('daily').innerHTML=dy.time.map((x,i)=>{let [ic]=WMO[dy.weather_code[i]]||['🌡️'];return `<div class="day"><b>${i===0?'Aujourd’hui':dayName(x,d.timezone)}</b><div class="wi">${ic}</div><strong>${temp(dy.temperature_2m_max[i])}</strong> / <span class="muted">${temp(dy.temperature_2m_min[i])}</span><div class="muted">🌧️ ${dy.precipitation_probability_max[i]??0}%</div><div class="muted">💧 ${dy.precipitation_sum[i]??0} mm</div></div>`}).join('');
+}
+function drawChart(){
+ const c=$('chart'),box=c.getBoundingClientRect(),dpr=devicePixelRatio||1;c.width=box.width*dpr;c.height=box.height*dpr;let x=c.getContext('2d');x.scale(dpr,dpr);let h=state.data.hourly,idx=Math.max(0,currentHourIndex(state.data)),vals=h.temperature_2m.slice(idx,idx+24),w=box.width,hh=box.height,pad=25,min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;x.clearRect(0,0,w,hh);x.font='12px system-ui';x.fillStyle=getComputedStyle(document.body).getPropertyValue('--muted');x.beginPath();vals.forEach((v,i)=>{let px=pad+i*(w-2*pad)/(vals.length-1),py=hh-pad-(v-min)/range*(hh-2*pad);i?x.lineTo(px,py):x.moveTo(px,py)});x.strokeStyle=getComputedStyle(document.body).getPropertyValue('--blue2');x.lineWidth=3;x.stroke();vals.forEach((v,i)=>{let px=pad+i*(w-2*pad)/(vals.length-1),py=hh-pad-(v-min)/range*(hh-2*pad);x.fillStyle=getComputedStyle(document.body).getPropertyValue('--yellow');x.beginPath();x.arc(px,py,4,0,Math.PI*2);x.fill();if(i%4===0){x.fillStyle=getComputedStyle(document.body).getPropertyValue('--muted');x.fillText(temp(v),px-14,py-10)}})
+}
+function renderSun(){
+ const d=state.data, sunrise=new Date(d.daily.sunrise[0]), sunset=new Date(d.daily.sunset[0]),now=new Date(d.current.time),total=sunset-sunrise,p=Math.max(0,Math.min(1,(now-sunrise)/total));$('sunDot').style.left=(p*100)+'%';$('sunText').textContent=`Lever ${timeIn(d.daily.sunrise[0],state.timezone)} · Coucher ${timeIn(d.daily.sunset[0],state.timezone)}`;
+}
+function getFav(){try{return JSON.parse(localStorage.favorites||'[]')}catch{return[]}}
+function renderFav(){let f=getFav();$('favorites').innerHTML=f.length?f.map((x,i)=>`<button class="fav" data-i="${i}">⭐ ${esc(x.name)}</button>`).join(''):'<span class="muted">Aucune ville favorite.</span>';[...$('favorites').querySelectorAll('.fav')].forEach(b=>b.onclick=()=>choose(f[+b.dataset.i]))}
+function updateFavButton(){let f=getFav(),exists=f.some(x=>x.name===state.city&&Math.abs(x.lat-state.lat)<.01&&Math.abs(x.lon-state.lon)<.01);$('favBtn').textContent=exists?'★ Retirer des favoris':'☆ Ajouter aux favoris'}
+function toggleFav(){let f=getFav(),i=f.findIndex(x=>x.name===state.city&&Math.abs(x.lat-state.lat)<.01&&Math.abs(x.lon-state.lon)<.01);if(i>=0)f.splice(i,1);else f.push({name:state.city,country:state.country,lat:state.lat,lon:state.lon,timezone:state.timezone});localStorage.favorites=JSON.stringify(f);renderFav();updateFavButton()}
+function toggleTheme(){document.body.classList.toggle('dark');localStorage.theme=document.body.classList.contains('dark')?'dark':'light';$('themeBtn').textContent=document.body.classList.contains('dark')?'☀️':'🌙';drawChart()}
+async function share(){let text=`Météo à ${state.city}: ${$('temp').textContent}, ${$('condition').textContent}. Humidité ${$('humidity').textContent}, vent ${$('wind').textContent}.`;if(navigator.share){try{await navigator.share({title:'Météo',text})}catch{}}else{await navigator.clipboard?.writeText(text);alert('Résumé météo copié.');}}
+$('searchInput').addEventListener('input',suggest);$('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')search()});$('searchBtn').onclick=search;$('locBtn').onclick=getLocation;$('refreshBtn').onclick=loadWeather;$('favBtn').onclick=toggleFav;$('shareBtn').onclick=share;$('shareBtn2').onclick=share;$('printBtn').onclick=()=>window.print();$('themeBtn').onclick=toggleTheme;$('themeBtn2').onclick=toggleTheme;$('homeBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});$('unitBtn').onclick=()=>{state.unit=state.unit==='c'?'f':'c';localStorage.unit=state.unit;if(state.data)render()};document.addEventListener('click',e=>{if(!e.target.closest('.search'))$('suggestions').classList.add('hidden')});window.addEventListener('resize',()=>state.data&&drawChart());
+load();loadWeather();
+</script>
+</body>
+<!--Étape suivante intéressante : on peut maintenant aller plus loin avec 
+une vraie carte météo interactive, 
+les alertes météo, 
+l'indice UV, 
+la qualité de l'air, 
+une recherche beaucoup plus avancée et 
+une interface encore plus proche d'une application météo professionnelle. -->
+</html>
