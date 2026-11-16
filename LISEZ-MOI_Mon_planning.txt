@@ -1,0 +1,6 @@
+MON PLANNING — Temps & Progression
+Lancement : décompresser le ZIP puis ouvrir index.html avec Edge, Chrome ou Firefox.
+Aucun serveur, aucune installation et aucune connexion Internet ne sont nécessaires.
+Fonctions : planning hebdomadaire modifiable, chronomètre start/pause/fin, objectifs journaliers, suivi mensuel, notes, historique, export et sauvegarde JSON.
+Les données restent dans le stockage local du navigateur. Elles ne sont pas synchronisées entre plusieurs appareils.
+Important : termine une session pour l'enregistrer dans les statistiques. Si tu fermes l'onglet pendant une session, le chronomètre conserve son état grâce à l'heure de démarrage enregistrée.
