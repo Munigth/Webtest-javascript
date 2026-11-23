@@ -1,0 +1,7 @@
+.git
+**/.git
+*.md
+*.txt
+*.ps1
+*.bat
+test_WORD/

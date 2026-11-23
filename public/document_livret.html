@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créateur de Livret PDF (Imposition)</title>
+    <!-- Chargement correct de la bibliothèque pdf-lib -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .upload-box {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem 1rem;
+            margin-bottom: 1.25rem;
+            cursor: pointer;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .upload-box:hover, .upload-box.dragover {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 0.5rem;
+            display: block;
+            word-break: break-all;
+        }
+
+        .file-info {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .options input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .status-msg {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-height: 1.2rem;
+        }
+
+        .status-error {
+            color: #dc2626;
+        }
+
+        .status-success {
+            color: #16a34a;
+        }
+
+        .instructions {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .instructions ol {
+            padding-left: 1.2rem;
+            margin-bottom: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 0.35rem;
+        }
+
+        .instructions strong {
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📖 PDF vers Livret</h1>
+    <p class="subtitle">Réorganisez automatiquement vos pages pour imprimer votre document en recto-verso et le plier en deux.</p>
+
+    <label class="upload-box" id="dropZone" for="pdfInput">
+        <div>📄 Glissez votre PDF ici ou <u>cliquez pour parcourir</u></div>
+        <span class="file-name" id="fileName">Aucun fichier sélectionné</span>
+        <span class="file-info" id="fileInfo"></span>
+        <input type="file" id="pdfInput" accept="application/pdf">
+    </label>
+
+    <div class="options">
+        <input type="checkbox" id="foldLine">
+        <label for="foldLine">Ajouter un repère de pliure au centre</label>
+    </div>
+
+    <button id="convertBtn" disabled>Générer le livret PDF</button>
+    <div class="status-msg" id="statusMsg"></div>
+
+    <div class="instructions">
+        <strong>💡 Comment imprimer le résultat :</strong>
+        <ol>
+            <li>Ouvrez le nouveau PDF téléchargé.</li>
+            <li>Lancez l'impression en mode <strong>Recto-Verso</strong>.</li>
+            <li>Choisissez l'option <strong>"Retourner sur les bords courts"</strong>.</li>
+            <li>Pliez l'ensemble des feuilles en deux au milieu.</li>
+        </ol>
+    </div>
+</div>
+
+<script>
+    const { PDFDocument, rgb } = PDFLib;
+
+    const dropZone = document.getElementById('dropZone');
+    const pdfInput = document.getElementById('pdfInput');
+    const fileNameDisplay = document.getElementById('fileName');
+    const fileInfoDisplay = document.getElementById('fileInfo');
+    const convertBtn = document.getElementById('convertBtn');
+    const foldLineCheckbox = document.getElementById('foldLine');
+    const statusMsg = document.getElementById('statusMsg');
+
+    let selectedFile = null;
+    let loadedPdfDoc = null;
+
+    // Gestion du glisser-déposer (Drag & Drop)
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            handleFileSelection(e.dataTransfer.files[0]);
+        }
+    });
+
+    pdfInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileSelection(e.target.files[0]);
+        }
+    });
+
+    async function handleFileSelection(file) {
+        statusMsg.textContent = '';
+        statusMsg.className = 'status-msg';
+
+        if (file.type !== 'application/pdf') {
+            statusMsg.textContent = "Veuillez sélectionner un fichier PDF valide.";
+            statusMsg.classList.add('status-error');
+            return;
+        }
+
+        selectedFile = file;
+        fileNameDisplay.textContent = file.name;
+        fileInfoDisplay.textContent = "Analyse du document...";
+        convertBtn.disabled = true;
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            loadedPdfDoc = await PDFDocument.load(arrayBuffer);
+            const totalPages = loadedPdfDoc.getPageCount();
+            const sheetsCount = Math.ceil(totalPages / 4);
+
+            fileInfoDisplay.textContent = `${totalPages} page(s) détectée(s) → ${sheetsCount} feuille(s) à imprimer`;
+            convertBtn.disabled = false;
+        } catch (err) {
+            console.error(err);
+            fileInfoDisplay.textContent = "";
+            statusMsg.textContent = "Impossible de lire ce PDF (il est peut-être protégé par un mot de passe).";
+            statusMsg.classList.add('status-error');
+        }
+    }
+
+    convertBtn.addEventListener('click', async () => {
+        if (!loadedPdfDoc || !selectedFile) return;
+
+        convertBtn.disabled = true;
+        convertBtn.textContent = "Création du livret en cours...";
+        statusMsg.textContent = "";
+
+        try {
+            const totalPages = loadedPdfDoc.getPageCount();
+            const paddedTotal = Math.ceil(totalPages / 4) * 4;
+            const bookletDoc = await PDFDocument.create();
+
+            // Dimensions basées sur la première page
+            const firstPage = loadedPdfDoc.getPage(0);
+            const { width: baseWidth, height: baseHeight } = firstPage.getSize();
+
+            // La feuille finale est deux fois plus large
+            const sheetWidth = baseWidth * 2;
+            const sheetHeight = baseHeight;
+
+            // Calcul de l'ordre des pages (Imposition)
+            const pageOrder = [];
+            for (let i = 0; i < paddedTotal / 2; i++) {
+                if (i % 2 === 0) {
+                    pageOrder.push([paddedTotal - 1 - i, i]); // Recto
+                } else {
+                    pageOrder.push([i, paddedTotal - 1 - i]); // Verso
+                }
+            }
+
+            // Pré-intégration de toutes les pages nécessaires pour de meilleures performances
+            const srcPages = loadedPdfDoc.getPages();
+            const embeddedPages = await bookletDoc.embedPages(srcPages);
+
+            for (const [leftIndex, rightIndex] of pageOrder) {
+                const sheet = bookletDoc.addPage([sheetWidth, sheetHeight]);
+
+                // Dessiner la page de gauche (centrée et mise à l'échelle si nécessaire)
+                if (leftIndex < totalPages) {
+                    drawPageFitted(sheet, embeddedPages[leftIndex], 0, 0, baseWidth, baseHeight);
+                }
+
+                // Dessiner la page de droite
+                if (rightIndex < totalPages) {
+                    drawPageFitted(sheet, embeddedPages[rightIndex], baseWidth, 0, baseWidth, baseHeight);
+                }
+
+                // Option : ligne de pliure centrale en pointillés
+                if (foldLineCheckbox.checked) {

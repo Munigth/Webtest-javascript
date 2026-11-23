@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🐉 Dragon en mouvement</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        overflow: hidden;
+        height: 100vh;
+        background:
+            radial-gradient(circle at 70% 20%, #263b72 0%, transparent 25%),
+            linear-gradient(#071126, #101a35 55%, #241b2f);
+        font-family: Arial, sans-serif;
+    }
+
+    /* =====================================================
+       CIEL
+    ===================================================== */
+
+    .scene {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .moon {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        right: 12%;
+        top: 10%;
+        border-radius: 50%;
+        background: #fff5c7;
+        box-shadow:
+            0 0 30px #fff5c7,
+            0 0 70px rgba(255, 245, 199, .35);
+    }
+
+    .star {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle 2s infinite alternate;
+    }
+
+    .s1 { left: 10%; top: 15%; }
+    .s2 { left: 22%; top: 28%; animation-delay: .4s; }
+    .s3 { left: 40%; top: 12%; animation-delay: .8s; }
+    .s4 { left: 55%; top: 25%; animation-delay: 1s; }
+    .s5 { left: 72%; top: 35%; animation-delay: .3s; }
+    .s6 { left: 85%; top: 18%; animation-delay: 1.2s; }
+    .s7 { left: 92%; top: 42%; animation-delay: .6s; }
+
+    @keyframes twinkle {
+        from {
+            opacity: .25;
+            transform: scale(.7);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1.4);
+        }
+    }
+
+    /* =====================================================
+       NUAGES
+    ===================================================== */
+
+    .cloud {
+        position: absolute;
+        width: 180px;
+        height: 50px;
+        border-radius: 50px;
+        background: rgba(255,255,255,.06);
+        filter: blur(2px);
+        animation: cloudMove 30s linear infinite;
+    }
+
+    .cloud::before,
+    .cloud::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: inherit;
+    }
+
+    .cloud::before {
+        width: 80px;
+        height: 80px;
+        left: 30px;
+        bottom: 10px;
+    }
+
+    .cloud::after {
+        width: 100px;
+        height: 100px;
+        right: 20px;
+        bottom: 5px;
+    }
+
+    .cloud1 {
+        top: 25%;
+        left: -220px;
+    }
+
+    .cloud2 {
+        top: 55%;
+        left: -300px;
+        animation-duration: 40s;
+        animation-delay: 8s;
+        transform: scale(.7);
+    }
+
+    @keyframes cloudMove {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(calc(100vw + 500px));
+        }
+    }
+
+    /* =====================================================
+       DRAGON
+    ===================================================== */
+
+    .dragon {
+        position: absolute;
+        width: 330px;
+        height: 230px;
+
+        left: -380px;
+        top: 35%;
+
+        animation:
+            dragonFly 12s linear infinite,
+            dragonFloat 1.8s ease-in-out infinite;
+    }
+
+    @keyframes dragonFly {
+        0% {
+            left: -380px;
+        }
+
+        45% {
+            left: 45%;
+        }
+
+        100% {
+            left: calc(100% + 400px);
+        }
+    }
+
+    @keyframes dragonFloat {
+        0%, 100% {
+            margin-top: 0;
+        }
+
+        50% {
+            margin-top: -25px;
+        }
+    }
+
+    /* Corps */
+
+    .body {
+        position: absolute;
+        width: 170px;
+        height: 75px;
+        left: 70px;
+        top: 90px;
+
+        border-radius: 55% 45% 45% 55%;
+
+        background:
+            radial-gradient(circle at 35% 30%, #70e000, transparent 15%),
+            linear-gradient(145deg, #399918, #125c19);
+
+        box-shadow:
+            inset -15px -10px 20px rgba(0,0,0,.35),
+            0 15px 20px rgba(0,0,0,.2);
+    }
+
+    /* Tête */
+
+    .head {
+        position: absolute;
+        width: 95px;
+        height: 80px;
+        left: 15px;
+        top: 55px;
+
+        border-radius: 55% 45% 50% 45%;
+
+        background:
+            linear-gradient(145deg, #54c92d, #176b1e);
+
+        transform: rotate(-5deg);
+
+        box-shadow:
+            inset -10px -8px 15px rgba(0,0,0,.3);
+    }
+
+    /* Museau */
+
+    .snout {
+        position: absolute;
+        width: 65px;
+        height: 38px;
+        left: -35px;
+        top: 28px;
+
+        border-radius: 60% 35% 45% 60%;
+        background: #368f24;
+    }
+
+    /* Narines */
+
+    .nostril {
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        background: #071507;
+        border-radius: 50%;
+        top: 14px;
+        left: 15px;
+    }
+
+    /* Œil */
+
+    .eye {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 20px;
+        top: 18px;
+
+        border-radius: 50%;
+        background: #ffe600;
+
+        box-shadow: 0 0 10px #ffe600;
+    }
+
+    .eye::after {
+        content: "";
+        position: absolute;
+
+        width: 4px;
+        height: 15px;
+
+        background: #111;
+
+        left: 8px;
+        top: 2px;
+
+        border-radius: 50%;
+    }
+
+    /* Cornes */
+
+    .horn {
+        position: absolute;
+        width: 13px;
+        height: 45px;
+
+        background: linear-gradient(#eee, #777);
+
+        clip-path: polygon(
+            50% 0,
+            100% 100%,
+            50% 80%,
+            0 100%
+        );
+    }
+
+    .horn1 {
+        left: 30px;
+        top: 20px;
+        transform: rotate(-35deg);
+    }
+
+    .horn2 {
+        left: 55px;
+        top: 15px;
+        transform: rotate(-20deg);
+    }
+
+    /* Aile */
+
+    .wing {
+        position: absolute;
+        width: 150px;
+        height: 130px;
+
+        left: 105px;
+        top: 0;
+
+        background: linear-gradient(
+            135deg,
+            #4ab72d,
+            #123d17
+        );
+
+        clip-path: polygon(
+            0 100%,
+            20% 25%,
+            45% 55%,
+            55% 5%,
+            70% 50%,
+            90% 20%,
+            100% 100%
+        );
+
+        transform-origin: 20% 90%;
+
+        animation: wingBeat .7s ease-in-out infinite alternate;
+    }
+
+    @keyframes wingBeat {
+        from {
+            transform: rotate(12deg);
+        }
+
+        to {
+            transform: rotate(-28deg);
+        }
+    }
+
+    /* Deuxième aile */
+
+    .wing-back {
+        position: absolute;
+        width: 130px;
+        height: 110px;
+
+        left: 130px;
+        top: 25px;
+
+        background: rgba(35,120,35,.65);
+
+        clip-path: polygon(
+            0 100%,
+            20% 30%,
+            45% 60%,
+            60% 10%,
+            75% 55%,
+            100% 25%,
+            100% 100%
+        );
+
+        transform-origin: 20% 90%;
+
+        animation: wingBeatBack .7s ease-in-out infinite alternate;
+    }
+
+    @keyframes wingBeatBack {
+        from {
+            transform: rotate(-10deg);
+        }
+
+        to {
+            transform: rotate(25deg);
+        }
+    }
+
+    /* Queue */
+
+    .tail {
+        position: absolute;
+
+        width: 130px;
+        height: 35px;
+
+        left: 205px;
+        top: 110px;
+
+        background: linear-gradient(
+            90deg,
+            #246f1b,
+            #092d0c
+        );
+
+        border-radius: 100% 20% 20% 100%;
+
+        transform: rotate(-15deg);
+        transform-origin: left center;
+
+        animation: tailMove .8s ease-in-out infinite alternate;
+    }
+
+    @keyframes tailMove {
+        from {
+            transform: rotate(-22deg);
+        }
+
+        to {
+            transform: rotate(8deg);
+        }
+    }
+
+    /* Pointe de queue */
+
+    .tail-tip {
+        position: absolute;
+
+        right: -22px;
+        top: -15px;
+
+        width: 45px;
+        height: 50px;
+
+        background: #123d17;
+
+        clip-path: polygon(
+            0 50%,
+            100% 0,
+            70% 50%,
+            100% 100%
+        );
+    }
+
+    /* Pattes */
+
+    .leg {
+        position: absolute;
+
+        width: 30px;
+        height: 65px;
+
+        background: #257a20;
+
+        border-radius: 20px;
+
+        transform-origin: top center;
+
+        animation: legsMove .5s ease-in-out infinite alternate;
+    }
+
+    .leg1 {
+        left: 105px;
+        top: 145px;
+        transform: rotate(15deg);
+    }
+
+    .leg2 {
+        left: 180px;
+        top: 145px;
+        transform: rotate(-10deg);
+        animation-delay: .2s;
+    }
+
+    @keyframes legsMove {
+        from {
+            transform: rotate(18deg);
+        }
+
+        to {
+            transform: rotate(-18deg);
+        }
+    }
+
+    /* Griffes */
+
+    .claw {
+        position: absolute;
+
+        width: 20px;
+        height: 8px;
+
+        border-bottom: 3px solid #ddd;
+
+        border-radius: 50%;
+    }
+
+    .leg1 .claw {
+        bottom: -3px;
+        left: 5px;
+    }
+
+    .leg2 .claw {
+        bottom: -3px;
+        left: 5px;
+    }
+
+    /* =====================================================
+       FEU
+    ===================================================== */
+
+    .fire {
+        position: absolute;
+
+        left: -75px;
+        top: 88px;
+
+        width: 75px;
+        height: 30px;
+
+        opacity: 0;
+
+        transform-origin: right center;
+
+        filter:
+            drop-shadow(0 0 8px #ff7b00)
+            drop-shadow(0 0 15px #ff2200);
+
+        animation: fireBreath 12s linear infinite;
+    }
+
+    .fire::before {
+        content: "";
+
+        position: absolute;
+
+        width: 75px;
+        height: 25px;
+
+        background: linear-gradient(
+            90deg,
+            transparent,
+            #ff2200,
+            #ff7b00,
+            #ffe600
+        );
+
+        clip-path: polygon(
+            100% 50%,
+            0 0,
+            30% 50%,
+            0 100%
+        );
+    }
+
+    @keyframes fireBreath {
+
+        0%, 55%, 100% {
+            opacity: 0;
+            transform: scaleX(.3);
+        }
+
+        60% {
+            opacity: 1;
+            transform: scaleX(1);
+        }
+
+        65% {
+            opacity: .9;
+            transform: scaleX(.7);
+        }
+
+        70% {
+            opacity: 0;
+            transform: scaleX(.2);
+        }
+    }
+
+    /* =====================================================
+       SOL
+    ===================================================== */
+
+    .mountains {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 35%;
+
+        background:
+            linear-gradient(
+                135deg,
+                transparent 35%,
+                #080d1b 35%,
+                #080d1b 55%,
+                transparent 55%
+            );
+
+        opacity: .7;
+    }
+
+    .ground {
+        position: absolute;
+        bottom: 0;
+
+        width: 100%;
+        height: 80px;
+
+        background: linear-gradient(
+            #0c2619,
+            #05120c
+        );
+
+        box-shadow: 0 -10px 30px rgba(0,0,0,.4);
+    }
+
+    /* =====================================================
+       TITRE
+    ===================================================== */
+
+    .title {
+        position: absolute;
+
+        top: 35px;
+        left: 50%;
+
+        transform: translateX(-50%);
+
+        color: white;
+        text-align: center;
+
+        z-index: 20;
+    }
+
+    .title h1 {
+        font-size: clamp(25px, 5vw, 50px);
+
+        text-shadow:
+            0 0 10px #27c52e,
+            0 0 25px rgba(39,197,46,.5);
+    }
+
+    .title p {
+        margin-top: 8px;
+        color: #b8c6df;
+        font-size: 14px;
+    }
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+        .dragon {
+            transform: scale(.75);
+            transform-origin: center;
+        }
+
+        .moon {
+            width: 70px;
+            height: 70px;
+        }
+
+        .title p {
+            font-size: 12px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+
+    <!-- Étoiles -->
+    <div class="star s1"></div>
+    <div class="star s2"></div>
+    <div class="star s3"></div>
+    <div class="star s4"></div>
+    <div class="star s5"></div>
+    <div class="star s6"></div>
+    <div class="star s7"></div>
+
+    <!-- Lune -->
+    <div class="moon"></div>
+
+    <!-- Nuages -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+
+    <!-- Titre -->
+    <div class="title">
+        <h1>🐉 Dragon volant</h1>
+        <p>Animation HTML • CSS • JavaScript</p>
+    </div>
+
+    <!-- =================================================
+         DRAGON
+    ================================================== -->
+
+    <div class="dragon">
+
+        <!-- Feu -->
+        <div class="fire"></div>
+
+        <!-- Aile arrière -->
+        <div class="wing-back"></div>
+
+        <!-- Queue -->
+        <div class="tail">
+            <div class="tail-tip"></div>
+        </div>
+
+        <!-- Corps -->
+        <div class="body"></div>
+
+        <!-- Aile principale -->
+        <div class="wing"></div>
+
+        <!-- Pattes -->
+        <div class="leg leg1">
+            <div class="claw"></div>
+        </div>
+
+        <div class="leg leg2">
+            <div class="claw"></div>
+        </div>
+
+        <!-- Tête -->
+        <div class="head">
+
+            <div class="horn horn1"></div>
+            <div class="horn horn2"></div>
+
+            <div class="eye"></div>
+
+            <div class="snout">
+                <div class="nostril"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Paysage -->
+    <div class="mountains"></div>
+    <div class="ground"></div>
+
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   PETITE INTERACTION JAVASCRIPT
+========================================================= */
+
+const dragon = document.querySelector(".dragon");
+const scene = document.querySelector(".scene");
+
+let speed = 12;
+
+/*
+    Cliquez sur le dragon pour accélérer
+*/
+dragon.addEventListener("click", () => {
+
+    speed = speed === 12 ? 6 : 12;
+
+    dragon.style.animationDuration =
+        `${speed}s, 1.8s`;
+
+});
+
+/*
+    Déplacement vertical légèrement aléatoire
+    pour donner un mouvement plus naturel.
+*/
+
+setInterval(() => {
+
+    const randomHeight =
+        25 + Math.random() * 45;
+
+    dragon.style.top =
+        `${randomHeight}%`;
+
+}, 2500);
+
+
+/*
+    Création de quelques petites particules
+    derrière le dragon.
+*/
+
+function createParticle() {
+
+    const particle =
+        document.createElement("div");
+
+    particle.style.position = "absolute";
+    particle.style.width = "4px";
+    particle.style.height = "4px";
+    particle.style.borderRadius = "50%";
+
+    particle.style.background =
+        Math.random() > .5
+        ? "#76ff03"
+        : "#ffe600";
+
+    particle.style.boxShadow =
+        "0 0 8px currentColor";
+
+    particle.style.left =
+        `${dragon.offsetLeft + 80}px`;
+
+    particle.style.top =
+        `${dragon.offsetTop + 130}px`;
+
+    particle.style.pointerEvents = "none";
+
+    scene.appendChild(particle);
+
+    let opacity = 1;
+    let distance = 0;
+
+    const animation =
+        setInterval(() => {
+
+            distance += 2;
+            opacity -= .04;
+
+            particle.style.transform =
+                `translate(${-distance}px, ${distance * .3}px)`;
+
+            particle.style.opacity = opacity;
+
+            if (opacity <= 0) {
+
+                clearInterval(animation);
+
+                particle.remove();
+            }
+
+        }, 40);
+}
+
+
+/*
+    Génération des particules.
+*/
+setInterval(createParticle, 180);
+</script>
+
+</body>
+</html>

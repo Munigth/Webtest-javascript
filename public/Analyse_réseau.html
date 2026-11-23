@@ -1,0 +1,3138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mobile Network Analyzer</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #020617;
+    --panel: #0f172a;
+    --panel2: #111c31;
+    --border: #243247;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --red: #ef4444;
+    --blue: #38bdf8;
+    --purple: #a78bfa;
+
+    --shadow: 0 15px 35px rgba(0,0,0,.25);
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at top left, #0b1f35 0, transparent 35%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+header {
+    padding: 22px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(2,6,23,.9);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(12px);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--green), var(--blue));
+    display: grid;
+    place-items: center;
+    font-size: 25px;
+}
+
+.logo h1 {
+    font-size: 22px;
+}
+
+.logo p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    background: var(--panel);
+    font-size: 13px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 25px;
+}
+
+.warning {
+    padding: 15px 18px;
+    margin-bottom: 22px;
+    border-radius: 14px;
+    background: rgba(234,179,8,.08);
+    border: 1px solid rgba(234,179,8,.35);
+    color: #fde68a;
+    line-height: 1.5;
+}
+
+.warning strong {
+    color: var(--yellow);
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 25px;
+}
+
+.nav-btn {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+    color: white;
+    border-color: var(--blue);
+    background: rgba(56,189,248,.1);
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.section-title {
+    margin-bottom: 18px;
+}
+
+.section-title h2 {
+    font-size: 24px;
+}
+
+.section-title p {
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.card {
+    background: linear-gradient(145deg, var(--panel), var(--panel2));
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.card-title {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.value {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.unit {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.good {
+    color: var(--green);
+}
+
+.medium {
+    color: var(--yellow);
+}
+
+.warning-color {
+    color: var(--orange);
+}
+
+.bad {
+    color: var(--red);
+}
+
+.info {
+    color: var(--blue);
+}
+
+.purple {
+    color: var(--purple);
+}
+
+.big-card {
+    min-height: 180px;
+}
+
+.signal-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 9px solid var(--green);
+    display: grid;
+    place-items: center;
+    margin: 10px auto 15px;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.center {
+    text-align: center;
+}
+
+.progress {
+    width: 100%;
+    height: 13px;
+    background: #020617;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    transition: width .5s;
+    background: var(--green);
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.btn {
+    border: 0;
+    border-radius: 11px;
+    padding: 11px 17px;
+    color: white;
+    background: #1e293b;
+    border: 1px solid var(--border);
+    transition: .2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ca8a04, #a16207);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: #020617;
+    color: white;
+    border: 1px solid var(--border);
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: var(--blue);
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.metric-row:last-child {
+    border-bottom: 0;
+}
+
+.metric-name {
+    color: var(--muted);
+}
+
+.metric-value {
+    font-weight: bold;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+th,
+td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+td {
+    font-size: 14px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.badge-green {
+    color: #bbf7d0;
+    background: rgba(34,197,94,.15);
+}
+
+.badge-yellow {
+    color: #fef08a;
+    background: rgba(234,179,8,.15);
+}
+
+.badge-red {
+    color: #fecaca;
+    background: rgba(239,68,68,.15);
+}
+
+.badge-blue {
+    color: #bae6fd;
+    background: rgba(56,189,248,.15);
+}
+
+canvas {
+    width: 100%;
+    height: 280px;
+    display: block;
+}
+
+.map {
+    height: 360px;
+    border-radius: 15px;
+    background:
+        linear-gradient(rgba(56,189,248,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,.08) 1px, transparent 1px),
+        #07111f;
+    background-size: 40px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.map-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+}
+
+.map-marker {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    transform: translate(-50%,-50%);
+    border: 3px solid white;
+    box-shadow: 0 0 18px currentColor;
+}
+
+.marker-good {
+    background: var(--green);
+    color: var(--green);
+}
+
+.marker-medium {
+    background: var(--yellow);
+    color: var(--yellow);
+}
+
+.marker-bad {
+    background: var(--red);
+    color: var(--red);
+}
+
+.score {
+    font-size: 55px;
+    font-weight: bold;
+}
+
+.score-label {
+    color: var(--muted);
+}
+
+.simulation-box {
+    border: 1px dashed var(--orange);
+    color: #fed7aa;
+    background: rgba(249,115,22,.07);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.real-box {
+    border: 1px dashed var(--green);
+    color: #bbf7d0;
+    background: rgba(34,197,94,.07);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 30px;
+}
+
+footer {
+    max-width: 1400px;
+    margin: auto;
+    padding: 25px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+@media(max-width: 1000px) {
+    .grid-4 {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .grid-3 {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media(max-width: 650px) {
+    .container {
+        padding: 15px;
+    }
+
+    .grid-4,
+    .grid-3,
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .header-content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .value {
+        font-size: 25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-content">
+
+        <div class="logo">
+            <div class="logo-icon">📡</div>
+
+            <div>
+                <h1>Mobile Network Analyzer</h1>
+                <p>Analyse réseau et consommation de données</p>
+            </div>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            <span id="connectionStatus">Analyse en cours...</span>
+        </div>
+
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="warning">
+        <strong>ℹ️ Limitation navigateur :</strong>
+        cette version Web utilise uniquement les informations réellement
+        accessibles au navigateur. Les paramètres radio comme RSSI, RSRP,
+        RSRQ, SINR et Cell ID peuvent être indisponibles.
+        Les valeurs simulées sont toujours identifiées comme telles.
+    </div>
+
+    <nav>
+        <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+        <button class="nav-btn" data-page="consumption">📦 Consommation</button>
+        <button class="nav-btn" data-page="test">🚀 Test réseau</button>
+        <button class="nav-btn" data-page="signal">📶 Signal</button>
+        <button class="nav-btn" data-page="history">📜 Historique</button>
+        <button class="nav-btn" data-page="mapPage">📍 Carte</button>
+        <button class="nav-btn" data-page="settings">⚙️ Paramètres</button>
+    </nav>
+
+    <!-- ================================================= -->
+    <!-- DASHBOARD -->
+    <!-- ================================================= -->
+
+    <section id="dashboard" class="page active">
+
+        <div class="section-title">
+            <h2>📊 Tableau de bord</h2>
+            <p>État actuel de votre connexion</p>
+        </div>
+
+        <div class="grid grid-4">
+
+            <div class="card big-card center">
+                <div class="card-title">TYPE DE CONNEXION</div>
+                <div class="value info" id="networkType">--</div>
+                <div class="unit" id="effectiveType">--</div>
+            </div>
+
+            <div class="card big-card center">
+                <div class="card-title">DÉBIT DESCENDANT</div>
+                <div class="value good" id="downloadSpeed">--</div>
+                <div class="unit">Mb/s estimés</div>
+            </div>
+
+            <div class="card big-card center">
+                <div class="card-title">LATENCE</div>
+                <div class="value" id="latency">--</div>
+                <div class="unit">ms</div>
+            </div>
+
+            <div class="card big-card center">
+                <div class="card-title">SCORE RÉSEAU</div>
+                <div class="score good" id="networkScore">--</div>
+                <div class="score-label">/ 100</div>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="grid grid-3">
+
+            <div class="card">
+                <div class="card-title">📡 CONNEXION</div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Technologie</span>
+                    <strong id="tech">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Débit estimé</span>
+                    <strong id="downlink">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">RTT navigateur</span>
+                    <strong id="browserRtt">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Économie de données</span>
+                    <strong id="saveData">--</strong>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📦 CONSOMMATION</div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Forfait</span>
+                    <strong id="planDisplay">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Consommé</span>
+                    <strong id="consumptionDisplay">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Restant</span>
+                    <strong id="remainingDisplay">--</strong>
+                </div>
+
+                <div class="progress-label">
+                    <span>Utilisation</span>
+                    <span id="usagePercent">0%</span>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-bar" id="usageBar"></div>
+                </div>
+            </div>
+
+            <div class="card center">
+                <div class="card-title">📶 QUALITÉ</div>
+
+                <div class="signal-circle" id="qualityCircle">
+                    <span id="qualityScore">--</span>
+                </div>
+
+                <strong id="qualityText">Analyse...</strong>
+
+                <br><br>
+
+                <div id="simulationStatus"></div>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="grid grid-2">
+
+            <div class="card">
+                <div class="card-title">📈 HISTORIQUE DE LA QUALITÉ</div>
+                <canvas id="qualityChart"></canvas>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📊 CONSOMMATION</div>
+                <canvas id="consumptionChart"></canvas>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================================================= -->
+    <!-- CONSUMPTION -->
+    <!-- ================================================= -->
+
+    <section id="consumption" class="page">
+
+        <div class="section-title">
+            <h2>📦 Consommation des données</h2>
+            <p>Suivez votre consommation mobile manuellement.</p>
+        </div>
+
+        <div class="grid grid-3">
+
+            <div class="card">
+                <div class="card-title">📥 DONNÉES REÇUES</div>
+                <div class="value info" id="receivedData">0</div>
+                <div class="unit">Mo</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📤 DONNÉES ENVOYÉES</div>
+                <div class="value purple" id="sentData">0</div>
+                <div class="unit">Mo</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📦 TOTAL</div>
+                <div class="value good" id="totalData">0</div>
+                <div class="unit">Mo</div>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="grid grid-2">
+
+            <div class="card">
+
+                <div class="card-title">MON FORFAIT</div>
+
+                <div class="form-group">
+                    <label>Volume du forfait en Go</label>
+                    <input
+                        id="planInput"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value="20"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Consommation actuelle en Go</label>
+                    <input
+                        id="usedInput"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Date de début</label>
+                    <input
+                        id="startDate"
+                        class="form-control"
+                        type="date"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Date de renouvellement</label>
+                    <input
+                        id="renewDate"
+                        class="form-control"
+                        type="date"
+                    >
+                </div>
+
+                <button class="btn btn-primary" onclick="savePlan()">
+                    💾 Enregistrer
+                </button>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-title">ÉTAT DU FORFAIT</div>
+
+                <div class="center">
+
+                    <div class="score" id="consumptionPercent">
+                        0%
+                    </div>
+
+                    <p id="consumptionMessage">
+                        Consommation normale
+                    </p>
+
+                    <br>
+
+                    <div class="progress">
+                        <div class="progress-bar" id="consumptionProgress"></div>
+                    </div>
+
+                    <br>
+
+                    <div class="metric-row">
+                        <span class="metric-name">Forfait</span>
+                        <strong id="packageValue">20 Go</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span class="metric-name">Consommé</span>
+                        <strong id="usedValue">0 Go</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span class="metric-name">Restant</span>
+                        <strong id="leftValue">20 Go</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span class="metric-name">Moyenne quotidienne</span>
+                        <strong id="dailyAverage">0 Go</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================================================= -->
+    <!-- NETWORK TEST -->
+    <!-- ================================================= -->
+
+    <section id="test" class="page">
+
+        <div class="section-title">
+            <h2>🚀 Test réseau</h2>
+            <p>Mesure HTTP de la qualité de votre connexion.</p>
+        </div>
+
+        <div class="simulation-box">
+            ⚠️ Le navigateur ne peut pas réaliser un véritable test
+            ICMP/ping ou mesurer directement la perte de paquets réseau.
+            Cette page utilise des requêtes HTTP et indique clairement
+            les estimations.
+        </div>
+
+        <br>
+
+        <div class="card">
+
+            <div class="form-group">
+                <label>Adresse de test HTTP</label>
+
+                <input
+                    id="testUrl"
+                    class="form-control"
+                    value="https://www.cloudflare.com/cdn-cgi/trace"
+                >
+            </div>
+
+            <div class="actions">
+
+                <button
+                    class="btn btn-primary"
+                    id="testButton"
+                    onclick="runNetworkTest()"
+                >
+                    🚀 Lancer le test
+                </button>
+
+                <button
+                    class="btn"
+                    onclick="clearTestResults()"
+                >
+                    🧹 Effacer
+                </button>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="grid grid-4">
+
+            <div class="card center">
+                <div class="card-title">LATENCE HTTP</div>
+                <div class="value info" id="testLatency">--</div>
+                <div class="unit">ms</div>
+            </div>
+
+            <div class="card center">
+                <div class="card-title">JITTER</div>
+                <div class="value purple" id="testJitter">--</div>
+                <div class="unit">ms</div>
+            </div>
+
+            <div class="card center">
+                <div class="card-title">SUCCÈS</div>
+                <div class="value good" id="testSuccess">--</div>
+                <div class="unit">%</div>
+            </div>
+
+            <div class="card center">
+                <div class="card-title">ÉCHECS HTTP</div>
+                <div class="value bad" id="testFailure">--</div>
+                <div class="unit">%</div>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="grid grid-2">
+
+            <div class="card center">
+                <div class="card-title">DOWNLOAD</div>
+                <div class="value good" id="testDownload">--</div>
+                <div class="unit">Mb/s</div>
+                <br>
+                <span class="badge badge-yellow">
+                    estimation navigateur
+                </span>
+            </div>
+
+            <div class="card center">
+                <div class="card-title">UPLOAD</div>
+                <div class="value info" id="testUpload">--</div>
+                <div class="unit">Mb/s</div>
+                <br>
+                <span class="badge badge-yellow">
+                    estimation navigateur
+                </span>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================================================= -->
+    <!-- SIGNAL -->
+    <!-- ================================================= -->
+
+    <section id="signal" class="page">
+
+        <div class="section-title">
+            <h2>📶 Analyse du signal</h2>
+            <p>Informations radio accessibles ou simulées.</p>
+        </div>
+
+        <div id="signalMode"></div>
+
+        <br>
+
+        <div class="grid grid-2">
+
+            <div class="card">
+
+                <div class="card-title">
+                    📡 INFORMATIONS RADIO
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">RSSI</span>
+                    <strong id="rssi">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">RSRP</span>
+                    <strong id="rsrp">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">RSRQ</span>
+                    <strong id="rsrq">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">SINR / SNR</span>
+                    <strong id="sinr">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Cell ID</span>
+                    <strong id="cellId">--</strong>
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-title">
+                    📱 CONNEXION
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Type</span>
+                    <strong id="signalNetworkType">--</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Opérateur</span>
+                    <strong id="operator">Non accessible</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Bande</span>
+                    <strong id="band">Non accessible</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Fréquence</span>
+                    <strong id="frequency">Non accessible</strong>
+                </div>
+
+                <div class="metric-row">
+                    <span class="metric-name">Technologie</span>
+                    <strong id="technology">--</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="card">
+
+            <div class="card-title">
+                📚 RÉFÉRENCE DES NIVEAUX RSSI
+            </div>
+
+            <div class="metric-row">
+                <span>Excellent</span>
+                <strong class="good">-30 à -50 dBm</strong>
+            </div>
+
+            <div class="metric-row">
+                <span>Bon</span>
+                <strong class="good">-51 à -67 dBm</strong>
+            </div>
+
+            <div class="metric-row">
+                <span>Moyen</span>
+                <strong class="medium">-68 à -80 dBm</strong>
+            </div>
+
+            <div class="metric-row">
+                <span>Faible</span>
+                <strong class="warning-color">-81 à -90 dBm</strong>
+            </div>
+
+            <div class="metric-row">
+                <span>Très faible</span>
+                <strong class="bad">&lt; -90 dBm</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================================================= -->
+    <!-- HISTORY -->
+    <!-- ================================================= -->
+
+    <section id="history" class="page">
+
+        <div class="section-title">
+
+            <h2>📜 Historique</h2>
+
+            <p>
+                Historique des mesures enregistrées localement.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <div class="actions">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="exportCSV()"
+                >
+                    📄 Export CSV
+                </button>
+
+                <button
+                    class="btn btn-success"
+                    onclick="exportJSON()"
+                >
+                    📦 Export JSON
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="clearHistory()"
+                >
+                    🗑️ Tout supprimer
+                </button>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="card">
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date</th>
+                            <th>Réseau</th>
+                            <th>Débit</th>
+                            <th>Latence</th>
+                            <th>Score</th>
+                            <th>Position</th>
+                            <th>Source</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="historyTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================================================= -->
+    <!-- MAP -->
+    <!-- ================================================= -->
+
+    <section id="mapPage" class="page">
+
+        <div class="section-title">
+
+            <h2>📍 Analyse de zone</h2>
+
+            <p>
+                Enregistrement des mesures associées à votre position.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <div class="actions">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="getLocation()"
+                >
+                    📍 Obtenir ma position
+                </button>
+
+                <button
+                    class="btn btn-success"
+                    onclick="recordLocation()"
+                >
+                    💾 Enregistrer la mesure
+                </button>
+
+            </div>
+
+            <br>
+
+            <div id="locationStatus" class="simulation-box">
+                Position non demandée.
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="card">
+
+            <div class="map" id="map">
+
+                <div class="map-center">
+                    📍
+                    <br>
+                    <span class="unit">
+                        Zone de mesure
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="card">
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Réseau</th>
+                            <th>Score</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="locationTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================================================= -->
+    <!-- SETTINGS -->
+    <!-- ================================================= -->
+
+    <section id="settings" class="page">
+
+        <div class="section-title">
+
+            <h2>⚙️ Paramètres</h2>
+
+            <p>
+                Configuration de l'application.
+            </p>
+
+        </div>
+
+        <div class="grid grid-2">
+
+            <div class="card">
+
+                <div class="card-title">
+                    🔄 ACTUALISATION
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Actualisation automatique
+                    </label>
+
+                    <select
+                        id="refreshInterval"
+                        class="form-control"
+                    >
+
+                        <option value="0">
+                            Désactivée
+                        </option>
+
+                        <option value="5000">
+                            Toutes les 5 secondes
+                        </option>
+
+                        <option value="10000">
+                            Toutes les 10 secondes
+                        </option>
+
+                        <option value="30000">
+                            Toutes les 30 secondes
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="applyRefresh()"
+                >
+                    💾 Appliquer
+                </button>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-title">
+                    🧪 MODE SIMULATION
+                </div>
+
+                <p style="color:var(--muted);line-height:1.6">
+                    Les informations radio réelles ne sont généralement
+                    pas accessibles depuis un navigateur.
+                    Activez ce mode pour tester l'interface.
+                </p>
+
+                <br>
+
+                <button
+                    id="simulationButton"
+                    class="btn btn-warning"
+                    onclick="toggleSimulation()"
+                >
+                    🧪 Désactiver simulation
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    Mobile Network Analyzer — Données stockées localement dans le navigateur.
+    Les mesures radio simulées ne représentent pas nécessairement votre réseau réel.
+</footer>
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const STORAGE = {
+    plan: "mna_plan",
+    history: "mna_history",
+    locations: "mna_locations",
+    simulation: "mna_simulation"
+};
+
+let simulationMode =
+    localStorage.getItem(STORAGE.simulation) !== "false";
+
+let currentLocation = null;
+let refreshTimer = null;
+
+let testResults = {
+    latencies: [],
+    success: 0,
+    failure: 0
+};
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+document.querySelectorAll(".nav-btn").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        document
+            .querySelectorAll(".nav-btn")
+            .forEach(btn => btn.classList.remove("active"));
+
+        document
+            .querySelectorAll(".page")
+            .forEach(page => page.classList.remove("active"));
+
+        button.classList.add("active");
+
+        document
+            .getElementById(button.dataset.page)
+            .classList.add("active");
+
+    });
+
+});
+
+
+/* =========================================================
+   NETWORK API
+========================================================= */
+
+function getConnection() {
+
+    return navigator.connection ||
+           navigator.mozConnection ||
+           navigator.webkitConnection ||
+           null;
+
+}
+
+
+function detectNetworkType() {
+
+    const connection = getConnection();
+
+    if (!connection) {
+
+        return {
+            type: "Inconnu",
+            effective: "Non disponible",
+            downlink: null,
+            rtt: null,
+            saveData: false
+        };
+
+    }
+
+    let type = connection.type || "";
+
+    let effective = connection.effectiveType || "";
+
+    if (!type) {
+
+        type = effective || "Connexion inconnue";
+
+    }
+
+    return {
+        type,
+        effective,
+        downlink: connection.downlink,
+        rtt: connection.rtt,
+        saveData: connection.saveData
+    };
+
+}
+
+
+function updateNetworkInfo() {
+
+    const data = detectNetworkType();
+
+    let type = data.type;
+
+    if (
+        type === "cellular" ||
+        type === "4g" ||
+        type === "3g"
+    ) {
+
+        type = "Cellulaire";
+
+    }
+
+    if (type === "wifi") {
+
+        type = "Wi-Fi";
+
+    }
+
+    document.getElementById("networkType").textContent =
+        type || "--";
+
+    document.getElementById("effectiveType").textContent =
+        data.effective || "--";
+
+    document.getElementById("tech").textContent =
+        data.effective || type || "--";
+
+    document.getElementById("technology").textContent =
+        data.effective || type || "--";
+
+    document.getElementById("signalNetworkType").textContent =
+        type || "--";
+
+    document.getElementById("downlink").textContent =
+        data.downlink
+        ? data.downlink + " Mb/s"
+        : "--";
+
+    document.getElementById("downloadSpeed").textContent =
+        data.downlink
+        ? data.downlink
+        : simulationDownload();
+
+    document.getElementById("browserRtt").textContent =
+        data.rtt
+        ? data.rtt + " ms"
+        : "--";
+
+    document.getElementById("saveData").textContent =
+        data.saveData
+        ? "Activé"
+        : "Désactivé";
+
+    document.getElementById("connectionStatus").textContent =
+        navigator.onLine
+        ? "Connexion active"
+        : "Hors ligne";
+
+}
+
+
+/* =========================================================
+   SIMULATION
+========================================================= */
+
+function simulationDownload() {
+
+    const values = [
+        8.4,
+        12.7,
+        18.3,
+        24.5,
+        31.8,
+        42.2,
+        55.7
+    ];
+
+    return values[
+        Math.floor(Math.random() * values.length)
+    ].toFixed(1);
+
+}
+
+
+function randomSignal() {
+
+    return {
+        rssi: -45 - Math.floor(Math.random() * 48),
+        rsrp: -75 - Math.floor(Math.random() * 40),
+        rsrq: -5 - Math.floor(Math.random() * 16),
+        sinr: 4 + Math.floor(Math.random() * 28)
+    };
+
+}
+
+
+function updateSignal() {
+
+    const signal = randomSignal();
+
+    if (simulationMode) {
+
+        document.getElementById("rssi").textContent =
+            signal.rssi + " dBm";
+
+        document.getElementById("rsrp").textContent =
+            signal.rsrp + " dBm";
+
+        document.getElementById("rsrq").textContent =
+            signal.rsrq + " dB";
+
+        document.getElementById("sinr").textContent =
+            signal.sinr + " dB";
+
+        document.getElementById("cellId").textContent =
+            "SIM-" +
+            Math.floor(100000 + Math.random() * 900000);
+
+        document.getElementById("band").textContent =
+            "LTE Band " +
+            (1 + Math.floor(Math.random() * 20));
+
+        document.getElementById("frequency").textContent =
+            "Simulation";
+
+        document.getElementById("operator").textContent =
+            "Opérateur simulé";
+
+        document.getElementById("signalMode").innerHTML =
+            `<div class="simulation-box">
+                🧪 <strong>MODE SIMULATION</strong><br>
+                Les paramètres RSSI, RSRP, RSRQ, SINR et Cell ID
+                sont générés localement et ne représentent pas
+                une mesure réelle du modem.
+            </div>`;
+
+        document.getElementById("simulationStatus").innerHTML =
+            `<span class="badge badge-yellow">
+                🧪 Simulation
+            </span>`;
+
+    } else {
+
+        document.getElementById("rssi").textContent =
+            "Non disponible";
+
+        document.getElementById("rsrp").textContent =
+            "Non disponible";
+
+        document.getElementById("rsrq").textContent =
+            "Non disponible";
+
+        document.getElementById("sinr").textContent =
+            "Non disponible";
+
+        document.getElementById("cellId").textContent =
+            "Non disponible";
+
+        document.getElementById("band").textContent =
+            "Non disponible";
+
+        document.getElementById("frequency").textContent =
+            "Non disponible";
+
+        document.getElementById("operator").textContent =
+            "Non accessible";
+
+        document.getElementById("signalMode").innerHTML =
+            `<div class="real-box">
+                🟢 <strong>MODE RÉEL NAVIGATEUR</strong><br>
+                Aucune donnée radio fictive n'est utilisée.
+                Les informations radio ne sont simplement pas exposées
+                par ce navigateur.
+            </div>`;
+
+        document.getElementById("simulationStatus").innerHTML =
+            `<span class="badge badge-green">
+                🟢 Données navigateur
+            </span>`;
+
+    }
+
+}
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+function calculateScore() {
+
+    const connection = detectNetworkType();
+
+    let score = 55;
+
+    if (connection.downlink) {
+
+        if (connection.downlink >= 50) score += 25;
+        else if (connection.downlink >= 20) score += 18;
+        else if (connection.downlink >= 10) score += 10;
+        else score += 4;
+
+    } else {
+
+        score += Math.floor(Math.random() * 15);
+
+    }
+
+    if (connection.rtt) {
+
+        if (connection.rtt < 30) score += 15;
+        else if (connection.rtt < 60) score += 10;
+        else if (connection.rtt < 100) score += 5;
+
+    } else {
+
+        score += 5;
+
+    }
+
+    score = Math.min(100, Math.max(0, score));
+
+    return score;
+
+}
+
+
+function qualityLabel(score) {
+
+    if (score >= 85) {
+
+        return {
+            text: "Excellente",
+            class: "good"
+        };
+
+    }
+
+    if (score >= 70) {
+
+        return {
+            text: "Bonne",
+            class: "good"
+        };
+
+    }
+
+    if (score >= 50) {
+
+        return {
+            text: "Moyenne",
+            class: "medium"
+        };
+
+    }
+
+    return {
+        text: "Faible",
+        class: "bad"
+    };
+
+}
+
+
+function updateScore() {
+
+    const score = calculateScore();
+
+    const quality = qualityLabel(score);
+
+    document.getElementById("networkScore").textContent =
+        score;
+
+    document.getElementById("qualityScore").textContent =
+        score;
+
+    document.getElementById("qualityText").textContent =
+        quality.text;
+
+    document.getElementById("qualityText").className =
+        quality.class;
+
+    const circle =
+        document.getElementById("qualityCircle");
+
+    circle.style.borderColor =
+        score >= 70
+            ? "var(--green)"
+            : score >= 50
+                ? "var(--yellow)"
+                : "var(--red)";
+
+    return score;
+
+}
+
+
+/* =========================================================
+   PLAN / CONSUMPTION
+========================================================= */
+
+function getPlan() {
+
+    const saved =
+        localStorage.getItem(STORAGE.plan);
+
+    if (!saved) {
+
+        return {
+            volume: 20,
+            used: 0,
+            start: new Date().toISOString().slice(0,10),
+            renew: ""
+        };
+
+    }
+
+    try {
+
+        return JSON.parse(saved);
+
+    } catch {
+
+        return {
+            volume: 20,
+            used: 0,
+            start: "",
+            renew: ""
+        };
+
+    }
+
+}
+
+
+function savePlan() {
+
+    const plan = {
+
+        volume:
+            parseFloat(
+                document.getElementById("planInput").value
+            ) || 0,
+
+        used:
+            parseFloat(
+                document.getElementById("usedInput").value
+            ) || 0,
+
+        start:
+            document.getElementById("startDate").value,
+
+        renew:
+            document.getElementById("renewDate").value
+
+    };
+
+    localStorage.setItem(
+        STORAGE.plan,
+        JSON.stringify(plan)
+    );
+
+    updateConsumption();
+
+    alert("Forfait enregistré.");
+
+}
+
+
+function updateConsumption() {
+
+    const plan = getPlan();
+
+    const volume = plan.volume;
+
+    const used = plan.used;
+
+    const percent =
+        volume > 0
+            ? Math.min(100, (used / volume) * 100)
+            : 0;
+
+    const remaining =
+        Math.max(0, volume - used);
+
+    document.getElementById("planDisplay").textContent =
+        volume.toFixed(2) + " Go";
+
+    document.getElementById("consumptionDisplay").textContent =
+        used.toFixed(2) + " Go";
+
+    document.getElementById("remainingDisplay").textContent =
+        remaining.toFixed(2) + " Go";
+
+    document.getElementById("packageValue").textContent =
+        volume.toFixed(2) + " Go";
+
+    document.getElementById("usedValue").textContent =
+        used.toFixed(2) + " Go";
+
+    document.getElementById("leftValue").textContent =
+        remaining.toFixed(2) + " Go";
+
+    document.getElementById("usagePercent").textContent =
+        percent.toFixed(1) + "%";
+
+    document.getElementById("consumptionPercent").textContent =
+        percent.toFixed(1) + "%";
+
+    const bar =
+        document.getElementById("usageBar");
+
+    const bar2 =
+        document.getElementById("consumptionProgress");
+
+    bar.style.width = percent + "%";
+
+    bar2.style.width = percent + "%";
+
+    let color = "var(--green)";
+    let message = "🟢 Consommation normale";
+
+    if (percent >= 90) {
+
+        color = "var(--red)";
+        message = "🔴 Forfait presque épuisé";
+
+    } else if (percent >= 80) {
+
+        color = "var(--orange)";
+        message = "🟠 Consommation élevée";
+
+    } else if (percent >= 50) {
+
+        color = "var(--yellow)";
+        message = "🟡 Surveillez votre consommation";
+
+    }
+
+    bar.style.background = color;
+    bar2.style.background = color;
+
+    document.getElementById("consumptionMessage").textContent =
+        message;
+
+    const start = new Date(plan.start);
+
+    const now = new Date();
+
+    let days = Math.max(
+        1,
+        Math.ceil(
+            (now - start) /
+            (1000 * 60 * 60 * 24)
+        )
+    );
+
+    const average =
+        used / days;
+
+    document.getElementById("dailyAverage").textContent =
+        average.toFixed(2) + " Go/jour";
+
+    document.getElementById("receivedData").textContent =
+        (used * .85).toFixed(2);
+
+    document.getElementById("sentData").textContent =
+        (used * .15).toFixed(2);
+
+    document.getElementById("totalData").textContent =
+        used.toFixed(2);
+
+    updateConsumptionChart(percent);
+
+}
+
+
+/* =========================================================
+   NETWORK TEST
+========================================================= */
+
+async function runNetworkTest() {
+
+    const button =
+        document.getElementById("testButton");
+
+    const url =
+        document.getElementById("testUrl").value.trim();
+
+    if (!url) {
+
+        alert("Veuillez saisir une URL.");
+
+        return;
+
+    }
+
+    button.disabled = true;
+
+    button.textContent =
+        "⏳ Test en cours...";
+
+    testResults = {
+        latencies: [],
+        success: 0,
+        failure: 0
+    };
+
+    for (let i = 0; i < 5; i++) {
+
+        const start = performance.now();
+
+        try {
+
+            await fetch(
+                url +
+                (url.includes("?") ? "&" : "?") +
+                "mna=" +
+                Date.now(),
+                {
+                    method: "GET",
+                    cache: "no-store",
+                    mode: "cors"
+                }
+            );
+
+            const end = performance.now();
+
+            testResults.latencies.push(
+                end - start
+            );
+
+            testResults.success++;
+
+        } catch (error) {
+
+            testResults.failure++;
+
+        }
+
+    }
+
+    if (testResults.latencies.length) {
+
+        const average =
+            testResults.latencies.reduce(
+                (a,b) => a+b,
+                0
+            ) /
+            testResults.latencies.length;
+
+        let jitter = 0;
+
+        if (testResults.latencies.length > 1) {
+
+            const differences = [];
+
+            for (
+                let i = 1;
+                i < testResults.latencies.length;
+                i++
+            ) {
+
+                differences.push(
+                    Math.abs(
+                        testResults.latencies[i] -
+                        testResults.latencies[i-1]
+                    )
+                );
+
+            }
+
+            jitter =
+                differences.reduce(
+                    (a,b) => a+b,
+                    0
+                ) /
+                differences.length;
+
+        }
+
+        document.getElementById("testLatency").textContent =
+            average.toFixed(1);
+
+        document.getElementById("testJitter").textContent =
+            jitter.toFixed(1);
+
+    }
+
+    const total =
+        testResults.success +
+        testResults.failure;
+
+    const successPercent =
+        total
+            ? testResults.success / total * 100
+            : 0;
+
+    const failurePercent =
+        total
+            ? testResults.failure / total * 100
+            : 0;
+
+    document.getElementById("testSuccess").textContent =
+        successPercent.toFixed(0);
+
+    document.getElementById("testFailure").textContent =
+        failurePercent.toFixed(0);
+
+    const browserData =
+        detectNetworkType();
+
+    const estimatedDownload =
+        browserData.downlink ||
+        parseFloat(simulationDownload());
+
+    const estimatedUpload =
+        Math.max(
+            1,
+            estimatedDownload * .25
+        );
+
+    document.getElementById("testDownload").textContent =
+        estimatedDownload.toFixed(1);
+
+    document.getElementById("testUpload").textContent =
+        estimatedUpload.toFixed(1);
+
+    button.disabled = false;
+
+    button.textContent =
+        "🚀 Relancer le test";
+
+    saveMeasurement(
+        calculateScore(),
+        averageValue(testResults.latencies)
+    );
+
+}
+
+
+function averageValue(array) {
+
+    if (!array.length) return null;
+
+    return array.reduce(
+        (a,b) => a+b,
+        0
+    ) / array.length;
+
+}
+
+
+function clearTestResults() {
+
+    document.getElementById("testLatency").textContent = "--";
+    document.getElementById("testJitter").textContent = "--";
+    document.getElementById("testSuccess").textContent = "--";
+    document.getElementById("testFailure").textContent = "--";
+    document.getElementById("testDownload").textContent = "--";
+    document.getElementById("testUpload").textContent = "--";
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function getHistory() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(STORAGE.history) || "[]"
+        );
+
+    } catch {
+
+        return [];
+
+    }
+
+}
+
+
+function saveMeasurement(score, latency) {
+
+    const network =
+        detectNetworkType();
+
+    const measurement = {
+
+        date:
+            new Date().toISOString(),
+
+        network:
+            network.type ||
+            network.effective ||
+            "Inconnu",
+
+        download:
+            network.downlink ||
+            parseFloat(simulationDownload()),
+
+        latency:
+            latency ||
+            network.rtt ||
+            null,
+
+        score,
+
+        source:
+            simulationMode
+                ? "Simulation"
+                : "Navigateur",
+
+        latitude:
+            currentLocation
+                ? currentLocation.latitude
+                : null,
+
+        longitude:
+            currentLocation
+                ? currentLocation.longitude
+                : null
+
+    };
+
+    const history =
+        getHistory();
+
+    history.unshift(measurement);
+
+    if (history.length > 100) {
+
+        history.pop();
+
+    }
+
+    localStorage.setItem(
+        STORAGE.history,
+        JSON.stringify(history)
+    );
+
+    renderHistory();
+
+    drawQualityChart();
+
+}
+
+
+function renderHistory() {
+
+    const table =
+        document.getElementById("historyTable");
+
+    const history =
+        getHistory();
+
+    if (!history.length) {
+
+        table.innerHTML =
+            `<tr>
+                <td colspan="7" class="empty">
+                    Aucune mesure enregistrée.
+                </td>
+            </tr>`;
+
+        return;
+
+    }
+
+    table.innerHTML =
+        history.map(item => {
+
+            const date =
+                new Date(item.date);
+
+            const quality =
+                qualityLabel(item.score);
+
+            return `
+                <tr>
+
+                    <td>
+                        ${date.toLocaleString("fr-FR")}
+                    </td>
+
+                    <td>
+                        <span class="badge badge-blue">
+                            ${item.network}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${Number(item.download).toFixed(1)}
+                        Mb/s
+                    </td>
+
+                    <td>
+                        ${item.latency
+                            ? Number(item.latency).toFixed(1)
+                            : "--"
+                        }
+                        ms
+                    </td>
+
+                    <td class="${quality.class}">
+                        ${item.score}/100
+                    </td>
+
+                    <td>
+                        ${
+                            item.latitude
+                                ? item.latitude.toFixed(5)
+                                  + ", "
+                                  + item.longitude.toFixed(5)
+                                : "--"
+                        }
+                    </td>
+
+                    <td>
+                        ${item.source}
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+}
+
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+function exportJSON() {
+
+    const data =
+        JSON.stringify(
+            getHistory(),
+            null,
+            2
+        );
+
+    downloadFile(
+        data,
+        "mobile-network-history.json",
+        "application/json"
+    );
+
+}
+
+
+function exportCSV() {
+
+    const history =
+        getHistory();
+
+    if (!history.length) {
+
+        alert("Aucune donnée à exporter.");
+
+        return;
+
+    }
+
+    const header =
+        [
+            "Date",
+            "Reseau",
+            "Download_Mbps",
+            "Latence_ms",
+            "Score",
+            "Latitude",
+            "Longitude",
+            "Source"
+        ];
+
+    const rows =
+        history.map(item => [
+
+            item.date,
+            item.network,
+            item.download,
+            item.latency,
+            item.score,
+            item.latitude || "",
+            item.longitude || "",
+            item.source
+
+        ]);
+
+    const csv =
+        [
+            header,
+            ...rows
+        ]
+        .map(row =>
+            row
+                .map(value =>
+                    `"${String(value).replaceAll('"','""')}"`
+                )
+                .join(";")
+        )
+        .join("\n");
+
+    downloadFile(
+        "\ufeff" + csv,
+        "mobile-network-history.csv",
+        "text/csv;charset=utf-8"
+    );
+
+}
+
+
+function downloadFile(
+    content,
+    filename,
+    type
+) {
+
+    const blob =
+        new Blob(
+            [content],
+            {type}
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+    a.download = filename;
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+function getLocation() {
+
+    const status =
+        document.getElementById("locationStatus");
+
+    if (!navigator.geolocation) {
+
+        status.innerHTML =
+            "❌ La géolocalisation n'est pas disponible.";
+
+        return;
+
+    }
+
+    status.innerHTML =
+        "⏳ Recherche de votre position...";
+
+    navigator.geolocation.getCurrentPosition(
+
+        position => {
+
+            currentLocation = {
+
+                latitude:
+                    position.coords.latitude,
+
+                longitude:
+                    position.coords.longitude,
+
+                accuracy:
+                    position.coords.accuracy
+
+            };
+
+            status.className =
+                "real-box";
+
+            status.innerHTML =
+                `
+                🟢 Position obtenue<br><br>
+
+                Latitude :
+                <strong>
+                    ${currentLocation.latitude.toFixed(6)}
+                </strong>
+
+                <br>
+
+                Longitude :
+                <strong>
+                    ${currentLocation.longitude.toFixed(6)}
+                </strong>
+
+                <br>
+
+                Précision :
+                <strong>
+                    ${Math.round(currentLocation.accuracy)} m
+                </strong>
+                `;
+
+        },
+
+        error => {
+
+            status.className =
+                "simulation-box";
+
+            status.innerHTML =
+                "❌ Impossible d'obtenir la position : "
+                + error.message;
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 30000
+        }
+
+    );
+
+}
+
+
+function recordLocation() {
+
+    if (!currentLocation) {
+
+        alert(
+            "Obtenez d'abord votre position."
+        );
+
+        return;
+
+    }
+
+    const score =
+        calculateScore();
+
+    const data = {
+
+        date:
+            new Date().toISOString(),
+
+        latitude:
+            currentLocation.latitude,
+
+        longitude:
+            currentLocation.longitude,
+
+        accuracy:
+            currentLocation.accuracy,
+
+        network:
+            detectNetworkType().type,
+
+        score
+
+    };
+
+    let locations;
+
+    try {
+
+        locations =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE.locations
+                ) || "[]"
+            );
+
+    } catch {
+
+        locations = [];
+
+    }
+
+    locations.unshift(data);
+
+    localStorage.setItem(
+        STORAGE.locations,
+        JSON.stringify(locations)
+    );
+
+    renderLocations();
+
+    addMapMarker(data);
+
+    saveMeasurement(
+        score,
+        detectNetworkType().rtt
+    );
+
+    alert(
+        "Mesure enregistrée pour cette position."
+    );
+
+}
+
+
+function renderLocations() {
+
+    const table =
+        document.getElementById(
+            "locationTable"
+        );
+
+    let locations;
+
+    try {
+
+        locations =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE.locations
+                ) || "[]"
+            );
+
+    } catch {
+
+        locations = [];
+
+    }
+
+    if (!locations.length) {
+
+        table.innerHTML =
+            `<tr>
+                <td colspan="5" class="empty">
+                    Aucun point enregistré.
+                </td>
+            </tr>`;
+
+        return;
+
+    }
+
+    table.innerHTML =
+        locations.map(item => {
+
+            return `
+                <tr>
+
+                    <td>
+                        ${new Date(item.date)
+                            .toLocaleString("fr-FR")}
+                    </td>
+
+                    <td>
+                        ${item.latitude.toFixed(6)}
+                    </td>
+
+                    <td>
+                        ${item.longitude.toFixed(6)}
+                    </td>
+
+                    <td>
+                        ${item.network || "--"}
+                    </td>
+
+                    <td>
+                        ${item.score}/100
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+}
+
+
+function addMapMarker(item) {
+
+    const map =
+        document.getElementById("map");
+
+    const marker =
+        document.createElement("div");
+
+    marker.className =
+        "map-marker " +
+        (
+            item.score >= 70
+                ? "marker-good"
+                : item.score >= 50
+                    ? "marker-medium"
+                    : "marker-bad"
+        );
+
+    /*
+       Projection simplifiée uniquement pour visualiser
+       les points dans l'interface HTML.
+    */
+
+    const x =
+        20 + Math.random() * 60;
+
+    const y =
+        20 + Math.random() * 60;
+
+    marker.style.left =
+        x + "%";
+
+    marker.style.top =
+        y + "%";
+
+    marker.title =
+        `${item.score}/100`;
+
+    map.appendChild(marker);
+
+}
+
+
+/* =========================================================
+   GRAPHIQUES
+========================================================= */
+
+function drawQualityChart() {
+
+    const canvas =
+        document.getElementById("qualityChart");
+
+    const ctx =
+        canvas.getContext("2d");
+
+    const width =
+        canvas.clientWidth;
+
+    const height =
+        canvas.clientHeight;
+
+    canvas.width =
+        width * devicePixelRatio;
+
+    canvas.height =
+        height * devicePixelRatio;
+
+    ctx.scale(
+        devicePixelRatio,
+        devicePixelRatio
+    );
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    const history =
+        getHistory()
+            .slice(0,10)
+            .reverse();
+
+    if (!history.length) {
+
+        ctx.fillStyle = "#94a3b8";
+
+        ctx.font = "14px Arial";
+
+        ctx.fillText(
+            "Aucune mesure",
+            20,
+            40
+        );
+
+        return;
+
+    }
+
+    const values =
+        history.map(item => item.score);
+
+    drawLineChart(
+        ctx,
+        width,
+        height,
+        values,
+        100
+    );
+
+}
+
+
+function updateConsumptionChart(percent) {
+
+    const canvas =
+        document.getElementById("consumptionChart");
+
+    const ctx =
+        canvas.getContext("2d");
+
+    const width =
+        canvas.clientWidth;
+
+    const height =
+        canvas.clientHeight;
+
+    canvas.width =
+        width * devicePixelRatio;
+
+    canvas.height =
+        height * devicePixelRatio;
+
+    ctx.scale(
+        devicePixelRatio,
+        devicePixelRatio
+    );
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    drawLineChart(
+        ctx,
+        width,
+        height,
+        [
+            10,
+            18,
+            27,
+            35,
+            44,
+            percent
+        ],
+        100
+    );
+
+}
+
+
+function drawLineChart(
+    ctx,
+    width,
+    height,
+    values,
+    max
+) {
+
+    const padding = 30;
+
+    ctx.strokeStyle =
+        "rgba(148,163,184,.2)";
+
+    ctx.lineWidth = 1;
+
+    for (
+        let i = 0;
+        i <= 4;
+        i++
+    ) {
+
+        const y =
+            padding +
+            (
+                height -
+                padding * 2
+            ) *
+            i / 4;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            padding,
+            y
+        );
+
+        ctx.lineTo(
+            width - padding,
+            y
+        );
+
+        ctx.stroke();
+
+    }
+
+    if (values.length < 1) return;
+
+    const step =
+        values.length === 1
+            ? 0
+            : (
+                width -
+                padding * 2
+            ) /
+            (values.length - 1);
+
+    ctx.beginPath();
+
+    values.forEach(
+        (value, index) => {
+
+            const x =
+                padding +
+                index * step;
+
+            const y =
+                height -
+                padding -
+                (
+                    value / max
+                ) *
+                (
+                    height -
+                    padding * 2
+                );
+
+            if (index === 0) {
+
+                ctx.moveTo(x,y);
+
+            } else {
+
+                ctx.lineTo(x,y);
+
+            }
+
+        }
+    );
+
+    ctx.strokeStyle =
+        "#38bdf8";
+
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+
+    values.forEach(
+        (value,index) => {
+
+            const x =
+                padding +
+                index * step;
+
+            const y =
+                height -
+                padding -
+                (
+                    value / max
+                ) *
+                (
+                    height -
+                    padding * 2
+                );
+
+            ctx.beginPath();
+
+            ctx.arc(
+                x,
+                y,
+                4,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                "#22c55e";
+
+            ctx.fill();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SIMULATION SETTINGS
+========================================================= */
+
+function toggleSimulation() {
+
+    simulationMode =
+        !simulationMode;
+
+    localStorage.setItem(
+        STORAGE.simulation,
+        simulationMode
+    );
+
+    document.getElementById(
+        "simulationButton"
+    ).textContent =
+        simulationMode
+            ? "🧪 Désactiver simulation"
+            : "🟢 Activer simulation";
+
+    updateSignal();
+
+}
+
+
+function applyRefresh() {
+
+    if (refreshTimer) {
+
+        clearInterval(
+            refreshTimer
+        );
+
+        refreshTimer = null;
+
+    }
+
+    const value =
+        Number(
+            document.getElementById(
+                "refreshInterval"
+            ).value
+        );
+
+    if (value > 0) {
+
+        refreshTimer =
+            setInterval(
+                updateAll,
+                value
+            );
+
+    }
+
+    alert(
+        value
+            ? "Actualisation automatique activée."
+            : "Actualisation automatique désactivée."
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE GLOBAL
+========================================================= */
+
+function updateAll() {
+
+    updateNetworkInfo();
+
+    updateSignal();
+
+    updateScore();
+
+    updateConsumption();
+
+}
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+function loadSettings() {
+
+    const plan =
+        getPlan();
+
+    document.getElementById("planInput").value =
+        plan.volume;
+
+    document.getElementById("usedInput").value =
+        plan.used;
+
+    document.getElementById("startDate").value =
+        plan.start;
+
+    document.getElementById("renewDate").value =
+        plan.renew;
+
+    document.getElementById(
+        "simulationButton"
+    ).textContent =
+        simulationMode
+            ? "🧪 Désactiver simulation"
+            : "🟢 Activer simulation";
+
+}
+
+
+function initialize() {
+
+    loadSettings();
+
+    updateAll();
+
+    renderHistory();
+
+    renderLocations();
+
+    drawQualityChart();
+
+    updateConsumptionChart(
+        getPlan().volume > 0
+            ? getPlan().used /
+              getPlan().volume *
+              100
+            : 0
+    );
+
+    const connection =
+        getConnection();
+
+    if (connection) {
+
+        connection.addEventListener(
+            "change",
+            updateAll
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ONLINE / OFFLINE
+========================================================= */
+
+window.addEventListener(
+    "online",
+    updateAll
+);
+
+window.addEventListener(
+    "offline",
+    updateAll
+);
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        drawQualityChart();
+
+        updateConsumptionChart(
+            getPlan().volume > 0
+                ? getPlan().used /
+                  getPlan().volume *
+                  100
+                : 0
+        );
+
+    }
+);
+
+
+/* START */
+
+initialize();
+
+</script>
+
+</body>
+</html>

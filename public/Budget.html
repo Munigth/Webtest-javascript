@@ -1,0 +1,6075 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Budget Manager FCFA</title>
+
+<style>
+
+/* =========================================================
+   BUDGET MANAGER FCFA
+   VERSION SANS VALEURS PRÉREMPLIES
+========================================================= */
+
+:root{
+
+    --bg:#eef8ff;
+    --card:#ffffff;
+
+    --text:#102a43;
+    --muted:#627d98;
+
+    --blue:#087ea4;
+    --blue2:#0ea5e9;
+
+    --yellow:#fbbf24;
+    --yellow2:#f59e0b;
+
+    --green:#16a34a;
+    --red:#dc2626;
+    --orange:#ea580c;
+
+    --border:#d9edf7;
+
+    --shadow:
+        0 12px 30px rgba(11,95,122,.12);
+
+    --radius:22px;
+}
+
+body.dark{
+
+    --bg:#020617;
+    --card:#0f172a;
+
+    --text:#e6f7ff;
+    --muted:#94a3b8;
+
+    --border:#1e3a4a;
+
+    --shadow:
+        0 15px 40px rgba(0,0,0,.35);
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:var(--bg);
+    color:var(--text);
+
+    min-height:100vh;
+
+    transition:
+        background .25s ease,
+        color .25s ease;
+}
+
+button,
+input,
+select{
+
+    font:inherit;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.topbar{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--blue2)
+        );
+
+    color:white;
+
+    padding:14px 20px;
+
+    box-shadow:
+        0 8px 30px rgba(8,126,164,.25);
+}
+
+.topbar-inner{
+
+    width:min(1450px,94%);
+
+    margin:auto;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+}
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.logo{
+
+    width:48px;
+    height:48px;
+
+    border-radius:16px;
+
+    display:grid;
+
+    place-items:center;
+
+    background:
+        rgba(255,255,255,.16);
+
+    font-size:25px;
+}
+
+.brand h1{
+    font-size:19px;
+}
+
+.brand p{
+    font-size:12px;
+    opacity:.8;
+}
+
+.header-actions{
+
+    display:flex;
+
+    gap:8px;
+}
+
+.icon-btn{
+
+    width:43px;
+    height:43px;
+
+    border:0;
+
+    border-radius:14px;
+
+    color:white;
+
+    background:
+        rgba(255,255,255,.15);
+
+    cursor:pointer;
+
+    font-size:18px;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+
+    width:min(1450px,94%);
+
+    margin:25px auto 100px;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+
+    background:var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:25px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:20px;
+}
+
+.hero h2{
+
+    font-size:28px;
+
+    margin-bottom:8px;
+}
+
+.hero p{
+
+    color:var(--muted);
+
+    line-height:1.6;
+
+    max-width:950px;
+}
+
+
+/* =========================================================
+   MODE SELECTOR
+========================================================= */
+
+.mode-selector{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:12px;
+
+    margin-top:20px;
+}
+
+.mode-btn{
+
+    padding:18px;
+
+    border:
+        2px solid var(--border);
+
+    border-radius:18px;
+
+    background:var(--card);
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    text-align:left;
+
+    transition:.2s;
+}
+
+.mode-btn strong{
+
+    display:block;
+
+    font-size:16px;
+
+    margin-bottom:4px;
+}
+
+.mode-btn span{
+
+    color:var(--muted);
+
+    font-size:12px;
+}
+
+.mode-btn.active{
+
+    border-color:var(--blue2);
+
+    background:
+        rgba(14,165,233,.08);
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card{
+
+    background:var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:20px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:20px;
+}
+
+.card-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    margin-bottom:18px;
+}
+
+.card-title{
+
+    font-size:19px;
+
+    font-weight:800;
+}
+
+.card-subtitle{
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    margin-top:4px;
+}
+
+
+/* =========================================================
+   INFO REFERENCE
+========================================================= */
+
+.reference-box{
+
+    margin-top:16px;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    background:
+        rgba(14,165,233,.08);
+
+    border:
+        1px solid var(--border);
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    line-height:1.6;
+}
+
+.reference-box strong{
+    color:var(--text);
+}
+
+
+/* =========================================================
+   KPI
+========================================================= */
+
+.kpi-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,1fr);
+
+    gap:12px;
+}
+
+.kpi{
+
+    padding:17px;
+
+    border-radius:17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(14,165,233,.08),
+            rgba(251,191,36,.08)
+        );
+
+    border:
+        1px solid var(--border);
+}
+
+.kpi-label{
+
+    color:var(--muted);
+
+    font-size:11px;
+
+    text-transform:uppercase;
+
+    letter-spacing:.06em;
+}
+
+.kpi-value{
+
+    font-size:22px;
+
+    font-weight:850;
+
+    margin-top:6px;
+}
+
+.kpi-value.green{
+    color:var(--green);
+}
+
+.kpi-value.red{
+    color:var(--red);
+}
+
+.kpi-value.yellow{
+    color:var(--yellow2);
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:13px;
+}
+
+.field{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+}
+
+.field label{
+
+    font-size:12px;
+
+    font-weight:750;
+
+    color:var(--muted);
+}
+
+.field input,
+.field select{
+
+    width:100%;
+
+    padding:11px 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:12px;
+
+    background:var(--card);
+
+    color:var(--text);
+
+    outline:none;
+}
+
+.field input:focus,
+.field select:focus{
+
+    border-color:var(--blue2);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(14,165,233,.1);
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.buttons{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:9px;
+
+    margin-top:15px;
+}
+
+.btn{
+
+    border:0;
+
+    border-radius:13px;
+
+    padding:11px 15px;
+
+    cursor:pointer;
+
+    font-weight:750;
+
+    transition:.15s;
+}
+
+.btn:hover{
+    transform:translateY(-1px);
+}
+
+.btn-primary{
+
+    background:var(--blue);
+
+    color:white;
+}
+
+.btn-blue{
+
+    background:var(--blue2);
+
+    color:white;
+}
+
+.btn-yellow{
+
+    background:var(--yellow);
+
+    color:#172033;
+}
+
+.btn-green{
+
+    background:var(--green);
+
+    color:white;
+}
+
+.btn-red{
+
+    background:var(--red);
+
+    color:white;
+}
+
+.btn-secondary{
+
+    background:
+        rgba(14,165,233,.08);
+
+    color:var(--blue);
+
+    border:
+        1px solid var(--border);
+}
+
+
+/* =========================================================
+   EXPENSE LIST
+========================================================= */
+
+.expense-list{
+
+    display:grid;
+
+    gap:9px;
+
+    margin-top:15px;
+}
+
+.expense-row{
+
+    display:grid;
+
+    grid-template-columns:
+        1.5fr
+        .9fr
+        .9fr
+        .9fr
+        auto;
+
+    gap:8px;
+
+    align-items:center;
+
+    padding:10px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:13px;
+}
+
+.expense-row input,
+.expense-row select{
+
+    padding:9px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:9px;
+
+    background:var(--card);
+
+    color:var(--text);
+
+    width:100%;
+}
+
+.remove-btn{
+
+    width:34px;
+    height:34px;
+
+    border:0;
+
+    border-radius:9px;
+
+    background:
+        rgba(220,38,38,.1);
+
+    color:var(--red);
+
+    cursor:pointer;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state{
+
+    padding:25px;
+
+    text-align:center;
+
+    color:var(--muted);
+
+    border:
+        1px dashed var(--border);
+
+    border-radius:16px;
+
+    line-height:1.7;
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+.chart-container{
+
+    position:relative;
+
+    height:340px;
+
+    width:100%;
+}
+
+#budgetChart{
+
+    width:100%;
+
+    height:100%;
+
+    display:block;
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress{
+
+    height:12px;
+
+    border-radius:999px;
+
+    background:
+        rgba(148,163,184,.2);
+
+    overflow:hidden;
+
+    margin-top:8px;
+}
+
+.progress-bar{
+
+    height:100%;
+
+    width:0;
+
+    border-radius:inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--blue2)
+        );
+
+    transition:
+        width .4s ease;
+}
+
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.alerts{
+
+    display:grid;
+
+    gap:9px;
+}
+
+.alert{
+
+    padding:13px;
+
+    border-radius:13px;
+
+    font-size:13px;
+
+    border-left:
+        4px solid var(--blue);
+}
+
+.alert.warning{
+
+    background:
+        rgba(251,191,36,.1);
+
+    border-color:var(--yellow2);
+}
+
+.alert.danger{
+
+    background:
+        rgba(220,38,38,.08);
+
+    border-color:var(--red);
+}
+
+.alert.success{
+
+    background:
+        rgba(22,163,74,.08);
+
+    border-color:var(--green);
+}
+
+.alert.info{
+
+    background:
+        rgba(14,165,233,.08);
+
+    border-color:var(--blue2);
+}
+
+
+/* =========================================================
+   TWO COLUMNS
+========================================================= */
+
+.two-columns{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:20px;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper{
+
+    overflow-x:auto;
+
+    border-radius:16px;
+
+    border:
+        1px solid var(--border);
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    min-width:1000px;
+}
+
+th,
+td{
+
+    padding:12px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    text-align:right;
+
+    font-size:12px;
+}
+
+th{
+
+    background:
+        rgba(14,165,233,.08);
+
+    color:var(--text);
+
+    font-weight:800;
+}
+
+th:first-child,
+td:first-child{
+
+    text-align:left;
+}
+
+tr:last-child td{
+    border-bottom:0;
+}
+
+.total-row{
+
+    font-weight:850;
+
+    background:
+        rgba(251,191,36,.08);
+}
+
+.simulation-row{
+
+    background:
+        rgba(14,165,233,.035);
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    padding:5px 8px;
+
+    border-radius:999px;
+
+    font-size:10px;
+
+    font-weight:800;
+}
+
+.badge.green{
+
+    color:#166534;
+
+    background:#dcfce7;
+}
+
+.badge.red{
+
+    color:#991b1b;
+
+    background:#fee2e2;
+}
+
+.badge.yellow{
+
+    color:#854d0e;
+
+    background:#fef3c7;
+}
+
+.badge.blue{
+
+    color:#075985;
+
+    background:#e0f2fe;
+}
+
+
+/* =========================================================
+   PRIORITY
+========================================================= */
+
+.priority-list{
+
+    display:grid;
+
+    gap:9px;
+}
+
+.priority-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:13px;
+
+    border-radius:13px;
+
+    border:
+        1px solid var(--border);
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottom-nav{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:14px;
+
+    transform:translateX(-50%);
+
+    z-index:2000;
+
+    width:min(850px,94%);
+
+    padding:8px;
+
+    display:flex;
+
+    justify-content:space-around;
+
+    background:
+        rgba(15,23,42,.92);
+
+    backdrop-filter:blur(15px);
+
+    border-radius:20px;
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.25);
+}
+
+.bottom-nav button{
+
+    border:0;
+
+    background:transparent;
+
+    color:#cbd5e1;
+
+    padding:9px 12px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:12px;
+
+    font-weight:700;
+}
+
+.bottom-nav button:hover{
+
+    background:
+        rgba(255,255,255,.08);
+
+    color:white;
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast{
+
+    position:fixed;
+
+    right:20px;
+
+    bottom:85px;
+
+    z-index:5000;
+
+    padding:13px 16px;
+
+    max-width:360px;
+
+    background:#0f172a;
+
+    color:white;
+
+    border-radius:14px;
+
+    opacity:0;
+
+    transform:translateY(20px);
+
+    pointer-events:none;
+
+    transition:.25s;
+}
+
+#toast.show{
+
+    opacity:1;
+
+    transform:translateY(0);
+}
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print{
+
+    .topbar,
+    .bottom-nav,
+    .buttons,
+    .mode-selector{
+
+        display:none!important;
+    }
+
+    body{
+
+        background:white;
+
+        color:black;
+    }
+
+    .card{
+
+        box-shadow:none;
+
+        break-inside:avoid;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1100px){
+
+    .kpi-grid{
+
+        grid-template-columns:
+            repeat(3,1fr);
+    }
+
+    .form-grid{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:750px){
+
+    .two-columns{
+
+        grid-template-columns:1fr;
+    }
+
+    .mode-selector{
+
+        grid-template-columns:1fr;
+    }
+
+    .kpi-grid{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:500px){
+
+    main{
+
+        width:94%;
+
+        margin-top:15px;
+    }
+
+    .hero h2{
+
+        font-size:23px;
+    }
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .kpi-grid{
+
+        grid-template-columns:1fr 1fr;
+    }
+
+    .kpi-value{
+
+        font-size:17px;
+    }
+
+    .expense-row{
+
+        grid-template-columns:1fr 1fr;
+    }
+
+    .expense-row input:first-child{
+
+        grid-column:1 / -1;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     HEADER
+======================================================== -->
+
+<header class="topbar">
+
+<div class="topbar-inner">
+
+    <div class="brand">
+
+        <div class="logo">
+            💰
+        </div>
+
+        <div>
+
+            <h1>
+                Budget Manager FCFA
+            </h1>
+
+            <p>
+                Budget • Épargne • Dépenses • Simulation
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <button
+            class="icon-btn"
+            id="themeBtn"
+            title="Changer de thème">
+
+            🌙
+
+        </button>
+
+    </div>
+
+</div>
+
+</header>
+
+
+<!-- =======================================================
+     MAIN
+======================================================== -->
+
+<main>
+
+
+<!-- =======================================================
+     HERO
+======================================================== -->
+
+<section class="hero">
+
+    <h2>
+        📊 Pilotez votre budget intelligemment
+    </h2>
+
+    <p>
+
+        Saisissez simplement vos données pour un premier mois.
+        Ce mois devient automatiquement la <strong>base de référence</strong>
+        de la simulation. Les mois suivants sont projetés
+        proportionnellement jusqu'à décembre.
+
+    </p>
+
+
+    <div class="reference-box">
+
+        💡 <strong>Exemple :</strong>
+        si vous choisissez <strong>Août</strong> et remplissez
+        vos revenus, dépenses et épargne, l'application utilise
+        Août comme référence et simule automatiquement
+        <strong>Septembre → Décembre</strong>.
+
+        Les mois de janvier à juillet restent volontairement
+        sans données.
+
+    </div>
+
+
+    <div class="mode-selector">
+
+        <button
+            class="mode-btn active"
+            data-mode="home">
+
+            <strong>
+                🏠 Budget Maison
+            </strong>
+
+            <span>
+                Revenus • dépenses • épargne • projets
+            </span>
+
+        </button>
+
+
+        <button
+            class="mode-btn"
+            data-mode="business">
+
+            <strong>
+                🏢 Budget Entreprise
+            </strong>
+
+            <span>
+                CA • coûts • salaires • marge • BFR
+            </span>
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     DASHBOARD
+======================================================== -->
+
+<section class="card" id="dashboard">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            📈 Tableau de bord
+        </div>
+
+        <div class="card-subtitle"
+             id="dashboardSubtitle">
+
+            Saisissez votre premier mois pour commencer.
+
+        </div>
+
+    </div>
+
+    <strong id="dashboardMode">
+        🏠 Maison
+    </strong>
+
+</div>
+
+
+<div class="kpi-grid">
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            Revenus / CA
+        </div>
+
+        <div
+            class="kpi-value green"
+            id="kpiIncome">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            Dépenses
+        </div>
+
+        <div
+            class="kpi-value red"
+            id="kpiExpenses">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            Épargne
+        </div>
+
+        <div
+            class="kpi-value yellow"
+            id="kpiSavings">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div
+            class="kpi-label">
+
+            Solde
+
+        </div>
+
+        <div
+            class="kpi-value"
+            id="kpiBalance">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            Taux d'épargne
+        </div>
+
+        <div
+            class="kpi-value"
+            id="kpiSavingsRate">
+
+            0 %
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     CONFIGURATION
+======================================================== -->
+
+<section class="card" id="configuration">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            ⚙️ Mois de référence
+        </div>
+
+        <div class="card-subtitle">
+            Le premier mois renseigné devient la base de projection
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="form-grid">
+
+
+    <div class="field">
+
+        <label>
+            Mois de référence
+        </label>
+
+        <select id="month">
+
+            <option value="">
+                — Choisir le mois —
+            </option>
+
+            <option value="0">
+                Janvier
+            </option>
+
+            <option value="1">
+                Février
+            </option>
+
+            <option value="2">
+                Mars
+            </option>
+
+            <option value="3">
+                Avril
+            </option>
+
+            <option value="4">
+                Mai
+            </option>
+
+            <option value="5">
+                Juin
+            </option>
+
+            <option value="6">
+                Juillet
+            </option>
+
+            <option value="7">
+                Août
+            </option>
+
+            <option value="8">
+                Septembre
+            </option>
+
+            <option value="9">
+                Octobre
+            </option>
+
+            <option value="10">
+                Novembre
+            </option>
+
+            <option value="11">
+                Décembre
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Revenu principal / CA
+        </label>
+
+        <input
+            type="number"
+            id="income"
+            min="0"
+            step="1000"
+            placeholder="Ex. 400000">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Revenus exceptionnels
+        </label>
+
+        <input
+            type="number"
+            id="extraIncome"
+            min="0"
+            step="1000"
+            placeholder="Ex. 50000">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Objectif d'épargne
+        </label>
+
+        <input
+            type="number"
+            id="savingGoal"
+            min="0"
+            step="1000"
+            placeholder="Ex. 50000">
+
+    </div>
+
+</div>
+
+
+<div class="buttons">
+
+    <button
+        class="btn btn-primary"
+        id="applyConfig">
+
+        📊 Créer la simulation
+
+    </button>
+
+
+    <button
+        class="btn btn-secondary"
+        id="saveData">
+
+        💾 Sauvegarder
+
+    </button>
+
+
+    <button
+        class="btn btn-yellow"
+        id="printBtn">
+
+        🖨️ Imprimer
+
+    </button>
+
+</div>
+
+
+<div class="reference-box"
+     id="simulationInfo">
+
+    ⏳ Aucun mois de référence sélectionné.
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     DEPENSES
+======================================================== -->
+
+<section class="card" id="expenses">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            💳 Dépenses du mois de référence
+        </div>
+
+        <div class="card-subtitle">
+
+            Ces dépenses serviront de base à la simulation
+            des mois suivants.
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="btn btn-blue"
+        id="addExpense">
+
+        + Ajouter
+
+    </button>
+
+</div>
+
+
+<div
+    class="expense-list"
+    id="expenseList">
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     OBJECTIF EPARGNE
+======================================================== -->
+
+<section class="card">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            🎯 Simulation de l'épargne
+        </div>
+
+        <div class="card-subtitle">
+            Projection à partir du mois de référence
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="two-columns">
+
+
+    <div>
+
+        <h3>
+            💰 Épargne projetée
+        </h3>
+
+        <p
+            style="
+                color:var(--muted);
+                font-size:12px;
+                margin-top:5px;
+            "
+            id="savingProjectionText">
+
+            Aucun mois de référence.
+
+        </p>
+
+
+        <div
+            style="
+                margin-top:15px;
+                font-size:27px;
+                font-weight:850;
+            "
+            id="projectedSaving">
+
+            0 FCFA
+
+        </div>
+
+
+        <p
+            style="
+                color:var(--muted);
+                font-size:12px;
+                margin-top:5px;
+            ">
+
+            Épargne cumulée projetée jusqu'à décembre
+
+        </p>
+
+
+        <div class="progress">
+
+            <div
+                class="progress-bar"
+                id="savingProgress">
+
+            </div>
+
+        </div>
+
+
+        <p
+            style="
+                margin-top:8px;
+                color:var(--muted);
+                font-size:12px;
+            "
+            id="savingGoalText">
+
+            —
+
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h3>
+            🛟 Objectif de sécurité
+        </h3>
+
+        <p
+            style="
+                color:var(--muted);
+                font-size:12px;
+                margin-top:5px;
+            ">
+
+            Estimation basée sur les dépenses fixes
+            du mois de référence.
+
+        </p>
+
+
+        <div
+            style="
+                margin-top:15px;
+                font-size:27px;
+                font-weight:850;
+            "
+            id="emergencyTarget">
+
+            0 FCFA
+
+        </div>
+
+
+        <p
+            style="
+                color:var(--muted);
+                font-size:12px;
+                margin-top:5px;
+            "
+            id="emergencyText">
+
+            —
+
+        </p>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     PROJET
+======================================================== -->
+
+<section class="card">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            🎓 Projet financier
+        </div>
+
+        <div class="card-subtitle">
+            Définissez un objectif futur
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="form-grid">
+
+
+    <div class="field">
+
+        <label>
+            Nom du projet
+        </label>
+
+        <input
+            id="projectName"
+            placeholder="Ex. Scolarité">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Montant
+        </label>
+
+        <input
+            type="number"
+            id="projectAmount"
+            min="0"
+            placeholder="Ex. 250000">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Mois cible
+        </label>
+
+        <select id="projectMonth">
+
+            <option value="">
+                — Choisir —
+            </option>
+
+            <option value="0">
+                Janvier
+            </option>
+
+            <option value="1">
+                Février
+            </option>
+
+            <option value="2">
+                Mars
+            </option>
+
+            <option value="3">
+                Avril
+            </option>
+
+            <option value="4">
+                Mai
+            </option>
+
+            <option value="5">
+                Juin
+            </option>
+
+            <option value="6">
+                Juillet
+            </option>
+
+            <option value="7">
+                Août
+            </option>
+
+            <option value="8">
+                Septembre
+            </option>
+
+            <option value="9">
+                Octobre
+            </option>
+
+            <option value="10">
+                Novembre
+            </option>
+
+            <option value="11">
+                Décembre
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Épargne mensuelle souhaitée
+        </label>
+
+        <input
+            type="number"
+            id="projectSaving"
+            min="0"
+            placeholder="Ex. 50000">
+
+    </div>
+
+</div>
+
+
+<div class="reference-box"
+     id="projectAnalysis">
+
+    Saisissez un projet pour obtenir une estimation.
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     ENTREPRISE
+======================================================== -->
+
+<section
+    class="card"
+    id="businessSection"
+    style="display:none;">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            🏢 Analyse entreprise
+        </div>
+
+        <div class="card-subtitle">
+            Les données restent vides jusqu'à votre saisie.
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="form-grid">
+
+
+    <div class="field">
+
+        <label>
+            Nombre d'unités / ventes
+        </label>
+
+        <input
+            type="number"
+            id="salesVolume"
+            min="0"
+            placeholder="Ex. 800">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Prix moyen / unité
+        </label>
+
+        <input
+            type="number"
+            id="unitPrice"
+            min="0"
+            placeholder="Ex. 2500">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Coût variable / unité
+        </label>
+
+        <input
+            type="number"
+            id="variableCostUnit"
+            min="0"
+            placeholder="Ex. 1000">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Charges fixes
+        </label>
+
+        <input
+            type="number"
+            id="fixedBusinessCosts"
+            min="0"
+            placeholder="Ex. 265000">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Masse salariale
+        </label>
+
+        <input
+            type="number"
+            id="payroll"
+            min="0"
+            placeholder="Ex. 330000">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Délai client (jours)
+        </label>
+
+        <input
+            type="number"
+            id="customerDelay"
+            min="0"
+            placeholder="Ex. 30">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Délai fournisseur (jours)
+        </label>
+
+        <input
+            type="number"
+            id="supplierDelay"
+            min="0"
+            placeholder="Ex. 30">
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Investissement / CapEx
+        </label>
+
+        <input
+            type="number"
+            id="capex"
+            min="0"
+            placeholder="Ex. 1500000">
+
+    </div>
+
+</div>
+
+
+<div class="kpi-grid"
+     style="margin-top:18px;">
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            CA
+        </div>
+
+        <div
+            class="kpi-value"
+            id="businessRevenue">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            Coûts variables
+        </div>
+
+        <div
+            class="kpi-value"
+            id="businessVariable">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            Marge brute
+        </div>
+
+        <div
+            class="kpi-value green"
+            id="grossMargin">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            Seuil unités
+        </div>
+
+        <div
+            class="kpi-value yellow"
+            id="breakEvenUnits">
+
+            0
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-label">
+            BFR simplifié
+        </div>
+
+        <div
+            class="kpi-value red"
+            id="bfr">
+
+            0 FCFA
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     ALERTES
+======================================================== -->
+
+<section class="card">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            🚨 Analyse automatique
+        </div>
+
+        <div class="card-subtitle">
+            Résultats calculés à partir des données saisies
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="alerts"
+    id="alerts">
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     GRAPHIQUE
+======================================================== -->
+
+<section class="card">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            📊 Simulation financière
+        </div>
+
+        <div class="card-subtitle"
+             id="chartSubtitle">
+
+            Aucun mois de référence.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="chart-container">
+
+    <canvas id="budgetChart"></canvas>
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     TABLEAU
+======================================================== -->
+
+<section class="card"
+         id="annual">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            📅 Analyse à partir du mois choisi
+        </div>
+
+        <div class="card-subtitle">
+
+            Réel pour le mois de référence,
+            simulation pour les mois suivants.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+    <th>
+        Mois
+    </th>
+
+    <th>
+        Revenus
+    </th>
+
+    <th>
+        Dépenses
+    </th>
+
+    <th>
+        Épargne
+    </th>
+
+    <th>
+        Solde
+    </th>
+
+    <th>
+        Taux épargne
+    </th>
+
+    <th>
+        Type
+    </th>
+
+    <th>
+        Situation
+    </th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="annualTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     ARBITRAGE
+======================================================== -->
+
+<section class="card">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            ⚖️ Grille d'arbitrage
+        </div>
+
+        <div class="card-subtitle">
+            Organisation des dépenses
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="priority-list">
+
+    <div class="priority-item">
+
+        <span>
+            🟢 Niveau 1 — Vital / obligatoire
+        </span>
+
+        <span class="badge green">
+            À préserver
+        </span>
+
+    </div>
+
+
+    <div class="priority-item">
+
+        <span>
+            🟡 Niveau 2 — Important
+        </span>
+
+        <span class="badge yellow">
+            À optimiser
+        </span>
+
+    </div>
+
+
+    <div class="priority-item">
+
+        <span>
+            🟠 Niveau 3 — Confort
+        </span>
+
+        <span class="badge yellow">
+            À réduire
+        </span>
+
+    </div>
+
+
+    <div class="priority-item">
+
+        <span>
+            🔴 Niveau 4 — Facultatif
+        </span>
+
+        <span class="badge red">
+            À reporter si nécessaire
+        </span>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =======================================================
+     DONNEES
+======================================================== -->
+
+<section class="card"
+         id="dataSection">
+
+<div class="card-header">
+
+    <div>
+
+        <div class="card-title">
+            💾 Gestion des données
+        </div>
+
+        <div class="card-subtitle">
+            Sauvegarde locale et fichiers
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="buttons">
+
+    <button
+        class="btn btn-primary"
+        id="exportCSV">
+
+        📗 Exporter CSV
+
+    </button>
+
+
+    <button
+        class="btn btn-blue"
+        id="exportJSON">
+
+        📄 Exporter JSON
+
+    </button>
+
+
+    <button
+        class="btn btn-secondary"
+        id="importJSONBtn">
+
+        📂 Importer JSON
+
+    </button>
+
+
+    <button
+        class="btn btn-yellow"
+        id="resetBtn">
+
+        ♻️ Réinitialiser
+
+    </button>
+
+</div>
+
+
+<input
+    type="file"
+    id="jsonInput"
+    accept=".json"
+    style="display:none;">
+
+</section>
+
+
+</main>
+
+
+<!-- =======================================================
+     NAVIGATION
+======================================================== -->
+
+<nav class="bottom-nav">
+
+<button onclick="goTo('dashboard')">
+    📊 Tableau
+</button>
+
+<button onclick="goTo('configuration')">
+    ⚙️ Budget
+</button>
+
+<button onclick="goTo('expenses')">
+    💳 Dépenses
+</button>
+
+<button onclick="goTo('annual')">
+    📅 Simulation
+</button>
+
+<button onclick="goTo('dataSection')">
+    💾 Données
+</button>
+
+</nav>
+
+
+<div id="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   OUTILS
+========================================================= */
+
+const $ = id =>
+    document.getElementById(id);
+
+
+const months = [
+
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre"
+
+];
+
+
+const STORAGE_KEY =
+    "budgetManagerFCFA_v3";
+
+
+let currentMode =
+    "home";
+
+
+/*
+    IMPORTANT :
+
+    Aucun mois n'est considéré comme rempli
+    au démarrage.
+*/
+
+let referenceMonth =
+    null;
+
+
+/*
+    Liste des dépenses du mois de référence.
+    Elle commence volontairement vide.
+*/
+
+let expenses = [];
+
+
+/*
+    Données annuelles.
+
+    null = aucune donnée.
+
+    Un mois sera créé uniquement
+    lorsque l'utilisateur aura choisi
+    un mois de référence.
+*/
+
+let annualData =
+    Array.from(
+        {length:12},
+        () => null
+    );
+
+
+/* =========================================================
+   FORMATAGE
+========================================================= */
+
+function money(value){
+
+    value =
+        Number(value) || 0;
+
+
+    return new Intl.NumberFormat(
+        "fr-FR"
+    ).format(
+        Math.round(value)
+    ) + " FCFA";
+
+}
+
+
+function numberValue(id){
+
+    return Number(
+        $(id).value
+    ) || 0;
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function toast(message){
+
+    const el =
+        $("toast");
+
+
+    el.textContent =
+        message;
+
+
+    el.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                el.classList.remove(
+                    "show"
+                );
+
+            },
+            2800
+        );
+
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+const savedTheme =
+    localStorage.getItem(
+        "budgetTheme"
+    );
+
+
+if(savedTheme === "dark"){
+
+    document.body.classList.add(
+        "dark"
+    );
+
+    $("themeBtn").textContent =
+        "☀️";
+
+}
+
+
+$("themeBtn").onclick = () => {
+
+    document.body.classList.toggle(
+        "dark"
+    );
+
+
+    const dark =
+        document.body.classList.contains(
+            "dark"
+        );
+
+
+    localStorage.setItem(
+        "budgetTheme",
+        dark
+            ? "dark"
+            : "light"
+    );
+
+
+    $("themeBtn").textContent =
+        dark
+            ? "☀️"
+            : "🌙";
+
+
+    drawChart();
+
+};
+
+
+/* =========================================================
+   MODE
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".mode-btn"
+    )
+    .forEach(
+        button => {
+
+            button.onclick = () => {
+
+                document
+                    .querySelectorAll(
+                        ".mode-btn"
+                    )
+                    .forEach(
+                        b =>
+                            b.classList.remove(
+                                "active"
+                            )
+                    );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                currentMode =
+                    button.dataset.mode;
+
+
+                updateModeUI();
+
+                calculate();
+
+            };
+
+        }
+    );
+
+
+function updateModeUI(){
+
+    const home =
+        currentMode === "home";
+
+
+    $("businessSection").style.display =
+        home
+            ? "none"
+            : "block";
+
+
+    $("dashboardMode").textContent =
+        home
+            ? "🏠 Maison"
+            : "🏢 Entreprise";
+
+}
+
+
+/* =========================================================
+   DEPENSES
+========================================================= */
+
+function renderExpenses(){
+
+    const list =
+        $("expenseList");
+
+
+    list.innerHTML = "";
+
+
+    if(expenses.length === 0){
+
+        list.innerHTML = `
+
+            <div class="empty-state">
+
+                💳 Aucune dépense renseignée.
+
+                <br>
+
+                Cliquez sur
+                <strong>+ Ajouter</strong>
+                pour saisir votre première dépense.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    expenses.forEach(
+        (expense,index) => {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "expense-row";
+
+
+            row.innerHTML = `
+
+                <input
+                    value="${escapeHtml(expense.name)}"
+                    placeholder="Nom de la dépense"
+                    data-index="${index}"
+                    data-field="name"
+                >
+
+
+                <select
+                    data-index="${index}"
+                    data-field="type">
+
+                    <option value="Fixe"
+                        ${expense.type === "Fixe" ? "selected" : ""}>
+                        Fixe
+                    </option>
+
+                    <option value="Variable"
+                        ${expense.type === "Variable" ? "selected" : ""}>
+                        Variable
+                    </option>
+
+                    <option value="Épargne"
+                        ${expense.type === "Épargne" ? "selected" : ""}>
+                        Épargne
+                    </option>
+
+                    <option value="Investissement"
+                        ${expense.type === "Investissement" ? "selected" : ""}>
+                        Investissement
+                    </option>
+
+                </select>
+
+
+                <input
+                    type="number"
+                    min="0"
+                    value="${expense.planned || ""}"
+                    placeholder="Prévu"
+                    data-index="${index}"
+                    data-field="planned"
+                >
+
+
+                <input
+                    type="number"
+                    min="0"
+                    value="${expense.real || ""}"
+                    placeholder="Réel"
+                    data-index="${index}"
+                    data-field="real"
+                >
+
+
+                <button
+                    class="remove-btn"
+                    data-remove="${index}">
+
+                    ×
+
+                </button>
+
+            `;
+
+
+            list.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    list
+        .querySelectorAll(
+            "[data-field]"
+        )
+        .forEach(
+            input => {
+
+                input.addEventListener(
+                    "input",
+                    () => {
+
+                        const index =
+                            Number(
+                                input.dataset.index
+                            );
+
+
+                        const field =
+                            input.dataset.field;
+
+
+                        expenses[index][field] =
+                            (
+                                field === "planned" ||
+                                field === "real"
+                            )
+                                ? Number(
+                                    input.value
+                                ) || 0
+                                : input.value;
+
+
+                        calculate();
+
+                    }
+                );
+
+            }
+        );
+
+
+    list
+        .querySelectorAll(
+            "[data-remove]"
+        )
+        .forEach(
+            button => {
+
+                button.onclick = () => {
+
+                    expenses.splice(
+                        Number(
+                            button.dataset.remove
+                        ),
+                        1
+                    );
+
+
+                    renderExpenses();
+
+                    calculate();
+
+                };
+
+            }
+        );
+
+}
+
+
+$("addExpense").onclick = () => {
+
+    expenses.push({
+
+        name:"",
+
+        type:"Variable",
+
+        planned:0,
+
+        real:0
+
+    });
+
+
+    renderExpenses();
+
+    calculate();
+
+};
+
+
+/* =========================================================
+   HTML SAFE
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        );
+
+}
+
+
+/* =========================================================
+   DONNEES MAISON
+========================================================= */
+
+function getHomeData(){
+
+    const income =
+        numberValue(
+            "income"
+        );
+
+
+    const extra =
+        numberValue(
+            "extraIncome"
+        );
+
+
+    const totalIncome =
+        income +
+        extra;
+
+
+    const totalExpenses =
+        expenses.reduce(
+            (sum,e) =>
+                sum +
+                Number(
+                    e.real || 0
+                ),
+            0
+        );
+
+
+    const plannedExpenses =
+        expenses.reduce(
+            (sum,e) =>
+                sum +
+                Number(
+                    e.planned || 0
+                ),
+            0
+        );
+
+
+    const savingFromExpenses =
+        expenses
+            .filter(
+                e =>
+                    e.type === "Épargne"
+            )
+            .reduce(
+                (sum,e) =>
+                    sum +
+                    Number(
+                        e.real || 0
+                    ),
+                0
+            );
+
+
+    const investment =
+        expenses
+            .filter(
+                e =>
+                    e.type === "Investissement"
+            )
+            .reduce(
+                (sum,e) =>
+                    sum +
+                    Number(
+                        e.real || 0
+                    ),
+                0
+            );
+
+
+    const savingGoal =
+        numberValue(
+            "savingGoal"
+        );
+
+
+    /*
+        Si aucune dépense de type Épargne
+        n'est créée, l'objectif d'épargne
+        saisi est utilisé.
+    */
+
+    const saving =
+        savingFromExpenses > 0
+            ? savingFromExpenses
+            : savingGoal;
+
+
+    const balance =
+        totalIncome -
+        totalExpenses;
+
+
+    const savingsRate =
+        totalIncome > 0
+            ? saving /
+              totalIncome *
+              100
+            : 0;
+
+
+    const fixed =
+        expenses
+            .filter(
+                e =>
+                    e.type === "Fixe"
+            )
+            .reduce(
+                (sum,e) =>
+                    sum +
+                    Number(
+                        e.real || 0
+                    ),
+                0
+            );
+
+
+    return {
+
+        income:
+            totalIncome,
+
+        plannedExpenses,
+
+        expenses:
+            totalExpenses,
+
+        saving,
+
+        investment,
+
+        balance,
+
+        savingsRate,
+
+        fixed
+
+    };
+
+}
+
+
+/* =========================================================
+   DONNEES ENTREPRISE
+========================================================= */
+
+function getBusinessData(){
+
+    const volume =
+        numberValue(
+            "salesVolume"
+        );
+
+
+    const price =
+        numberValue(
+            "unitPrice"
+        );
+
+
+    const variableUnit =
+        numberValue(
+            "variableCostUnit"
+        );
+
+
+    const fixed =
+        numberValue(
+            "fixedBusinessCosts"
+        );
+
+
+    const payroll =
+        numberValue(
+            "payroll"
+        );
+
+
+    const customerDelay =
+        numberValue(
+            "customerDelay"
+        );
+
+
+    const supplierDelay =
+        numberValue(
+            "supplierDelay"
+        );
+
+
+    const capex =
+        numberValue(
+            "capex"
+        );
+
+
+    const revenue =
+        volume *
+        price;
+
+
+    const variable =
+        volume *
+        variableUnit;
+
+
+    const margin =
+        revenue -
+        variable;
+
+
+    const marginRate =
+        revenue > 0
+            ? margin /
+              revenue *
+              100
+            : 0;
+
+
+    const totalFixed =
+        fixed +
+        payroll;
+
+
+    const operatingResult =
+        margin -
+        totalFixed;
+
+
+    const contribution =
+        price -
+        variableUnit;
+
+
+    const breakEvenUnits =
+        contribution > 0
+            ? Math.ceil(
+                totalFixed /
+                contribution
+            )
+            : 0;
+
+
+    const breakEvenRevenue =
+        breakEvenUnits *
+        price;
+
+
+    const receivables =
+        revenue *
+        customerDelay /
+        30;
+
+
+    const supplierDebt =
+        variable *
+        supplierDelay /
+        30;
+
+
+    const bfr =
+        receivables -
+        supplierDebt;
+
+
+    return {
+
+        volume,
+
+        price,
+
+        revenue,
+
+        variable,
+
+        margin,
+
+        marginRate,
+
+        fixed,
+
+        payroll,
+
+        totalFixed,
+
+        operatingResult,
+
+        breakEvenUnits,
+
+        breakEvenRevenue,
+
+        bfr,
+
+        capex
+
+    };
+
+}
+
+
+/* =========================================================
+   CRÉATION DE LA SIMULATION
+========================================================= */
+
+function createSimulation(){
+
+    const selected =
+        $("month").value;
+
+
+    if(selected === ""){
+
+        toast(
+            "⚠️ Choisissez d'abord un mois."
+        );
+
+        return false;
+
+    }
+
+
+    referenceMonth =
+        Number(
+            selected
+        );
+
+
+    /*
+        Données du premier mois.
+    */
+
+    const homeData =
+        getHomeData();
+
+
+    const monthData = {
+
+        income:
+            homeData.income,
+
+        expenses:
+            homeData.expenses,
+
+        saving:
+            homeData.saving,
+
+        balance:
+            homeData.balance,
+
+        savingsRate:
+            homeData.savingsRate,
+
+        type:
+            "real"
+
+    };
+
+
+    annualData =
+        Array.from(
+            {length:12},
+            () => null
+        );
+
+
+    /*
+        Le mois choisi est le seul mois
+        réel au moment de la création.
+    */
+
+    annualData[
+        referenceMonth
+    ] =
+        monthData;
+
+
+    /*
+        Projection proportionnelle.
+
+        Pour chaque mois suivant,
+        on utilise les mêmes proportions
+        que le mois de référence.
+    */
+
+    for(
+        let i =
+            referenceMonth + 1;
+
+        i < 12;
+
+        i++
+    ){
+
+        annualData[i] = {
+
+            income:
+                homeData.income,
+
+            expenses:
+                homeData.expenses,
+
+            saving:
+                homeData.saving,
+
+            balance:
+                homeData.balance,
+
+            savingsRate:
+                homeData.savingsRate,
+
+            type:
+                "simulation"
+
+        };
+
+    }
+
+
+    updateSimulationInfo();
+
+    calculate();
+
+    saveSilent();
+
+    toast(
+        `📊 Simulation créée à partir de ${months[referenceMonth]}`
+    );
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   INFOS SIMULATION
+========================================================= */
+
+function updateSimulationInfo(){
+
+    if(
+        referenceMonth === null
+    ){
+
+        $("simulationInfo").innerHTML = `
+
+            ⏳ Aucun mois de référence sélectionné.
+
+        `;
+
+        return;
+
+    }
+
+
+    if(
+        referenceMonth === 11
+    ){
+
+        $("simulationInfo").innerHTML = `
+
+            📌 <strong>Décembre</strong> est votre mois
+            de référence.
+
+            <br>
+
+            Il n'y a aucun mois suivant à simuler.
+
+        `;
+
+        return;
+
+    }
+
+
+    $("simulationInfo").innerHTML = `
+
+        📌 <strong>${months[referenceMonth]}</strong>
+        est le mois réel de référence.
+
+        <br>
+
+        🔮 Les mois
+        <strong>${months[referenceMonth + 1]} → Décembre</strong>
+        sont simulés proportionnellement aux données
+        du mois de référence.
+
+    `;
+
+}
+
+
+/* =========================================================
+   CALCUL GENERAL
+========================================================= */
+
+function calculate(){
+
+    if(
+        currentMode === "home"
+    ){
+
+        calculateHome();
+
+    }else{
+
+        calculateBusiness();
+
+    }
+
+
+    renderAnnualTable();
+
+    renderProjection();
+
+    renderAlerts();
+
+    renderProjectAnalysis();
+
+    drawChart();
+
+}
+
+
+/* =========================================================
+   CALCUL MAISON
+========================================================= */
+
+function calculateHome(){
+
+    const data =
+        getHomeData();
+
+
+    $("kpiIncome").textContent =
+        money(
+            data.income
+        );
+
+
+    $("kpiExpenses").textContent =
+        money(
+            data.expenses
+        );
+
+
+    $("kpiSavings").textContent =
+        money(
+            data.saving
+        );
+
+
+    $("kpiBalance").textContent =
+        money(
+            data.balance
+        );
+
+
+    $("kpiSavingsRate").textContent =
+        data.savingsRate.toFixed(
+            1
+        ) + " %";
+
+
+    $("kpiBalance").className =
+        "kpi-value " +
+        (
+            data.balance >= 0
+                ? "green"
+                : "red"
+        );
+
+
+    if(
+        referenceMonth === null
+    ){
+
+        $("dashboardSubtitle").textContent =
+            "Saisissez votre premier mois pour commencer.";
+
+    }else{
+
+        $("dashboardSubtitle").textContent =
+
+            `Référence : ${months[referenceMonth]} • ` +
+            `projection jusqu'à décembre`;
+
+    }
+
+
+    /*
+        Matelas de sécurité :
+
+        6 mois de charges fixes.
+    */
+
+    const emergencyTarget =
+        data.fixed *
+        6;
+
+
+    $("emergencyTarget").textContent =
+        money(
+            emergencyTarget
+        );
+
+
+    const accumulated =
+        data.saving;
+
+
+    const percentage =
+        emergencyTarget > 0
+            ? Math.min(
+                100,
+                accumulated /
+                emergencyTarget *
+                100
+            )
+            : 0;
+
+
+    $("emergencyText").textContent =
+        emergencyTarget > 0
+
+            ? `${money(accumulated)} sur ${money(emergencyTarget)} • ${percentage.toFixed(1)} %`
+
+            : "Ajoutez des charges fixes pour calculer cet objectif.";
+
+}
+
+
+/* =========================================================
+   CALCUL ENTREPRISE
+========================================================= */
+
+function calculateBusiness(){
+
+    const data =
+        getBusinessData();
+
+
+    $("kpiIncome").textContent =
+        money(
+            data.revenue
+        );
+
+
+    $("kpiExpenses").textContent =
+        money(
+            data.variable +
+            data.totalFixed
+        );
+
+
+    $("kpiSavings").textContent =
+        money(
+            data.capex
+        );
+
+
+    $("kpiBalance").textContent =
+        money(
+            data.operatingResult
+        );
+
+
+    $("kpiSavingsRate").textContent =
+        data.marginRate.toFixed(
+            1
+        ) + " %";
+
+
+    $("kpiBalance").className =
+        "kpi-value " +
+        (
+            data.operatingResult >= 0
+                ? "green"
+                : "red"
+        );
+
+
+    $("businessRevenue").textContent =
+        money(
+            data.revenue
+        );
+
+
+    $("businessVariable").textContent =
+        money(
+            data.variable
+        );
+
+
+    $("grossMargin").textContent =
+        money(
+            data.margin
+        ) +
+        ` (${data.marginRate.toFixed(1)}%)`;
+
+
+    $("breakEvenUnits").textContent =
+        data.breakEvenUnits.toLocaleString(
+            "fr-FR"
+        );
+
+
+    $("bfr").textContent =
+        money(
+            data.bfr
+        );
+
+}
+
+
+/* =========================================================
+   PROJECTION EPARGNE / DEPENSES
+========================================================= */
+
+function renderProjection(){
+
+    if(
+        referenceMonth === null
+    ){
+
+        $("projectedSaving").textContent =
+            "0 FCFA";
+
+
+        $("savingProjectionText").textContent =
+            "Choisissez un mois de référence.";
+
+
+        $("savingGoalText").textContent =
+            "—";
+
+
+        $("savingProgress").style.width =
+            "0%";
+
+
+        return;
+
+    }
+
+
+    let totalSaving = 0;
+    let totalExpenses = 0;
+
+
+    for(
+        let i =
+            referenceMonth;
+
+        i < 12;
+
+        i++
+    ){
+
+        const data =
+            annualData[i];
+
+
+        if(!data){
+
+            continue;
+
+        }
+
+
+        totalSaving +=
+            Number(
+                data.saving || 0
+            );
+
+
+        totalExpenses +=
+            Number(
+                data.expenses || 0
+            );
+
+    }
+
+
+    const numberOfMonths =
+        12 -
+        referenceMonth;
+
+
+    const monthlySaving =
+        annualData[
+            referenceMonth
+        ]?.saving || 0;
+
+
+    const monthlyExpenses =
+        annualData[
+            referenceMonth
+        ]?.expenses || 0;
+
+
+    const goal =
+        numberValue(
+            "savingGoal"
+        ) *
+        numberOfMonths;
+
+
+    $("projectedSaving").textContent =
+        money(
+            totalSaving
+        );
+
+
+    $("savingProjectionText").textContent =
+
+        `${numberOfMonths} mois analysés • ` +
+        `${money(monthlySaving)} d'épargne mensuelle simulée`;
+
+
+
+    if(goal > 0){
+
+        const percent =
+            Math.min(
+                100,
+                totalSaving /
+                goal *
+                100
+            );
+
+
+        $("savingProgress").style.width =
+            percent + "%";
+
+
+        $("savingGoalText").textContent =
+
+            `${money(totalSaving)} / ${money(goal)} ` +
+            `(${percent.toFixed(1)} %)`;
+
+    }else{
+
+        $("savingProgress").style.width =
+            "0%";
+
+
+        $("savingGoalText").textContent =
+            "Saisissez un objectif d'épargne.";
+
+    }
+
+
+    /*
+        Matelas d'urgence.
+    */
+
+    const fixedExpenses =
+        expenses
+            .filter(
+                e =>
+                    e.type === "Fixe"
+            )
+            .reduce(
+                (sum,e) =>
+                    sum +
+                    Number(
+                        e.real || 0
+                    ),
+                0
+            );
+
+
+    const emergencyTarget =
+        fixedExpenses *
+        6;
+
+
+    $("emergencyTarget").textContent =
+        money(
+            emergencyTarget
+        );
+
+
+    if(
+        emergencyTarget > 0
+    ){
+
+        const percentage =
+            Math.min(
+                100,
+                totalSaving /
+                emergencyTarget *
+                100
+            );
+
+
+        $("emergencyText").textContent =
+
+            `${money(totalSaving)} accumulés projetés • ` +
+            `${percentage.toFixed(1)} % de l'objectif de 6 mois`;
+
+    }else{
+
+        $("emergencyText").textContent =
+            "Ajoutez des dépenses fixes.";
+
+    }
+
+}
+
+
+/* =========================================================
+   TABLEAU ANNUEL
+========================================================= */
+
+function renderAnnualTable(){
+
+    const tbody =
+        $("annualTable");
+
+
+    tbody.innerHTML = "";
+
+
+    if(
+        referenceMonth === null
+    ){
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="8"
+                    style="text-align:center;padding:30px;">
+
+                    ⏳ Choisissez un mois et saisissez
+                    vos données pour générer la simulation.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    let totalSaving = 0;
+    let totalBalance = 0;
+
+
+    for(
+        let i =
+            0;
+
+        i < 12;
+
+        i++
+    ){
+
+        /*
+            Les mois précédents au mois choisi
+            restent volontairement vides.
+        */
+
+        if(
+            i < referenceMonth
+        ){
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${months[i]}
+                </td>
+
+                <td colspan="7"
+                    style="
+                        text-align:center;
+                        color:var(--muted);
+                    ">
+
+                    —
+                    Non analysé
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                tr
+            );
+
+
+            continue;
+
+        }
+
+
+        const data =
+            annualData[i];
+
+
+        if(!data){
+
+            continue;
+
+        }
+
+
+        const income =
+            Number(
+                data.income || 0
+            );
+
+
+        const expense =
+            Number(
+                data.expenses || 0
+            );
+
+
+        const saving =
+            Number(
+                data.saving || 0
+            );
+
+
+        const balance =
+            Number(
+                data.balance || 0
+            );
+
+
+        const rate =
+            income > 0
+                ? saving /
+                  income *
+                  100
+                : 0;
+
+
+        totalIncome +=
+            income;
+
+
+        totalExpenses +=
+            expense;
+
+
+        totalSaving +=
+            saving;
+
+
+        totalBalance +=
+            balance;
+
+
+        const tr =
+            document.createElement(
+                "tr"
+            );
+
+
+        if(
+            data.type === "simulation"
+        ){
+
+            tr.className =
+                "simulation-row";
+
+        }
+
+
+        tr.innerHTML = `
+
+            <td>
+                <strong>
+                    ${months[i]}
+                </strong>
+            </td>
+
+            <td>
+                ${money(income)}
+            </td>
+
+            <td>
+                ${money(expense)}
+            </td>
+
+            <td>
+                ${money(saving)}
+            </td>
+
+            <td>
+                ${money(balance)}
+            </td>
+
+            <td>
+                ${rate.toFixed(1)} %
+            </td>
+
+            <td>
+
+                ${
+                    data.type === "real"
+
+                        ? `
+                            <span class="badge green">
+                                RÉEL
+                            </span>
+                        `
+
+                        : `
+                            <span class="badge blue">
+                                SIMULATION
+                            </span>
+                        `
+                }
+
+            </td>
+
+            <td>
+
+                <span class="badge ${
+                    balance >= 0
+                        ? "green"
+                        : "red"
+                }">
+
+                    ${
+                        balance >= 0
+                            ? "Positif"
+                            : "Déficitaire"
+                    }
+
+                </span>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(
+            tr
+        );
+
+    }
+
+
+    const totalRow =
+        document.createElement(
+            "tr"
+        );
+
+
+    totalRow.className =
+        "total-row";
+
+
+    const annualRate =
+        totalIncome > 0
+            ? totalSaving /
+              totalIncome *
+              100
+            : 0;
+
+
+    totalRow.innerHTML = `
+
+        <td>
+            TOTAL ANALYSÉ
+        </td>
+
+        <td>
+            ${money(totalIncome)}
+        </td>
+
+        <td>
+            ${money(totalExpenses)}
+        </td>
+
+        <td>
+            ${money(totalSaving)}
+        </td>
+
+        <td>
+            ${money(totalBalance)}
+        </td>
+
+        <td>
+            ${annualRate.toFixed(1)} %
+        </td>
+
+        <td>
+            🔮
+        </td>
+
+        <td>
+            ${
+                totalBalance >= 0
+                    ? "🟢"
+                    : "🔴"
+            }
+        </td>
+
+    `;
+
+
+    tbody.appendChild(
+        totalRow
+    );
+
+}
+
+
+/* =========================================================
+   ALERTES
+========================================================= */
+
+function renderAlerts(){
+
+    const container =
+        $("alerts");
+
+
+    container.innerHTML = "";
+
+
+    if(
+        referenceMonth === null
+    ){
+
+        addAlert(
+            "info",
+            "ℹ️ Sélectionnez un mois et renseignez vos données pour commencer l'analyse."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        currentMode === "home"
+    ){
+
+        const data =
+            getHomeData();
+
+
+        if(
+            data.income <= 0
+        ){
+
+            addAlert(
+                "warning",
+                "🟡 Aucun revenu n'a encore été renseigné."
+            );
+
+        }
+
+
+        if(
+            data.balance < 0
+        ){
+
+            addAlert(
+                "danger",
+                "🔴 Les dépenses dépassent les revenus du mois de référence."
+            );
+
+        }
+
+
+        if(
+            data.savingsRate < 10 &&
+            data.income > 0
+        ){
+
+            addAlert(
+                "warning",
+                "🟡 Le taux d'épargne de référence est inférieur à 10 %."
+            );
+
+        }
+
+
+        if(
+            data.expenses >
+            data.income * .7 &&
+            data.income > 0
+        ){
+
+            addAlert(
+                "warning",
+                "⚠️ Les dépenses représentent plus de 70 % des revenus."
+            );
+
+        }
+
+
+        if(
+            data.balance >= 0 &&
+            data.income > 0
+        ){
+
+            addAlert(
+                "success",
+                "🟢 Le mois de référence présente un solde positif."
+            );
+
+        }
+
+
+        const numberOfMonths =
+            12 -
+            referenceMonth;
+
+
+        if(
+            numberOfMonths > 1
+        ){
+
+            addAlert(
+                "info",
+                `🔮 ${numberOfMonths - 1} mois seront simulés à partir de ${months[referenceMonth]}.`
+            );
+
+        }
+
+    }else{
+
+        const data =
+            getBusinessData();
+
+
+        if(
+            data.revenue <= 0
+        ){
+
+            addAlert(
+                "warning",
+                "🟡 Les données commerciales ne sont pas encore renseignées."
+            );
+
+            return;
+
+        }
+
+
+        if(
+            data.operatingResult < 0
+        ){
+
+            addAlert(
+                "danger",
+                "🔴 Le résultat opérationnel calculé est négatif."
+            );
+
+        }
+
+
+        if(
+            data.revenue <
+            data.breakEvenRevenue
+        ){
+
+            addAlert(
+                "warning",
+                "⚠️ Le chiffre d'affaires est inférieur au seuil de rentabilité calculé."
+            );
+
+        }
+
+
+        if(
+            data.operatingResult >= 0
+        ){
+
+            addAlert(
+                "success",
+                "🟢 Le résultat opérationnel calculé est positif."
+            );
+
+        }
+
+    }
+
+}
+
+
+function addAlert(
+    type,
+    text
+){
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.className =
+        `alert ${type}`;
+
+
+    div.textContent =
+        text;
+
+
+    $("alerts").appendChild(
+        div
+    );
+
+}
+
+
+/* =========================================================
+   ANALYSE PROJET
+========================================================= */
+
+function renderProjectAnalysis(){
+
+    const name =
+        $("projectName").value.trim();
+
+
+    const amount =
+        numberValue(
+            "projectAmount"
+        );
+
+
+    const targetMonthValue =
+        $("projectMonth").value;
+
+
+    const savingPerMonth =
+        numberValue(
+            "projectSaving"
+        );
+
+
+    const box =
+        $("projectAnalysis");
+
+
+    if(
+        !name ||
+        amount <= 0 ||
+        targetMonthValue === ""
+    ){
+
+        box.innerHTML = `
+
+            Saisissez le nom, le montant et le mois cible
+            pour obtenir une estimation.
+
+        `;
+
+        return;
+
+    }
+
+
+    const targetMonth =
+        Number(
+            targetMonthValue
+        );
+
+
+    if(
+        referenceMonth === null
+    ){
+
+        box.innerHTML = `
+
+            ⚠️ Choisissez d'abord un mois de référence.
+
+        `;
+
+        return;
+
+    }
+
+
+    if(
+        targetMonth <
+        referenceMonth
+    ){
+
+        box.innerHTML = `
+
+            ⚠️ Le mois cible est situé avant le mois
+            de référence. Choisissez une date ultérieure.
+
+        `;
+
+        return;
+
+    }
+
+
+    const monthsAvailable =
+        targetMonth -
+        referenceMonth +
+        1;
+
+
+    const neededPerMonth =
+        amount /
+        monthsAvailable;
+
+
+    const selectedSaving =
+        savingPerMonth > 0
+            ? savingPerMonth
+            : neededPerMonth;
+
+
+    const estimatedTotal =
+        selectedSaving *
+        monthsAvailable;
+
+
+    const possible =
+        estimatedTotal >= amount;
+
+
+    box.innerHTML = `
+
+        🎯 <strong>${escapeHtml(name)}</strong>
+
+        <br><br>
+
+        Montant :
+        <strong>${money(amount)}</strong>
+
+        <br>
+
+        Période :
+        <strong>
+            ${months[referenceMonth]}
+            → ${months[targetMonth]}
+        </strong>
+
+        <br>
+
+        Épargne nécessaire :
+        <strong>
+            ${money(neededPerMonth)} / mois
+        </strong>
+
+        <br>
+
+        Avec votre objectif :
+        <strong>
+            ${money(selectedSaving)} / mois
+        </strong>
+
+        <br><br>
+
+        ${
+            possible
+
+                ? `
+                    <span class="badge green">
+                        🟢 Objectif théoriquement atteignable
+                    </span>
+                `
+
+                : `
+                    <span class="badge red">
+                        🔴 Objectif à renforcer
+                    </span>
+                `
+        }
+
+    `;
+
+}
+
+
+/* =========================================================
+   GRAPHIQUE
+========================================================= */
+
+function drawChart(){
+
+    const canvas =
+        $("budgetChart");
+
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    if(
+        !rect.width
+    ){
+
+        return;
+
+    }
+
+
+    const dpr =
+        window.devicePixelRatio ||
+        1;
+
+
+    canvas.width =
+        rect.width *
+        dpr;
+
+
+    canvas.height =
+        rect.height *
+        dpr;
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+
+    const width =
+        rect.width;
+
+
+    const height =
+        rect.height;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const dark =
+        document.body.classList.contains(
+            "dark"
+        );
+
+
+    const textColor =
+        dark
+            ? "#cbd5e1"
+            : "#102a43";
+
+
+    const gridColor =
+        dark
+            ? "rgba(148,163,184,.15)"
+            : "rgba(8,126,164,.12)";
+
+
+    if(
+        referenceMonth === null
+    ){
+
+        ctx.fillStyle =
+            textColor;
+
+
+        ctx.font =
+            "15px system-ui";
+
+
+        ctx.textAlign =
+            "center";
+
+
+        ctx.fillText(
+            "Choisissez un mois pour générer la simulation",
+            width / 2,
+            height / 2
+        );
+
+
+        return;
+
+    }
+
+
+    const data =
+        [];
+
+
+    for(
+        let i =
+            referenceMonth;
+
+        i < 12;
+
+        i++
+    ){
+
+        const item =
+            annualData[i];
+
+
+        if(
+            !item
+        ){
+
+            continue;
+
+        }
+
+
+        data.push({
+
+            month:
+                months[i],
+
+            income:
+                Number(
+                    item.income || 0
+                ),
+
+            expenses:
+                Number(
+                    item.expenses || 0
+                ),
+
+            saving:
+                Number(
+                    item.saving || 0
+                ),
+
+            balance:
+                Number(
+                    item.balance || 0
+                )
+
+        });
+
+    }
+
+
+    if(
+        data.length === 0
+    ){
+
+        return;
+
+    }
+
+
+    const maxValue =
+        Math.max(
+            1,
+            ...data.flatMap(
+                d => [
+                    d.income,
+                    d.expenses,
+                    d.saving
+                ]
+            )
+        );
+
+
+    const left =
+        60;
+
+
+    const right =
+        20;
+
+
+    const top =
+        30;
+
+
+    const bottom =
+        45;
+
+
+    const chartWidth =
+        width -
+        left -
+        right;
+
+
+    const chartHeight =
+        height -
+        top -
+        bottom;
+
+
+    /*
+        Grille
+    */
+
+    ctx.strokeStyle =
+        gridColor;
+
+
+    ctx.lineWidth =
+        1;
+
+
+    for(
+        let i = 0;
+
+        i <= 5;
+
+        i++
+    ){
+
+        const y =
+            top +
+            chartHeight -
+            (
+                chartHeight *
+                i /
+                5
+            );
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            left,
+            y
+        );
+
+        ctx.lineTo(
+            width - right,
+            y
+        );
+
+        ctx.stroke();
+
+
+        ctx.fillStyle =
+            textColor;
+
+
+        ctx.font =
+            "10px system-ui";
+
+
+        ctx.textAlign =
+            "right";
+
+
+        const label =
+            maxValue *
+            i /
+            5;
+
+
+        ctx.fillText(
+            compactMoney(
+                label
+            ),
+            left - 8,
+            y + 3
+        );
+
+    }
+
+
+    const step =
+        chartWidth /
+        data.length;
+
+
+    drawLine(
+        data.map(
+            d => d.income
+        ),
+        "#0ea5e9"
+    );
+
+
+    drawLine(
+        data.map(
+            d => d.expenses
+        ),
+        "#dc2626"
+    );
+
+
+    drawLine(
+        data.map(
+            d => d.saving
+        ),
+        "#f59e0b"
+    );
+
+
+    /*
+        Labels
+    */
+
+    ctx.fillStyle =
+        textColor;
+
+
+    ctx.font =
+        "10px system-ui";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    data.forEach(
+        (d,index) => {
+
+            const x =
+                left +
+                step *
+                index +
+                step / 2;
+
+
+            ctx.fillText(
+                d.month.substring(
+                    0,
+                    3
+                ),
+                x,
+                height - 15
+            );
+
+        }
+    );
+
+
+    /*
+        Légende
+    */
+
+    const legend = [
+
+        [
+            "Revenus",
+            "#0ea5e9"
+        ],
+
+        [
+            "Dépenses",
+            "#dc2626"
+        ],
+
+        [
+            "Épargne",
+            "#f59e0b"
+        ]
+
+    ];
+
+
+    let legendX =
+        left;
+
+
+    legend.forEach(
+        item => {
+
+            ctx.fillStyle =
+                item[1];
+
+
+            ctx.fillRect(
+                legendX,
+                8,
+                10,
+                10
+            );
+
+
+            ctx.fillStyle =
+                textColor;
+
+
+            ctx.textAlign =
+                "left";
+
+
+            ctx.fillText(
+                item[0],
+                legendX + 15,
+                17
+            );
+
+
+            legendX += 85;
+
+        }
+    );
+
+
+    function drawLine(
+        values,
+        color
+    ){
+
+        ctx.beginPath();
+
+
+        values.forEach(
+            (value,index) => {
+
+                const x =
+                    left +
+                    step *
+                    index +
+                    step / 2;
+
+
+                const y =
+                    top +
+                    chartHeight -
+                    (
+                        value /
+                        maxValue *
+                        chartHeight
+                    );
+
+
+                if(
+                    index === 0
+                ){
+
+                    ctx.moveTo(
+                        x,
+                        y
+                    );
+
+                }else{
+
+                    ctx.lineTo(
+                        x,
+                        y
+                    );
+
+                }
+
+            }
+        );
+
+
+        ctx.strokeStyle =
+            color;
+
+
+        ctx.lineWidth =
+            3;
+
+
+        ctx.stroke();
+
+
+        values.forEach(
+            (value,index) => {
+
+                const x =
+                    left +
+                    step *
+                    index +
+                    step / 2;
+
+
+                const y =
+                    top +
+                    chartHeight -
+                    (
+                        value /
+                        maxValue *
+                        chartHeight
+                    );
+
+
+                ctx.beginPath();
+
+
+                ctx.arc(
+                    x,
+                    y,
+                    4,
+                    0,
+                    Math.PI * 2
+                );
+
+
+                ctx.fillStyle =
+                    color;
+
+
+                ctx.fill();
+
+            }
+        );
+
+    }
+
+
+    $("chartSubtitle").textContent =
+
+        `Analyse ${months[referenceMonth]} → Décembre • ` +
+        `base réelle + projections`;
+
+}
+
+
+function compactMoney(
+    value
+){
+
+    if(
+        value >= 1000000
+    ){
+
+        return (
+            value /
+            1000000
+        ).toFixed(1) +
+        " M";
+
+    }
+
+
+    if(
+        value >= 1000
+    ){
+
+        return (
+            value /
+            1000
+        ).toFixed(0) +
+        " k";
+
+    }
+
+
+    return Math.round(
+        value
+    ).toString();
+
+}
+
+
+window.addEventListener(
+    "resize",
+    drawChart
+);
+
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+$("applyConfig").onclick =
+    createSimulation;
+
+
+/*
+    Si l'utilisateur change de mois,
+    on recharge les données existantes
+    de ce mois lorsqu'elles existent.
+*/
+
+$("month").addEventListener(
+    "change",
+    () => {
+
+        const value =
+            $("month").value;
+
+
+        if(
+            value === ""
+        ){
+
+            return;
+
+        }
+
+
+        const selected =
+            Number(
+                value
+            );
+
+
+        /*
+            Si ce mois existe déjà comme
+            référence, on affiche ses données.
+        */
+
+        if(
+            annualData[selected]
+        ){
+
+            const data =
+                annualData[selected];
+
+
+            $("income").value =
+                data.income || "";
+
+
+            $("extraIncome").value =
+                "";
+
+
+            $("savingGoal").value =
+                data.saving || "";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ECOUTE DES CHAMPS
+========================================================= */
+
+[
+    "income",
+    "extraIncome",
+    "savingGoal",
+    "projectName",
+    "projectAmount",
+    "projectMonth",
+    "projectSaving",
+    "salesVolume",
+    "unitPrice",
+    "variableCostUnit",
+    "fixedBusinessCosts",
+    "payroll",
+    "customerDelay",
+    "supplierDelay",
+    "capex"
+]
+.forEach(
+    id => {
+
+        $(id).addEventListener(
+            "input",
+            calculate
+        );
+
+
+        $(id).addEventListener(
+            "change",
+            calculate
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SAUVEGARDE
+========================================================= */
+
+function collectData(){
+
+    return {
+
+        version:
+            3,
+
+        application:
+            "Budget Manager FCFA",
+
+        date:
+            new Date().toISOString(),
+
+        mode:
+            currentMode,
+
+        referenceMonth,
+
+        expenses,
+
+        annualData,
+
+        configuration:{
+
+            month:
+                $("month").value,
+
+            income:
+                $("income").value,
+
+            extraIncome:
+                $("extraIncome").value,
+
+            savingGoal:
+                $("savingGoal").value
+
+        },
+
+        project:{
+
+            name:
+                $("projectName").value,
+
+            amount:
+                $("projectAmount").value,
+
+            month:
+                $("projectMonth").value,
+
+            saving:
+                $("projectSaving").value
+
+        },
+
+        business:{
+
+            salesVolume:
+                $("salesVolume").value,
+
+            unitPrice:
+                $("unitPrice").value,
+
+            variableCostUnit:
+                $("variableCostUnit").value,
+
+            fixedBusinessCosts:
+                $("fixedBusinessCosts").value,
+
+            payroll:
+                $("payroll").value,
+
+            customerDelay:
+                $("customerDelay").value,
+
+            supplierDelay:
+                $("supplierDelay").value,
+
+            capex:
+                $("capex").value
+
+        }
+
+    };
+
+}
+
+
+function saveSilent(){
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(
+            collectData()
+        )
+    );
+
+}
+
+
+$("saveData").onclick = () => {
+
+    saveSilent();
+
+    toast(
+        "💾 Données sauvegardées localement."
+    );
+
+};
+
+
+/* =========================================================
+   CHARGEMENT
+========================================================= */
+
+function loadFromLocal(){
+
+    try{
+
+        const raw =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+
+        if(
+            !raw
+        ){
+
+            return;
+
+        }
+
+
+        const data =
+            JSON.parse(
+                raw
+            );
+
+
+        /*
+            Mode
+        */
+
+        currentMode =
+            data.mode ||
+            "home";
+
+
+        document
+            .querySelectorAll(
+                ".mode-btn"
+            )
+            .forEach(
+                button => {
+
+                    button.classList.toggle(
+                        "active",
+                        button.dataset.mode ===
+                        currentMode
+                    );
+
+                }
+            );
+
+
+        /*
+            Mois de référence
+        */
+
+        referenceMonth =
+            data.referenceMonth !== null &&
+            data.referenceMonth !== undefined
+
+                ? Number(
+                    data.referenceMonth
+                )
+
+                : null;
+
+
+        /*
+            Dépenses
+        */
+
+        expenses =
+            Array.isArray(
+                data.expenses
+            )
+                ? data.expenses
+                : [];
+
+
+        /*
+            Données annuelles
+        */
+
+        annualData =
+            Array.isArray(
+                data.annualData
+            )
+
+                ? data.annualData
+
+                : Array.from(
+                    {length:12},
+                    () => null
+                );
+
+
+        /*
+            Configuration
+        */
+
+        if(
+            data.configuration
+        ){
+
+            $("month").value =
+                data.configuration.month ||
+                "";
+
+
+            $("income").value =
+                data.configuration.income ||
+                "";
+
+
+            $("extraIncome").value =
+                data.configuration.extraIncome ||
+                "";
+
+
+            $("savingGoal").value =
+                data.configuration.savingGoal ||
+                "";
+
+        }
+
+
+        /*
+            Projet
+        */
+
+        if(
+            data.project
+        ){
+
+            $("projectName").value =
+                data.project.name ||
+                "";
+
+
+            $("projectAmount").value =
+                data.project.amount ||
+                "";
+
+
+            $("projectMonth").value =
+                data.project.month ||
+                "";
+
+
+            $("projectSaving").value =
+                data.project.saving ||
+                "";
+
+        }
+
+
+        /*
+            Entreprise
+        */
+
+        if(
+            data.business
+        ){
+
+            $("salesVolume").value =
+                data.business.salesVolume ||
+                "";
+
+
+            $("unitPrice").value =
+                data.business.unitPrice ||
+                "";
+
+
+            $("variableCostUnit").value =
+                data.business.variableCostUnit ||
+                "";
+
+
+            $("fixedBusinessCosts").value =
+                data.business.fixedBusinessCosts ||
+                "";
+
+
+            $("payroll").value =
+                data.business.payroll ||
+                "";
+
+
+            $("customerDelay").value =
+                data.business.customerDelay ||
+                "";
+
+
+            $("supplierDelay").value =
+                data.business.supplierDelay ||
+                "";
+
+
+            $("capex").value =
+                data.business.capex ||
+                "";
+
+        }
+
+
+        updateModeUI();
+
+        updateSimulationInfo();
+
+    }catch(error){
+
+        console.error(
+            "Erreur chargement :",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EXPORT JSON
+========================================================= */
+
+$("exportJSON").onclick = () => {
+
+    const data =
+        collectData();
+
+
+    const json =
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
+
+
+    downloadFile(
+        json,
+        "budget-manager-fcfa.json",
+        "application/json"
+    );
+
+
+    toast(
+        "📄 JSON exporté."
+    );
+
+};
+
+
+/* =========================================================
+   IMPORT JSON
+========================================================= */
+
+$("importJSONBtn").onclick = () => {
+
+    $("jsonInput").click();
+
+};
+
+
+$("jsonInput").addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files[0];
+
+
+        if(
+            !file
+        ){
+
+            return;
+
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            () => {
+
+                try{
+
+                    const data =
+                        JSON.parse(
+                            reader.result
+                        );
+
+
+                    localStorage.setItem(
+                        STORAGE_KEY,
+                        JSON.stringify(
+                            data
+                        )
+                    );
+
+
+                    location.reload();
+
+                }catch(error){
+
+                    alert(
+                        "Le fichier JSON est invalide."
+                    );
+
+                }
+
+            };
+
+
+        reader.readAsText(
+            file
+        );
+
+    }
+);
+
+
+/* =========================================================
+   EXPORT CSV
+========================================================= */
+
+$("exportCSV").onclick = () => {
+
+    if(
+        referenceMonth === null
+    ){
+
+        toast(
+            "⚠️ Créez d'abord une simulation."
+        );
+
+        return;
+
+    }
+
+
+    const rows = [
+
+        [
+            "Mois",
+            "Revenus",
+            "Dépenses",
+            "Épargne",
+            "Solde",
+            "Taux épargne",
+            "Type"
+        ]
+
+    ];
+
+
+    for(
+        let i =
+            referenceMonth;
+
+        i < 12;
+
+        i++
+    ){
+
+        const data =
+            annualData[i];
+
+
+        if(
+            !data
+        ){
+
+            continue;
+
+        }
+
+
+        rows.push([
+
+            months[i],
+
+            Number(
+                data.income || 0
+            ),
+
+            Number(
+                data.expenses || 0
+            ),
+
+            Number(
+                data.saving || 0
+            ),
+
+            Number(
+                data.balance || 0
+            ),
+
+            Number(
+                data.savingsRate || 0
+            ).toFixed(2) + " %",
+
+            data.type === "real"
+                ? "RÉEL"
+                : "SIMULATION"
+
+        ]);
+
+    }
+
+
+    const csv =
+        rows
+            .map(
+                row =>
+                    row
+                        .map(
+                            value =>
+                                `"${String(value)
+                                    .replaceAll(
+                                        '"',
+                                        '""'
+                                    )}"`
+                        )
+                        .join(";")
+            )
+            .join("\n");
+
+
+    downloadFile(
+        "\uFEFF" + csv,
+        "budget-manager-fcfa.csv",
+        "text/csv;charset=utf-8"
+    );
+
+
+    toast(
+        "📗 CSV exporté."
+    );
+
+};
+
+
+/* =========================================================
+   TELECHARGEMENT
+========================================================= */
+
+function downloadFile(
+    content,
+    filename,
+    type
+){
+
+    const blob =
+        new Blob(
+            [content],
+            {
+                type
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        filename;
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(
+                url
+            ),
+        1000
+    );
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+$("resetBtn").onclick = () => {
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment effacer toutes les données ?"
+        );
+
+
+    if(
+        !confirmation
+    ){
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
+
+
+    location.reload();
+
+};
+
+
+/* =========================================================
+   IMPRESSION
+========================================================= */
+
+$("printBtn").onclick = () => {
+
+    window.print();
+
+};
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function goTo(id){
+
+    if(
+        id === "annual"
+    ){
+
+        $("annual")
+            ?.scrollIntoView({
+                behavior:"smooth"
+            });
+
+        return;
+
+    }
+
+
+    $(id)
+        ?.scrollIntoView({
+            behavior:"smooth"
+        });
+
+}
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+loadFromLocal();
+
+renderExpenses();
+
+updateModeUI();
+
+updateSimulationInfo();
+
+calculate();
+
+
+/*
+    Actualisation automatique
+*/
+
+setInterval(
+    () => {
+
+        calculate();
+
+    },
+    30000
+);
+
+</script>
+
+</body>
+
+</html>

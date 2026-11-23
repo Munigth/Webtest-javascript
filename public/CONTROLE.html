@@ -1,0 +1,3861 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<meta
+    name="theme-color"
+    content="#ffffff"
+>
+
+<title>LocalConnect</title>
+
+<style>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+:root {
+
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+
+    --text: #111827;
+    --muted: #6b7280;
+
+    --border: #e5e7eb;
+
+    --primary: #2563eb;
+    --primary2: #1d4ed8;
+
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+
+    --shadow:
+        0 8px 25px rgba(0,0,0,.08);
+
+    --nav-height: 68px;
+
+}
+
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+body.dark {
+
+    --bg: #000000;
+
+    --surface: #0b0b0b;
+
+    --surface2: #151515;
+
+    --text: #f5f5f5;
+
+    --muted: #a1a1aa;
+
+    --border: #27272a;
+
+    --shadow:
+        0 8px 25px rgba(0,0,0,.5);
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+* {
+
+    box-sizing: border-box;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+html {
+
+    scroll-behavior: smooth;
+
+}
+
+
+body {
+
+    font-family:
+        Inter,
+        Roboto,
+        Arial,
+        sans-serif;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+    min-height: 100vh;
+
+    padding-bottom:
+        calc(
+            var(--nav-height)
+            +
+            env(safe-area-inset-bottom)
+        );
+
+}
+
+
+button,
+input,
+textarea,
+select {
+
+    font: inherit;
+
+}
+
+
+button {
+
+    border: none;
+
+    cursor: pointer;
+
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 50;
+
+    height: 60px;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--surface) 94%,
+            transparent
+        );
+
+    backdrop-filter:
+        blur(15px);
+
+    border-bottom:
+        1px solid var(--border);
+
+}
+
+
+.header-inner {
+
+    max-width: 700px;
+
+    height: 100%;
+
+    margin: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 15px;
+
+}
+
+
+.logo {
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+}
+
+
+.logo span {
+
+    color: var(--primary);
+
+}
+
+
+.header-actions {
+
+    display: flex;
+
+    gap: 8px;
+
+}
+
+
+.icon-btn {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 50%;
+
+    background: var(--surface2);
+
+    color: var(--text);
+
+    display: grid;
+
+    place-items: center;
+
+    font-size: 19px;
+
+    transition: .2s;
+
+}
+
+
+.icon-btn:active {
+
+    transform: scale(.9);
+
+}
+
+
+/* =====================================================
+   APP
+===================================================== */
+
+.app {
+
+    max-width: 700px;
+
+    margin: auto;
+
+}
+
+
+.page {
+
+    display: none;
+
+}
+
+
+.page.active {
+
+    display: block;
+
+}
+
+
+/* =====================================================
+   FEED
+===================================================== */
+
+.feed {
+
+    padding-bottom: 20px;
+
+}
+
+
+.post {
+
+    background: var(--surface);
+
+    border-bottom:
+        1px solid var(--border);
+
+    position: relative;
+
+}
+
+
+.post-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 13px 15px;
+
+}
+
+
+.avatar {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #7c3aed
+        );
+
+    color: white;
+
+    display: grid;
+
+    place-items: center;
+
+    font-weight: bold;
+
+}
+
+
+.user-info {
+
+    flex: 1;
+
+}
+
+
+.username {
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+}
+
+
+.post-time {
+
+    font-size: 11px;
+
+    color: var(--muted);
+
+    margin-top: 2px;
+
+}
+
+
+.post-text {
+
+    padding:
+        0 15px 13px;
+
+    line-height: 1.5;
+
+}
+
+
+.media {
+
+    position: relative;
+
+    width: 100%;
+
+    background: #000;
+
+    overflow: hidden;
+
+}
+
+
+.media img,
+.media video {
+
+    display: block;
+
+    width: 100%;
+
+    max-height: 700px;
+
+    object-fit: cover;
+
+}
+
+
+.media.vertical img,
+.media.vertical video {
+
+    aspect-ratio: 9 / 16;
+
+    object-fit: cover;
+
+}
+
+
+.media audio {
+
+    width: 100%;
+
+    padding: 20px;
+
+}
+
+
+.post-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 17px;
+
+    padding: 12px 15px 5px;
+
+}
+
+
+.action {
+
+    background: transparent;
+
+    color: var(--text);
+
+    font-size: 23px;
+
+    transition: .2s;
+
+}
+
+
+.action:active {
+
+    transform: scale(.8);
+
+}
+
+
+.action.liked {
+
+    color: var(--red);
+
+}
+
+
+.likes {
+
+    padding:
+        0 15px 12px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* =====================================================
+   DOUBLE CLICK HEART
+===================================================== */
+
+.heart-animation {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.2);
+
+    font-size: 100px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+}
+
+
+.heart-animation.show {
+
+    animation:
+        heartPop .8s ease forwards;
+
+}
+
+
+@keyframes heartPop {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.2);
+
+    }
+
+    25% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.2);
+
+    }
+
+    70% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.4);
+
+    }
+
+}
+
+
+/* =====================================================
+   BOTTOM NAVIGATION
+===================================================== */
+
+.bottom-nav {
+
+    position: fixed;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    height:
+        calc(
+            var(--nav-height)
+            +
+            env(safe-area-inset-bottom)
+        );
+
+    padding-bottom:
+        env(safe-area-inset-bottom);
+
+    background:
+        color-mix(
+            in srgb,
+            var(--surface) 96%,
+            transparent
+        );
+
+    backdrop-filter:
+        blur(20px);
+
+    border-top:
+        1px solid var(--border);
+
+    display: flex;
+
+    justify-content: center;
+
+    z-index: 100;
+
+}
+
+
+.bottom-inner {
+
+    width: 100%;
+
+    max-width: 700px;
+
+    display: flex;
+
+    justify-content: space-around;
+
+}
+
+
+.nav-item {
+
+    flex: 1;
+
+    background: transparent;
+
+    color: var(--muted);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 3px;
+
+    font-size: 21px;
+
+}
+
+
+.nav-item span {
+
+    font-size: 10px;
+
+}
+
+
+.nav-item.active {
+
+    color: var(--primary);
+
+}
+
+
+/* =====================================================
+   CREATE
+===================================================== */
+
+.create-container {
+
+    padding: 20px 15px;
+
+}
+
+
+.card {
+
+    background: var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    margin-bottom: 15px;
+
+    box-shadow: var(--shadow);
+
+}
+
+
+.card-title {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    margin-bottom: 15px;
+
+}
+
+
+textarea,
+.text-input {
+
+    width: 100%;
+
+    border:
+        1px solid var(--border);
+
+    background: var(--surface2);
+
+    color: var(--text);
+
+    border-radius: 13px;
+
+    padding: 13px;
+
+    outline: none;
+
+    resize: vertical;
+
+}
+
+
+textarea {
+
+    min-height: 110px;
+
+}
+
+
+textarea:focus,
+.text-input:focus {
+
+    border-color: var(--primary);
+
+}
+
+
+.media-picker {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap: 10px;
+
+    margin-top: 15px;
+
+}
+
+
+.media-option {
+
+    min-height: 75px;
+
+    border-radius: 14px;
+
+    background: var(--surface2);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    color: var(--text);
+
+}
+
+
+.media-option span {
+
+    font-size: 12px;
+
+}
+
+
+.preview {
+
+    margin-top: 15px;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    background: #000;
+
+}
+
+
+.preview img,
+.preview video {
+
+    width: 100%;
+
+    max-height: 500px;
+
+    object-fit: contain;
+
+}
+
+
+.publish-btn {
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    padding: 14px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--primary2)
+        );
+
+    color: white;
+
+    font-weight: 700;
+
+}
+
+
+/* =====================================================
+   CHAT
+===================================================== */
+
+.chat {
+
+    height:
+        calc(
+            100vh
+            -
+            128px
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.chat-header {
+
+    padding: 15px;
+
+    background: var(--surface);
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-weight: 700;
+
+}
+
+
+.messages {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 15px;
+
+}
+
+
+.message {
+
+    max-width: 78%;
+
+    padding: 10px 13px;
+
+    border-radius: 17px;
+
+    margin-bottom: 8px;
+
+    line-height: 1.4;
+
+    animation:
+        messageIn .2s ease;
+
+}
+
+
+@keyframes messageIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.message.received {
+
+    background: var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-bottom-left-radius: 5px;
+
+}
+
+
+.message.sent {
+
+    background: var(--primary);
+
+    color: white;
+
+    margin-left: auto;
+
+    border-bottom-right-radius: 5px;
+
+}
+
+
+.message-time {
+
+    font-size: 9px;
+
+    opacity: .65;
+
+    margin-top: 4px;
+
+}
+
+
+.chat-input {
+
+    display: flex;
+
+    gap: 8px;
+
+    padding: 10px;
+
+    background: var(--surface);
+
+    border-top:
+        1px solid var(--border);
+
+}
+
+
+.chat-input input {
+
+    flex: 1;
+
+    border:
+        1px solid var(--border);
+
+    background: var(--surface2);
+
+    color: var(--text);
+
+    border-radius: 25px;
+
+    padding:
+        12px 15px;
+
+    outline: none;
+
+}
+
+
+.send-btn {
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+
+    color: white;
+
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+.profile {
+
+    padding: 20px 15px;
+
+}
+
+
+.profile-head {
+
+    text-align: center;
+
+    padding: 20px;
+
+}
+
+
+.profile-avatar {
+
+    width: 90px;
+
+    height: 90px;
+
+    border-radius: 50%;
+
+    margin: auto auto 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #9333ea
+        );
+
+    display: grid;
+
+    place-items: center;
+
+    color: white;
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+}
+
+
+.stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+.stat {
+
+    text-align: center;
+
+}
+
+
+.stat strong {
+
+    display: block;
+
+    font-size: 20px;
+
+}
+
+
+.stat span {
+
+    font-size: 11px;
+
+    color: var(--muted);
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+.search {
+
+    padding: 15px;
+
+}
+
+
+.search-input {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border-radius: 15px;
+
+    border:
+        1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    outline: none;
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+.toast {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 90px;
+
+    transform:
+        translateX(-50%)
+        translateY(20px);
+
+    background: #111827;
+
+    color: white;
+
+    padding:
+        12px 18px;
+
+    border-radius: 30px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: .3s;
+
+    z-index: 200;
+
+}
+
+
+.toast.show {
+
+    opacity: 1;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+
+}
+
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+.storage-bar {
+
+    height: 10px;
+
+    background: var(--surface2);
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+}
+
+
+.storage-fill {
+
+    height: 100%;
+
+    background: var(--primary);
+
+    width: 0%;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(min-width:700px) {
+
+    body {
+
+        background:
+            linear-gradient(
+                90deg,
+                #eef2ff,
+                var(--bg),
+                #eef2ff
+            );
+
+    }
+
+    body.dark {
+
+        background: #000;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+<div class="header-inner">
+
+    <div class="logo">
+        Local<span>Connect</span>
+    </div>
+
+    <div class="header-actions">
+
+        <button
+            class="icon-btn"
+            onclick="toggleDarkMode()"
+        >
+            🌙
+        </button>
+
+        <button
+            class="icon-btn"
+            onclick="showStorageInfo()"
+        >
+            💾
+        </button>
+
+    </div>
+
+</div>
+
+</header>
+
+
+<!-- =====================================================
+     APP
+===================================================== -->
+
+<main class="app">
+
+
+<!-- =====================================================
+     HOME
+===================================================== -->
+
+<section
+    id="home"
+    class="page active"
+>
+
+<div id="feed" class="feed"></div>
+
+</section>
+
+
+<!-- =====================================================
+     SEARCH
+===================================================== -->
+
+<section
+    id="search"
+    class="page"
+>
+
+<div class="search">
+
+    <input
+        id="searchInput"
+        class="search-input"
+        placeholder="🔎 Rechercher..."
+        oninput="searchPosts()"
+    >
+
+</div>
+
+<div id="searchResults"></div>
+
+</section>
+
+
+<!-- =====================================================
+     CREATE
+===================================================== -->
+
+<section
+    id="create"
+    class="page"
+>
+
+<div class="create-container">
+
+<div class="card">
+
+<div class="card-title">
+    ➕ Nouvelle publication
+</div>
+
+<textarea
+    id="postText"
+    placeholder="Que voulez-vous partager ?"
+></textarea>
+
+
+<div class="media-picker">
+
+<label class="media-option">
+
+    📷
+    <span>Photo</span>
+
+    <input
+        type="file"
+        accept="image/*"
+        hidden
+        onchange="selectMedia(event)"
+    >
+
+</label>
+
+
+<label class="media-option">
+
+    🎥
+    <span>Vidéo</span>
+
+    <input
+        type="file"
+        accept="video/*"
+        hidden
+        onchange="selectMedia(event)"
+    >
+
+</label>
+
+
+<label class="media-option">
+
+    🎵
+    <span>Audio</span>
+
+    <input
+        type="file"
+        accept="audio/*"
+        hidden
+        onchange="selectMedia(event)"
+    >
+
+</label>
+
+
+<button
+    class="media-option"
+    onclick="startAudioRecording()"
+>
+
+    🎙️
+    <span>Enregistrer</span>
+
+</button>
+
+</div>
+
+
+<div
+    id="mediaPreview"
+    class="preview"
+    style="display:none"
+></div>
+
+
+<button
+    class="publish-btn"
+    onclick="publishPost()"
+>
+
+    🚀 Publier localement
+
+</button>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+    📡 Réseau
+</div>
+
+<div id="localNetworkInfo">
+
+    Analyse du réseau local...
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     CHAT
+===================================================== -->
+
+<section
+    id="messages"
+    class="page"
+>
+
+<div class="chat">
+
+<div class="chat-header">
+
+    💬 Messagerie locale
+
+    <small
+        id="chatStatus"
+        style="
+            display:block;
+            color:var(--muted);
+            margin-top:3px;
+        "
+    >
+        Réseau local
+
+    </small>
+
+</div>
+
+
+<div
+    id="messagesList"
+    class="messages"
+></div>
+
+
+<div class="chat-input">
+
+<input
+    id="messageInput"
+    placeholder="Écrire un message..."
+    onkeydown="
+        if(event.key === 'Enter')
+            sendMessage()
+    "
+>
+
+
+<button
+    class="send-btn"
+    onclick="sendMessage()"
+>
+    ➤
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<section
+    id="profile"
+    class="page"
+>
+
+<div class="profile">
+
+<div class="card">
+
+<div class="profile-head">
+
+<div class="profile-avatar">
+    LC
+</div>
+
+<h2 id="profileName">
+    Utilisateur
+</h2>
+
+<p
+    style="
+        color:var(--muted);
+        margin-top:5px;
+    "
+>
+    Communication locale
+</p>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<strong id="postCount">
+    0
+</strong>
+
+<span>
+    Publications
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<strong id="messageCount">
+    0
+</strong>
+
+<span>
+    Messages
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<strong>
+    📡
+</strong>
+
+<span>
+    Local
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+    👤 Profil
+</div>
+
+<input
+    id="profileInput"
+    class="text-input"
+    placeholder="Votre nom"
+>
+
+<br><br>
+
+<button
+    class="publish-btn"
+    onclick="saveProfile()"
+>
+    💾 Enregistrer
+</button>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+    💾 Stockage local
+</div>
+
+<div id="storageText">
+    Calcul...
+</div>
+
+<br>
+
+<div class="storage-bar">
+
+<div
+    id="storageFill"
+    class="storage-fill"
+></div>
+
+</div>
+
+<br>
+
+<button
+    class="publish-btn"
+    style="background:var(--red)"
+    onclick="clearAllData()"
+>
+    🗑️ Supprimer mes données
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+</main>
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="bottom-nav">
+
+<div class="bottom-inner">
+
+
+<button
+    class="nav-item active"
+    data-page="home"
+>
+
+    🏠
+    <span>Accueil</span>
+
+</button>
+
+
+<button
+    class="nav-item"
+    data-page="search"
+>
+
+    🔎
+    <span>Recherche</span>
+
+</button>
+
+
+<button
+    class="nav-item"
+    data-page="create"
+>
+
+    ➕
+    <span>Créer</span>
+
+</button>
+
+
+<button
+    class="nav-item"
+    data-page="messages"
+>
+
+    💬
+    <span>Messages</span>
+
+</button>
+
+
+<button
+    class="nav-item"
+    data-page="profile"
+>
+
+    👤
+    <span>Profil</span>
+
+</button>
+
+
+</div>
+
+</nav>
+
+
+<div
+    id="toast"
+    class="toast"
+>
+    Message
+</div>
+
+
+<script>
+
+/* =====================================================
+   CONFIGURATION
+===================================================== */
+
+const DB_NAME =
+    "LocalConnectDB";
+
+const DB_VERSION =
+    1;
+
+let db;
+
+let selectedMedia = null;
+
+let mediaURL = null;
+
+let mediaRecorder = null;
+
+let audioChunks = [];
+
+
+/* =====================================================
+   INDEXED DB
+===================================================== */
+
+function openDatabase() {
+
+    return new Promise(
+        (resolve,reject) => {
+
+            const request =
+                indexedDB.open(
+                    DB_NAME,
+                    DB_VERSION
+                );
+
+            request.onupgradeneeded =
+                event => {
+
+                    const database =
+                        event.target.result;
+
+                    if (
+                        !database.objectStoreNames.contains(
+                            "posts"
+                        )
+                    ) {
+
+                        database.createObjectStore(
+                            "posts",
+                            {
+                                keyPath: "id",
+                                autoIncrement: true
+                            }
+                        );
+
+                    }
+
+                    if (
+                        !database.objectStoreNames.contains(
+                            "messages"
+                        )
+                    ) {
+
+                        database.createObjectStore(
+                            "messages",
+                            {
+                                keyPath: "id",
+                                autoIncrement: true
+                            }
+                        );
+
+                    }
+
+                };
+
+
+            request.onsuccess =
+                event => {
+
+                    db =
+                        event.target.result;
+
+                    resolve(db);
+
+                };
+
+
+            request.onerror =
+                () => reject(
+                    request.error
+                );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   DATABASE HELPERS
+===================================================== */
+
+function addData(
+    storeName,
+    data
+) {
+
+    return new Promise(
+        (resolve,reject) => {
+
+            const transaction =
+                db.transaction(
+                    storeName,
+                    "readwrite"
+                );
+
+            const store =
+                transaction.objectStore(
+                    storeName
+                );
+
+            const request =
+                store.add(data);
+
+            request.onsuccess =
+                () => resolve(
+                    request.result
+                );
+
+            request.onerror =
+                () => reject(
+                    request.error
+                );
+
+        }
+    );
+
+}
+
+
+function getAllData(
+    storeName
+) {
+
+    return new Promise(
+        (resolve,reject) => {
+
+            const transaction =
+                db.transaction(
+                    storeName,
+                    "readonly"
+                );
+
+            const request =
+                transaction
+                    .objectStore(storeName)
+                    .getAll();
+
+            request.onsuccess =
+                () => resolve(
+                    request.result
+                );
+
+            request.onerror =
+                () => reject(
+                    request.error
+                );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+document
+    .querySelectorAll(".nav-item")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                document
+                    .querySelectorAll(
+                        ".nav-item"
+                    )
+                    .forEach(
+                        item =>
+                            item.classList.remove(
+                                "active"
+                            )
+                    );
+
+
+                document
+                    .querySelectorAll(
+                        ".page"
+                    )
+                    .forEach(
+                        page =>
+                            page.classList.remove(
+                                "active"
+                            )
+                    );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                document
+                    .getElementById(
+                        button.dataset.page
+                    )
+                    .classList.add(
+                        "active"
+                    );
+
+
+                if (
+                    button.dataset.page ===
+                    "home"
+                ) {
+
+                    renderFeed();
+
+                }
+
+
+                if (
+                    button.dataset.page ===
+                    "messages"
+                ) {
+
+                    renderMessages();
+
+                }
+
+
+                if (
+                    button.dataset.page ===
+                    "profile"
+                ) {
+
+                    updateProfile();
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   MEDIA SELECTION
+===================================================== */
+
+function selectMedia(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) return;
+
+    selectedMedia = file;
+
+    const preview =
+        document.getElementById(
+            "mediaPreview"
+        );
+
+    preview.innerHTML = "";
+
+    preview.style.display =
+        "block";
+
+
+    mediaURL =
+        URL.createObjectURL(file);
+
+
+    if (
+        file.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        const img =
+            document.createElement(
+                "img"
+            );
+
+        img.src =
+            mediaURL;
+
+        preview.appendChild(img);
+
+    }
+
+
+    else if (
+        file.type.startsWith(
+            "video/"
+        )
+    ) {
+
+        const video =
+            document.createElement(
+                "video"
+            );
+
+        video.src =
+            mediaURL;
+
+        video.controls =
+            true;
+
+        video.muted =
+            true;
+
+        preview.appendChild(video);
+
+    }
+
+
+    else if (
+        file.type.startsWith(
+            "audio/"
+        )
+    ) {
+
+        const audio =
+            document.createElement(
+                "audio"
+            );
+
+        audio.src =
+            mediaURL;
+
+        audio.controls =
+            true;
+
+        preview.appendChild(audio);
+
+    }
+
+}
+
+
+/* =====================================================
+   COMPRESSION IMAGE
+===================================================== */
+
+function compressImage(
+    file,
+    maxWidth = 1280,
+    quality = .78
+) {
+
+    return new Promise(
+        resolve => {
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                event => {
+
+                    const img =
+                        new Image();
+
+                    img.onload =
+                        () => {
+
+                            let width =
+                                img.width;
+
+                            let height =
+                                img.height;
+
+
+                            if (
+                                width >
+                                maxWidth
+                            ) {
+
+                                height =
+                                    height *
+                                    maxWidth /
+                                    width;
+
+                                width =
+                                    maxWidth;
+
+                            }
+
+
+                            const canvas =
+                                document
+                                    .createElement(
+                                        "canvas"
+                                    );
+
+                            canvas.width =
+                                width;
+
+                            canvas.height =
+                                height;
+
+
+                            const ctx =
+                                canvas.getContext(
+                                    "2d"
+                                );
+
+                            ctx.drawImage(
+                                img,
+                                0,
+                                0,
+                                width,
+                                height
+                            );
+
+
+                            canvas.toBlob(
+                                blob =>
+                                    resolve(
+                                        blob
+                                    ),
+                                "image/jpeg",
+                                quality
+                            );
+
+                        };
+
+
+                    img.src =
+                        event.target.result;
+
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   PUBLISH
+===================================================== */
+
+async function publishPost() {
+
+    const text =
+        document
+            .getElementById(
+                "postText"
+            )
+            .value
+            .trim();
+
+
+    if (
+        !text &&
+        !selectedMedia
+    ) {
+
+        showToast(
+            "Ajoutez du texte ou un média."
+        );
+
+        return;
+
+    }
+
+
+    let mediaBlob =
+        null;
+
+    let mediaType =
+        null;
+
+
+    if (selectedMedia) {
+
+        mediaType =
+            selectedMedia.type;
+
+
+        if (
+            selectedMedia.type.startsWith(
+                "image/"
+            )
+        ) {
+
+            mediaBlob =
+                await compressImage(
+                    selectedMedia
+                );
+
+        }
+
+        else {
+
+            mediaBlob =
+                selectedMedia;
+
+        }
+
+    }
+
+
+    const profile =
+        localStorage.getItem(
+            "localconnect_profile"
+        ) ||
+        "Utilisateur";
+
+
+    const post = {
+
+        author:
+            profile,
+
+        text,
+
+        media:
+            mediaBlob,
+
+        mediaType,
+
+        date:
+            Date.now(),
+
+        likes:
+            0,
+
+        liked:
+            false
+
+    };
+
+
+    try {
+
+        await addData(
+            "posts",
+            post
+        );
+
+
+        document
+            .getElementById(
+                "postText"
+            )
+            .value = "";
+
+
+        selectedMedia =
+            null;
+
+
+        document
+            .getElementById(
+                "mediaPreview"
+            )
+            .style.display =
+            "none";
+
+
+        showToast(
+            "Publication enregistrée sur l'appareil."
+        );
+
+
+        renderFeed();
+
+        updateProfile();
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        showToast(
+            "Erreur de stockage."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   FEED
+===================================================== */
+
+async function renderFeed(
+    postsOverride = null
+) {
+
+    const feed =
+        document.getElementById(
+            "feed"
+        );
+
+
+    let posts =
+        postsOverride;
+
+
+    if (!posts) {
+
+        posts =
+            await getAllData(
+                "posts"
+            );
+
+    }
+
+
+    posts =
+        posts.reverse();
+
+
+    if (!posts.length) {
+
+        feed.innerHTML = `
+
+            <div
+                class="card"
+                style="
+                    margin:20px;
+                    text-align:center;
+                "
+            >
+
+                <div style="font-size:50px">
+                    📡
+                </div>
+
+                <h2>
+                    Bienvenue sur LocalConnect
+                </h2>
+
+                <p
+                    style="
+                        color:var(--muted);
+                        margin-top:8px;
+                    "
+                >
+                    Créez votre première publication.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    feed.innerHTML = "";
+
+
+    for (
+        const post of posts
+    ) {
+
+        const article =
+            document.createElement(
+                "article"
+            );
+
+        article.className =
+            "post";
+
+
+        const header =
+            document.createElement(
+                "div"
+            );
+
+        header.className =
+            "post-header";
+
+
+        header.innerHTML = `
+
+            <div class="avatar">
+                ${(
+                    post.author ||
+                    "U"
+                )[0].toUpperCase()}
+            </div>
+
+            <div class="user-info">
+
+                <div class="username">
+                    ${escapeHTML(
+                        post.author ||
+                        "Utilisateur"
+                    )}
+                </div>
+
+                <div class="post-time">
+                    ${formatDate(
+                        post.date
+                    )}
+                </div>
+
+            </div>
+
+            <button
+                class="icon-btn"
+                onclick="deletePost(${post.id})"
+            >
+                ⋯
+            </button>
+
+        `;
+
+
+        article.appendChild(
+            header
+        );
+
+
+        if (post.text) {
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+            text.className =
+                "post-text";
+
+            text.textContent =
+                post.text;
+
+            article.appendChild(
+                text
+            );
+
+        }
+
+
+        if (post.media) {
+
+            const media =
+                document.createElement(
+                    "div"
+                );
+
+            media.className =
+                "media";
+
+
+            const url =
+                URL.createObjectURL(
+                    post.media
+                );
+
+
+            if (
+                post.mediaType
+                    ?.startsWith(
+                        "image/"
+                    )
+            ) {
+
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+                img.src =
+                    url;
+
+                img.loading =
+                    "lazy";
+
+
+                media.appendChild(
+                    img
+                );
+
+            }
+
+
+            else if (
+                post.mediaType
+                    ?.startsWith(
+                        "video/"
+                    )
+            ) {
+
+                const video =
+                    document.createElement(
+                        "video"
+                    );
+
+                video.src =
+                    url;
+
+                video.controls =
+                    true;
+
+                video.muted =
+                    true;
+
+                video.playsInline =
+                    true;
+
+                video.preload =
+                    "metadata";
+
+
+                media.appendChild(
+                    video
+                );
+
+            }
+
+
+            else if (
+                post.mediaType
+                    ?.startsWith(
+                        "audio/"
+                    )
+            ) {
+
+                const audio =
+                    document.createElement(
+                        "audio"
+                    );
+
+                audio.src =
+                    url;
+
+                audio.controls =
+                    true;
+
+                media.appendChild(
+                    audio
+                );
+
+            }
+
+
+            const heart =
+                document.createElement(
+                    "div"
+                );
+
+            heart.className =
+                "heart-animation";
+
+            heart.textContent =
+                "❤️";
+
+            media.appendChild(
+                heart
+            );
+
+
+            let lastClick = 0;
+
+
+            media.addEventListener(
+                "click",
+                () => {
+
+                    const now =
+                        Date.now();
+
+
+                    if (
+                        now -
+                        lastClick <
+                        350
+                    ) {
+
+                        likePost(
+                            post
+                        );
+
+                        heart.classList.remove(
+                            "show"
+                        );
+
+                        void heart.offsetWidth;
+
+                        heart.classList.add(
+                            "show"
+                        );
+
+                    }
+
+
+                    lastClick =
+                        now;
+
+                }
+            );
+
+
+            article.appendChild(
+                media
+            );
+
+        }
+
+
+        const actions =
+            document.createElement(
+                "div"
+            );
+
+        actions.className =
+            "post-actions";
+
+
+        const likeButton =
+            document.createElement(
+                "button"
+            );
+
+        likeButton.className =
+            "action " +
+            (
+                post.liked
+                    ? "liked"
+                    : ""
+            );
+
+        likeButton.innerHTML =
+            post.liked
+                ? "❤️"
+                : "♡";
+
+
+        likeButton.onclick =
+            () => {
+
+                likePost(
+                    post
+                );
+
+            };
+
+
+        actions.appendChild(
+            likeButton
+        );
+
+
+        const commentButton =
+            document.createElement(
+                "button"
+            );
+
+        commentButton.className =
+            "action";
+
+        commentButton.textContent =
+            "💬";
+
+        commentButton.onclick =
+            () => {
+
+                showToast(
+                    "Commentaires : prochaine version"
+                );
+
+            };
+
+
+        actions.appendChild(
+            commentButton
+        );
+
+
+        const shareButton =
+            document.createElement(
+                "button"
+            );
+
+        shareButton.className =
+            "action";
+
+        shareButton.textContent =
+            "📤";
+
+        shareButton.onclick =
+            () => {
+
+                sharePost(
+                    post
+                );
+
+            };
+
+
+        actions.appendChild(
+            shareButton
+        );
+
+
+        article.appendChild(
+            actions
+        );
+
+
+        const likes =
+            document.createElement(
+                "div"
+            );
+
+        likes.className =
+            "likes";
+
+        likes.textContent =
+            `${post.likes || 0} J'aime`;
+
+
+        article.appendChild(
+            likes
+        );
+
+
+        feed.appendChild(
+            article
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LIKE
+===================================================== */
+
+async function likePost(
+    post
+) {
+
+    post.liked =
+        !post.liked;
+
+
+    post.likes =
+        Math.max(
+            0,
+            (post.likes || 0)
+            +
+            (
+                post.liked
+                    ? 1
+                    : -1
+            )
+        );
+
+
+    const transaction =
+        db.transaction(
+            "posts",
+            "readwrite"
+        );
+
+
+    transaction
+        .objectStore("posts")
+        .put(post);
+
+
+    renderFeed();
+
+}
+
+
+/* =====================================================
+   DELETE POST
+===================================================== */
+
+function deletePost(
+    id
+) {
+
+    if (
+        !confirm(
+            "Supprimer cette publication ?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const transaction =
+        db.transaction(
+            "posts",
+            "readwrite"
+        );
+
+
+    transaction
+        .objectStore("posts")
+        .delete(id);
+
+
+    transaction.oncomplete =
+        () => {
+
+            renderFeed();
+
+            showToast(
+                "Publication supprimée."
+            );
+
+        };
+
+}
+
+
+/* =====================================================
+   SHARE
+===================================================== */
+
+async function sharePost(
+    post
+) {
+
+    const text =
+        post.text ||
+        "Publication LocalConnect";
+
+
+    if (
+        navigator.share
+    ) {
+
+        try {
+
+            await navigator.share({
+                title:
+                    "LocalConnect",
+                text
+            });
+
+        }
+
+        catch {
+
+        }
+
+    }
+
+    else {
+
+        try {
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+            showToast(
+                "Texte copié."
+            );
+
+        }
+
+        catch {
+
+            showToast(
+                "Partage non disponible."
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   CHAT
+===================================================== */
+
+async function sendMessage() {
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+
+    const text =
+        input.value.trim();
+
+
+    if (!text) return;
+
+
+    const profile =
+        localStorage.getItem(
+            "localconnect_profile"
+        ) ||
+        "Utilisateur";
+
+
+    await addData(
+        "messages",
+        {
+
+            sender:
+                profile,
+
+            text,
+
+            date:
+                Date.now(),
+
+            sent:
+                true
+
+        }
+    );
+
+
+    input.value =
+        "";
+
+
+    renderMessages();
+
+}
+
+
+async function renderMessages() {
+
+    const container =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    const messages =
+        await getAllData(
+            "messages"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (!messages.length) {
+
+        container.innerHTML = `
+
+            <div
+                class="empty"
+                style="
+                    text-align:center;
+                    color:var(--muted);
+                    padding:50px 20px;
+                "
+            >
+
+                💬
+
+                <br><br>
+
+                Aucun message.
+
+                <br>
+
+                Commencez une conversation locale.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    messages.forEach(
+        message => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "message " +
+                (
+                    message.sent
+                        ? "sent"
+                        : "received"
+                );
+
+
+            div.innerHTML = `
+
+                ${escapeHTML(
+                    message.text
+                )}
+
+                <div
+                    class="message-time"
+                >
+                    ${formatDate(
+                        message.date
+                    )}
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                div
+            );
+
+        }
+    );
+
+
+    container.scrollTop =
+        container.scrollHeight;
+
+}
+
+
+/* =====================================================
+   AUDIO RECORDING
+===================================================== */
+
+async function startAudioRecording() {
+
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        showToast(
+            "Microphone non disponible."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+
+        audioChunks = [];
+
+
+        mediaRecorder =
+            new MediaRecorder(
+                stream
+            );
+
+
+        mediaRecorder.ondataavailable =
+            event => {
+
+                if (
+                    event.data.size > 0
+                ) {
+
+                    audioChunks.push(
+                        event.data
+                    );
+
+                }
+
+            };
+
+
+        mediaRecorder.onstop =
+            () => {
+
+                const blob =
+                    new Blob(
+                        audioChunks,
+                        {
+                            type:
+                                "audio/webm"
+                        }
+                    );
+
+
+                selectedMedia =
+                    new File(
+                        [blob],
+                        "message-audio.webm",
+                        {
+                            type:
+                                "audio/webm"
+                        }
+                    );
+
+
+                const preview =
+                    document.getElementById(
+                        "mediaPreview"
+                    );
+
+
+                preview.style.display =
+                    "block";
+
+
+                preview.innerHTML = `
+                    <audio
+                        controls
+                        src="${URL.createObjectURL(blob)}"
+                    ></audio>
+                `;
+
+
+                stream
+                    .getTracks()
+                    .forEach(
+                        track =>
+                            track.stop()
+                    );
+
+
+                showToast(
+                    "Enregistrement terminé."
+                );
+
+            };
+
+
+        mediaRecorder.start();
+
+
+        showToast(
+            "🎙️ Enregistrement... cliquez à nouveau pour arrêter."
+        );
+
+
+        setTimeout(
+            () => {
+
+                if (
+                    mediaRecorder &&
+                    mediaRecorder.state ===
+                    "recording"
+                ) {
+
+                    mediaRecorder.stop();
+
+                }
+
+            },
+            10000
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        showToast(
+            "Accès au microphone refusé."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+async function searchPosts() {
+
+    const query =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const posts =
+        await getAllData(
+            "posts"
+        );
+
+
+    const results =
+        posts.filter(
+            post =>
+                (
+                    post.text ||
+                    ""
+                )
+                .toLowerCase()
+                .includes(
+                    query
+                )
+                ||
+                (
+                    post.author ||
+                    ""
+                )
+                .toLowerCase()
+                .includes(
+                    query
+                )
+
+        );
+
+
+    const container =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (!query) return;
+
+
+    if (!results.length) {
+
+        container.innerHTML = `
+
+            <div
+                class="card"
+                style="
+                    margin:15px;
+                    text-align:center;
+                "
+            >
+                Aucun résultat.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    await renderSearchResults(
+        results,
+        container
+    );
+
+}
+
+
+async function renderSearchResults(
+    posts,
+    container
+) {
+
+    for (
+        const post of posts
+    ) {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+        card.className =
+            "card";
+
+
+        card.innerHTML = `
+
+            <strong>
+                ${escapeHTML(
+                    post.author
+                )}
+            </strong>
+
+            <p style="margin-top:8px">
+                ${escapeHTML(
+                    post.text ||
+                    ""
+                )}
+            </p>
+
+        `;
+
+
+        container.appendChild(
+            card
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+function saveProfile() {
+
+    const name =
+        document
+            .getElementById(
+                "profileInput"
+            )
+            .value
+            .trim();
+
+
+    if (!name) {
+
+        showToast(
+            "Entrez un nom."
+        );
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "localconnect_profile",
+        name
+    );
+
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        name;
+
+
+    showToast(
+        "Profil enregistré."
+    );
+
+}
+
+
+async function updateProfile() {
+
+    const name =
+        localStorage.getItem(
+            "localconnect_profile"
+        ) ||
+        "Utilisateur";
+
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        name;
+
+
+    document.getElementById(
+        "profileInput"
+    ).value =
+        name;
+
+
+    const posts =
+        await getAllData(
+            "posts"
+        );
+
+
+    const messages =
+        await getAllData(
+            "messages"
+        );
+
+
+    document.getElementById(
+        "postCount"
+    ).textContent =
+        posts.length;
+
+
+    document.getElementById(
+        "messageCount"
+    ).textContent =
+        messages.length;
+
+
+    updateStorageInfo();
+
+}
+
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+async function updateStorageInfo() {
+
+    if (
+        navigator.storage &&
+        navigator.storage.estimate
+    ) {
+
+        const estimate =
+            await navigator.storage.estimate();
+
+
+        const usage =
+            estimate.usage || 0;
+
+
+        const quota =
+            estimate.quota || 1;
+
+
+        const percentage =
+            usage /
+            quota *
+            100;
+
+
+        document.getElementById(
+            "storageText"
+        ).textContent =
+
+            formatBytes(usage)
+            +
+            " utilisés sur "
+            +
+            formatBytes(quota);
+
+
+        document.getElementById(
+            "storageFill"
+        ).style.width =
+            Math.min(
+                100,
+                percentage
+            ) +
+            "%";
+
+    }
+
+}
+
+
+async function showStorageInfo() {
+
+    if (
+        navigator.storage &&
+        navigator.storage.estimate
+    ) {
+
+        const data =
+            await navigator.storage.estimate();
+
+
+        showToast(
+            "Stockage : "
+            +
+            formatBytes(
+                data.usage || 0
+            )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DELETE DATA
+===================================================== */
+
+async function clearAllData() {
+
+    if (
+        !confirm(
+            "Supprimer toutes vos publications et messages ?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const stores = [
+        "posts",
+        "messages"
+    ];
+
+
+    for (
+        const storeName
+        of stores
+    ) {
+
+        await new Promise(
+            resolve => {
+
+                const transaction =
+                    db.transaction(
+                        storeName,
+                        "readwrite"
+                    );
+
+
+                transaction
+                    .objectStore(
+                        storeName
+                    )
+                    .clear();
+
+
+                transaction.oncomplete =
+                    resolve;
+
+            }
+        );
+
+    }
+
+
+    localStorage.removeItem(
+        "localconnect_profile"
+    );
+
+
+    renderFeed();
+
+    renderMessages();
+
+    updateProfile();
+
+
+    showToast(
+        "Toutes les données ont été supprimées."
+    );
+
+}
+
+
+/* =====================================================
+   NETWORK INFORMATION
+===================================================== */
+
+function updateLocalNetworkInfo() {
+
+    const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+
+
+    const online =
+        navigator.onLine;
+
+
+    let html = `
+
+        <div class="stat">
+
+            <strong>
+                ${online ? "🟢" : "🔴"}
+            </strong>
+
+            <span>
+                ${online
+                    ? "Connecté"
+                    : "Hors ligne"}
+            </span>
+
+        </div>
+
+    `;
+
+
+    if (connection) {
+
+        html += `
+
+            <div style="
+                margin-top:15px;
+                color:var(--muted);
+                line-height:1.7;
+            ">
+
+                Type :
+                <strong>
+                    ${connection.type || "Inconnu"}
+                </strong>
+
+                <br>
+
+                Réseau effectif :
+                <strong>
+                    ${connection.effectiveType || "--"}
+                </strong>
+
+                <br>
+
+                Débit estimé :
+                <strong>
+                    ${connection.downlink || "--"}
+                    Mb/s
+                </strong>
+
+                <br>
+
+                RTT :
+                <strong>
+                    ${connection.rtt || "--"}
+                    ms
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+
+    document.getElementById(
+        "localNetworkInfo"
+    ).innerHTML =
+        html;
+
+}
+
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+function toggleDarkMode() {
+
+    document.body.classList.toggle(
+        "dark"
+    );
+
+
+    localStorage.setItem(
+        "localconnect_dark",
+        document.body.classList.contains(
+            "dark"
+        )
+    );
+
+}
+
+
+/* =====================================================
+   UTILITIES
+===================================================== */
+
+function showToast(
+    message
+) {
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        () => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        },
+        2500
+    );
+
+}
+
+
+function formatDate(
+    timestamp
+) {
+
+    return new Date(
+        timestamp
+    ).toLocaleString(
+        "fr-FR",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function formatBytes(
+    bytes
+) {
+
+    if (!bytes) return "0 octet";
+
+
+    const units = [
+        "octets",
+        "Ko",
+        "Mo",
+        "Go",
+        "To"
+    ];
+
+
+    let i = 0;
+
+
+    while (
+        bytes >= 1024 &&
+        i <
+        units.length - 1
+    ) {
+
+        bytes /= 1024;
+
+        i++;
+
+    }
+
+
+    return bytes.toFixed(
+        2
+    )
+    +
+    " "
+    +
+    units[i];
+
+}
+
+
+function escapeHTML(
+    text
+) {
+
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+   INITIALISATION
+===================================================== */
+
+async function init() {
+
+    await openDatabase();
+
+
+    if (
+        localStorage.getItem(
+            "localconnect_dark"
+        ) === "true"
+    ) {
+
+        document.body.classList.add(
+            "dark"
+        );
+
+    }
+
+
+    renderFeed();
+
+    renderMessages();
+
+    updateProfile();
+
+    updateLocalNetworkInfo();
+
+
+    window.addEventListener(
+        "online",
+        updateLocalNetworkInfo
+    );
+
+
+    window.addEventListener(
+        "offline",
+        updateLocalNetworkInfo
+    );
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>

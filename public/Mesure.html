@@ -1,0 +1,6016 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="description"
+    content="Mesure3D Pro - Mannequin, moto et voiture 3D paramétriques"
+>
+
+<title>Mesure3D Pro</title>
+
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    min-height:100%;
+}
+
+body{
+
+    font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(22,131,255,.16),
+            transparent 35%
+        ),
+        var(--bg);
+
+    color:var(--text);
+
+    transition:
+        background .25s,
+        color .25s;
+}
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+:root{
+
+    --bg:#06101d;
+    --bg2:#0a1726;
+
+    --panel:#0d1c2d;
+    --panel2:#10253b;
+
+    --border:#1b3c5d;
+
+    --text:#edf7ff;
+    --muted:#91a9bd;
+
+    --blue:#1683ff;
+    --blue2:#075fc9;
+
+    --cyan:#22d3ee;
+    --green:#22c55e;
+    --yellow:#facc15;
+    --red:#ef4444;
+    --purple:#8b5cf6;
+
+    --shadow:
+        0 15px 45px rgba(0,0,0,.35);
+
+    --radius:18px;
+}
+
+body.light{
+
+    --bg:#eef5fb;
+    --bg2:#f7fbff;
+
+    --panel:#ffffff;
+    --panel2:#f1f7fc;
+
+    --border:#d6e2ed;
+
+    --text:#0f172a;
+    --muted:#607589;
+
+    --shadow:
+        0 15px 35px rgba(20,70,100,.12);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+
+    height:74px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    background:
+        rgba(6,16,29,.88);
+
+    backdrop-filter:
+        blur(18px);
+}
+
+body.light header{
+
+    background:
+        rgba(255,255,255,.90);
+}
+
+.header{
+
+    max-width:1600px;
+
+    height:100%;
+
+    margin:auto;
+
+    padding:
+        0 20px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+}
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.logo-icon{
+
+    width:44px;
+    height:44px;
+
+    display:grid;
+
+    place-items:center;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--cyan)
+        );
+
+    color:white;
+
+    font-size:23px;
+
+    box-shadow:
+        0 0 25px
+        rgba(34,211,238,.25);
+}
+
+.logo-title{
+
+    font-size:20px;
+
+    font-weight:900;
+}
+
+.logo-sub{
+
+    margin-top:2px;
+
+    font-size:11px;
+
+    color:var(--muted);
+}
+
+.header-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+}
+
+.unit-select{
+
+    padding:
+        9px 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:10px;
+
+    background:var(--panel);
+
+    color:var(--text);
+
+    outline:none;
+
+    cursor:pointer;
+}
+
+.icon-btn{
+
+    width:40px;
+    height:40px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:11px;
+
+    background:var(--panel);
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    transition:.2s;
+}
+
+.icon-btn:hover{
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        var(--cyan);
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.main-nav{
+
+    max-width:1600px;
+
+    margin:auto;
+
+    padding:
+        12px 20px;
+
+    display:flex;
+
+    gap:8px;
+
+    overflow-x:auto;
+
+    scrollbar-width:none;
+}
+
+.main-nav::-webkit-scrollbar{
+    display:none;
+}
+
+.nav-btn{
+
+    flex:
+        0 0 auto;
+
+    padding:
+        11px 18px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:12px;
+
+    background:var(--panel);
+
+    color:var(--muted);
+
+    cursor:pointer;
+
+    font-weight:800;
+
+    transition:.2s;
+}
+
+.nav-btn:hover{
+
+    color:var(--text);
+
+    transform:
+        translateY(-2px);
+}
+
+.nav-btn.active{
+
+    color:white;
+
+    border-color:
+        transparent;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--blue2)
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(22,131,255,.25);
+}
+
+/* =========================================================
+   APPLICATION
+========================================================= */
+
+.app{
+
+    max-width:1600px;
+
+    margin:auto;
+
+    padding:
+        5px 20px 100px;
+}
+
+.workspace{
+
+    display:grid;
+
+    grid-template-columns:
+        290px
+        minmax(0,1fr);
+
+    gap:16px;
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.panel,
+.view-card{
+
+    background:var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+}
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls{
+
+    padding:18px;
+
+    height:max-content;
+
+    position:sticky;
+
+    top:90px;
+}
+
+.section{
+
+    padding:
+        15px 0;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.section:first-child{
+    padding-top:0;
+}
+
+.section:last-child{
+    border-bottom:none;
+}
+
+.section-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:14px;
+
+    font-weight:900;
+}
+
+.section-title span{
+    font-size:19px;
+}
+
+.measure-grid{
+
+    display:grid;
+
+    gap:9px;
+}
+
+.measure{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 90px;
+
+    align-items:center;
+
+    gap:8px;
+}
+
+.measure label{
+
+    color:var(--muted);
+
+    font-size:12px;
+}
+
+.measure input{
+
+    width:100%;
+
+    padding:
+        8px 9px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:8px;
+
+    background:var(--bg2);
+
+    color:var(--text);
+
+    outline:none;
+}
+
+.measure input:focus{
+
+    border-color:
+        var(--blue);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(22,131,255,.12);
+}
+
+.clothes{
+
+    display:grid;
+
+    gap:9px;
+}
+
+.clothes label{
+
+    font-size:12px;
+
+    color:var(--muted);
+}
+
+.clothes select{
+
+    width:100%;
+
+    padding:9px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:9px;
+
+    background:var(--bg2);
+
+    color:var(--text);
+
+    outline:none;
+}
+
+.colors{
+
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-top:12px;
+}
+
+.color{
+
+    width:30px;
+    height:30px;
+
+    border-radius:50%;
+
+    border:
+        2px solid var(--border);
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.color:hover{
+
+    transform:
+        scale(1.12);
+}
+
+.color.active{
+
+    outline:
+        2px solid var(--cyan);
+
+    outline-offset:2px;
+}
+
+.preset-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:6px;
+}
+
+.small-btn,
+.secondary-btn{
+
+    border:
+        1px solid var(--border);
+
+    border-radius:9px;
+
+    background:var(--bg2);
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.small-btn{
+
+    padding:8px 5px;
+
+    font-size:11px;
+}
+
+.small-btn:hover,
+.secondary-btn:hover{
+
+    border-color:
+        var(--blue);
+
+    transform:
+        translateY(-1px);
+}
+
+.primary-btn{
+
+    width:100%;
+
+    margin-top:12px;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--blue2)
+        );
+
+    color:white;
+
+    font-weight:900;
+
+    cursor:pointer;
+}
+
+.secondary-btn{
+
+    width:100%;
+
+    padding:10px;
+
+    margin-top:7px;
+}
+
+/* =========================================================
+   3D VIEWS
+========================================================= */
+
+.views{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:16px;
+}
+
+.view-card{
+
+    min-width:0;
+
+    overflow:hidden;
+}
+
+.view-head{
+
+    min-height:65px;
+
+    padding:
+        12px 15px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.view-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    font-weight:900;
+}
+
+.view-title small{
+
+    display:block;
+
+    margin-top:3px;
+
+    color:var(--muted);
+
+    font-size:10px;
+
+    font-weight:400;
+}
+
+.view-actions{
+
+    display:flex;
+
+    gap:5px;
+}
+
+.view-action{
+
+    width:32px;
+    height:32px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:8px;
+
+    background:var(--bg2);
+
+    color:var(--text);
+
+    cursor:pointer;
+}
+
+.canvas-wrap{
+
+    position:relative;
+
+    height:610px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(21,74,120,.17),
+            transparent 65%
+        );
+}
+
+canvas{
+
+    width:100%;
+    height:100%;
+
+    display:block;
+
+    touch-action:none;
+
+    cursor:
+        grab;
+}
+
+canvas:active{
+    cursor:grabbing;
+}
+
+/* =========================================================
+   DIMENSIONS
+========================================================= */
+
+.dimension-box{
+
+    position:absolute;
+
+    left:12px;
+    right:12px;
+    bottom:12px;
+
+    padding:10px;
+
+    border:
+        1px solid
+        rgba(80,150,210,.25);
+
+    border-radius:12px;
+
+    background:
+        rgba(6,16,29,.76);
+
+    backdrop-filter:
+        blur(12px);
+
+    pointer-events:none;
+}
+
+body.light .dimension-box{
+
+    background:
+        rgba(255,255,255,.84);
+}
+
+.dimension-title{
+
+    margin-bottom:6px;
+
+    font-size:12px;
+
+    font-weight:900;
+}
+
+.dimension-list{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:5px 15px;
+
+    font-size:11px;
+
+    color:var(--muted);
+}
+
+.dimension-list b{
+    color:var(--text);
+}
+
+.model-status{
+
+    position:absolute;
+
+    top:10px;
+
+    left:10px;
+
+    padding:
+        5px 8px;
+
+    border-radius:7px;
+
+    background:
+        rgba(6,16,29,.72);
+
+    color:var(--cyan);
+
+    font-size:10px;
+
+    font-weight:800;
+}
+
+/* =========================================================
+   SPECIFICATIONS
+========================================================= */
+
+.specs{
+
+    max-width:1600px;
+
+    margin:
+        16px auto 0;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:16px;
+}
+
+.spec-card{
+
+    padding:17px;
+}
+
+.spec-card h3{
+
+    margin-bottom:12px;
+
+    font-size:15px;
+}
+
+.spec-row{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:
+        7px 0;
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-size:12px;
+}
+
+.spec-row:last-child{
+    border-bottom:none;
+}
+
+.spec-row span{
+    color:var(--muted);
+}
+
+.spec-row b{
+    color:var(--text);
+}
+
+/* =========================================================
+   BOTTOM BAR
+========================================================= */
+
+.bottom-bar{
+
+    position:fixed;
+
+    z-index:90;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:64px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    border-top:
+        1px solid var(--border);
+
+    background:
+        rgba(6,16,29,.92);
+
+    backdrop-filter:
+        blur(16px);
+}
+
+body.light .bottom-bar{
+
+    background:
+        rgba(255,255,255,.92);
+}
+
+.bottom-btn{
+
+    min-width:90px;
+
+    padding:
+        9px 13px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:10px;
+
+    background:var(--panel);
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    transition:.2s;
+}
+
+.bottom-btn:hover{
+
+    border-color:
+        var(--blue);
+
+    transform:
+        translateY(-1px);
+}
+
+.status{
+
+    position:absolute;
+
+    right:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    color:var(--muted);
+
+    font-size:12px;
+}
+
+.status-dot{
+
+    width:8px;
+    height:8px;
+
+    border-radius:50%;
+
+    background:var(--green);
+
+    box-shadow:
+        0 0 10px
+        var(--green);
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:1000;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(0,0,0,.65);
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-content{
+
+    width:
+        min(700px,100%);
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    padding:20px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:20px;
+
+    background:var(--panel);
+
+    box-shadow:var(--shadow);
+}
+
+.modal-head{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:20px;
+}
+
+.close{
+
+    width:36px;
+    height:36px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:9px;
+
+    background:var(--bg2);
+
+    color:var(--text);
+
+    font-size:22px;
+
+    cursor:pointer;
+}
+
+.help{
+
+    color:var(--muted);
+
+    line-height:1.7;
+
+    font-size:14px;
+}
+
+.help strong{
+    color:var(--text);
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast{
+
+    position:fixed;
+
+    z-index:2000;
+
+    left:50%;
+
+    bottom:82px;
+
+    transform:
+        translate(-50%,20px);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    padding:
+        11px 16px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:12px;
+
+    background:var(--panel);
+
+    color:var(--text);
+
+    box-shadow:var(--shadow);
+
+    font-size:13px;
+
+    transition:.25s;
+}
+
+.toast.show{
+
+    opacity:1;
+
+    transform:
+        translate(-50%,0);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1150px){
+
+    .workspace{
+
+        grid-template-columns:
+            250px
+            minmax(0,1fr);
+    }
+
+    .views{
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .canvas-wrap{
+
+        height:560px;
+    }
+}
+
+@media(max-width:850px){
+
+    .workspace{
+
+        display:block;
+    }
+
+    .controls{
+
+        position:relative;
+
+        top:auto;
+
+        margin-bottom:16px;
+    }
+
+    .views{
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .specs{
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .status{
+        display:none;
+    }
+}
+
+@media(max-width:550px){
+
+    header{
+        height:64px;
+    }
+
+    .header{
+        padding:
+            0 10px;
+    }
+
+    .logo-sub{
+        display:none;
+    }
+
+    .logo-title{
+        font-size:16px;
+    }
+
+    .unit-select{
+        padding:
+            7px 8px;
+    }
+
+    .icon-btn{
+
+        width:36px;
+        height:36px;
+    }
+
+    .main-nav{
+
+        padding:
+            9px 10px;
+    }
+
+    .nav-btn{
+
+        padding:
+            9px 12px;
+
+        font-size:12px;
+    }
+
+    .app{
+
+        padding:
+            5px 10px 90px;
+    }
+
+    .canvas-wrap{
+
+        height:470px;
+    }
+
+    .bottom-bar{
+
+        justify-content:
+            space-around;
+    }
+
+    .bottom-btn{
+
+        min-width:auto;
+
+        padding:
+            8px 9px;
+
+        font-size:10px;
+    }
+
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print{
+
+    header,
+    .main-nav,
+    .controls,
+    .bottom-bar,
+    .view-actions{
+        display:none !important;
+    }
+
+    body{
+        background:white;
+        color:black;
+    }
+
+    .app{
+        padding:0;
+    }
+
+    .views{
+        display:grid;
+        grid-template-columns:
+            1fr 1fr 1fr;
+    }
+
+    .canvas-wrap{
+        height:500px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+<div class="header">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            ◇
+        </div>
+
+        <div>
+
+            <div class="logo-title">
+                Mesure3D Pro
+            </div>
+
+            <div class="logo-sub">
+                Mannequin • Moto • Voiture • Mensurations
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="header-actions">
+
+        <span
+            style="
+                font-size:11px;
+                color:var(--muted);
+            "
+        >
+            Unité
+        </span>
+
+        <select
+            class="unit-select"
+            id="unitSelect"
+        >
+            <option value="mm">
+                mm
+            </option>
+
+            <option
+                value="cm"
+                selected
+            >
+                cm
+            </option>
+
+            <option value="m">
+                m
+            </option>
+        </select>
+
+        <button
+            class="icon-btn"
+            id="themeBtn"
+            title="Mode clair / sombre"
+        >
+            ☀️
+        </button>
+
+        <button
+            class="icon-btn"
+            id="helpBtn"
+            title="Aide"
+        >
+            ?
+        </button>
+
+    </div>
+
+</div>
+
+</header>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
+<nav class="main-nav">
+
+<button
+    class="nav-btn active"
+    data-target="all"
+>
+    ◈ Tous
+</button>
+
+<button
+    class="nav-btn"
+    data-target="mannequin"
+>
+    👤 Mannequin
+</button>
+
+<button
+    class="nav-btn"
+    data-target="moto"
+>
+    🏍️ Moto
+</button>
+
+<button
+    class="nav-btn"
+    data-target="voiture"
+>
+    🚗 Voiture
+</button>
+
+</nav>
+
+
+<!-- =========================================================
+     APPLICATION
+========================================================= -->
+
+<main class="app">
+
+<div class="workspace">
+
+
+<!-- =======================================================
+     CONTROLES
+======================================================= -->
+
+<aside class="controls panel">
+
+
+<!-- MANNEQUIN -->
+
+<div class="section">
+
+<div class="section-title">
+    <span>👤</span>
+    Mensurations
+</div>
+
+<div class="measure-grid">
+
+    <div class="measure">
+
+        <label>
+            Taille
+        </label>
+
+        <input
+            id="mHeight"
+            type="number"
+            min="100"
+            max="250"
+            step="0.1"
+            value="175"
+        >
+
+    </div>
+
+    <div class="measure">
+
+        <label>
+            Tour poitrine
+        </label>
+
+        <input
+            id="mChest"
+            type="number"
+            min="50"
+            max="160"
+            step="0.1"
+            value="92"
+        >
+
+    </div>
+
+    <div class="measure">
+
+        <label>
+            Tour taille
+        </label>
+
+        <input
+            id="mWaist"
+            type="number"
+            min="40"
+            max="150"
+            step="0.1"
+            value="78"
+        >
+
+    </div>
+
+    <div class="measure">
+
+        <label>
+            Tour hanches
+        </label>
+
+        <input
+            id="mHips"
+            type="number"
+            min="50"
+            max="160"
+            step="0.1"
+            value="96"
+        >
+
+    </div>
+
+    <div class="measure">
+
+        <label>
+            Largeur épaules
+        </label>
+
+        <input
+            id="mShoulders"
+            type="number"
+            min="20"
+            max="80"
+            step="0.1"
+            value="44"
+        >
+
+    </div>
+
+    <div class="measure">
+
+        <label>
+            Longueur bras
+        </label>
+
+        <input
+            id="mArm"
+            type="number"
+            min="30"
+            max="100"
+            step="0.1"
+            value="60"
+        >
+
+    </div>
+
+    <div class="measure">
+
+        <label>
+            Longueur jambe
+        </label>
+
+        <input
+            id="mLeg"
+            type="number"
+            min="40"
+            max="130"
+            step="0.1"
+            value="78"
+        >
+
+    </div>
+
+    <div class="measure">
+
+        <label>
+            Tour cou
+        </label>
+
+        <input
+            id="mNeck"
+            type="number"
+            min="25"
+            max="60"
+            step="0.1"
+            value="38"
+        >
+
+    </div>
+
+</div>
+
+<button
+    class="primary-btn"
+    id="applyMan"
+>
+    ↻ Appliquer
+</button>
+
+</div>
+
+
+<!-- VETEMENTS -->
+
+<div class="section">
+
+<div class="section-title">
+    <span>👕</span>
+    Vêtements
+</div>
+
+<div class="clothes">
+
+<label>
+    Haut
+</label>
+
+<select id="shirtType">
+
+    <option value="classic">
+        T-shirt classique
+    </option>
+
+    <option value="sport">
+        T-shirt sport
+    </option>
+
+    <option value="shirt">
+        Chemise
+    </option>
+
+    <option value="jacket">
+        Veste
+    </option>
+
+</select>
+
+<label>
+    Bas
+</label>
+
+<select id="pantsType">
+
+    <option value="jean">
+        Jean
+    </option>
+
+    <option value="sport">
+        Pantalon sport
+    </option>
+
+    <option value="short">
+        Short
+    </option>
+
+</select>
+
+</div>
+
+
+<div class="colors">
+
+<div
+    class="color active"
+    data-color="#1683ff"
+    style="background:#1683ff"
+></div>
+
+<div
+    class="color"
+    data-color="#111827"
+    style="background:#111827"
+></div>
+
+<div
+    class="color"
+    data-color="#f8fafc"
+    style="background:#f8fafc"
+></div>
+
+<div
+    class="color"
+    data-color="#ef4444"
+    style="background:#ef4444"
+></div>
+
+<div
+    class="color"
+    data-color="#16a34a"
+    style="background:#16a34a"
+></div>
+
+<div
+    class="color"
+    data-color="#d4a72c"
+    style="background:#d4a72c"
+></div>
+
+</div>
+
+</div>
+
+
+<!-- PRESETS -->
+
+<div class="section">
+
+<div class="section-title">
+    <span>✦</span>
+    Préréglages
+</div>
+
+<div class="preset-grid">
+
+<button
+    class="small-btn"
+    data-preset="man"
+>
+    Homme
+</button>
+
+<button
+    class="small-btn"
+    data-preset="woman"
+>
+    Femme
+</button>
+
+<button
+    class="small-btn"
+    data-preset="sport"
+>
+    Sport
+</button>
+
+</div>
+
+<button
+    class="secondary-btn"
+    id="resetBtn"
+>
+    ↶ Réinitialiser
+</button>
+
+</div>
+
+
+<!-- ACTIONS -->
+
+<div class="section">
+
+<div class="section-title">
+    <span>⚙️</span>
+    Actions
+</div>
+
+<button
+    class="secondary-btn"
+    id="saveLocalBtn"
+>
+    💾 Sauvegarder
+</button>
+
+<button
+    class="secondary-btn"
+    id="clearLocalBtn"
+>
+    🗑️ Effacer sauvegarde
+</button>
+
+</div>
+
+
+</aside>
+
+
+<!-- =======================================================
+     VUES 3D
+======================================================= -->
+
+<section class="views">
+
+
+<!-- MANNEQUIN -->
+
+<article
+    class="view-card"
+    data-view="mannequin"
+>
+
+<div class="view-head">
+
+<div class="view-title">
+
+    <span>👤</span>
+
+    <div>
+
+        Mannequin Humanoïde
+
+        <small>
+            Modèle paramétrique
+        </small>
+
+    </div>
+
+</div>
+
+<div class="view-actions">
+
+<button
+    class="view-action"
+    data-camera="mannequin"
+    title="Recentrer"
+>
+    ⌖
+</button>
+
+<button
+    class="view-action"
+    data-grid="mannequin"
+    title="Grille"
+>
+    #
+</button>
+
+<button
+    class="view-action"
+    data-capture="mannequin"
+    title="Capture"
+>
+    📷
+</button>
+
+</div>
+
+</div>
+
+<div class="canvas-wrap">
+
+<canvas id="mannequinCanvas"></canvas>
+
+<div class="model-status">
+    3D • PARAMÉTRIQUE
+</div>
+
+<div class="dimension-box">
+
+<div class="dimension-title">
+    📐 Mensurations
+</div>
+
+<div
+    class="dimension-list"
+    id="mannequinDimensions"
+></div>
+
+</div>
+
+</div>
+
+</article>
+
+
+<!-- MOTO -->
+
+<article
+    class="view-card"
+    data-view="moto"
+>
+
+<div class="view-head">
+
+<div class="view-title">
+
+    <span>🏍️</span>
+
+    <div>
+
+        Moto 3D
+
+        <small>
+            Modèle dimensionnel
+        </small>
+
+    </div>
+
+</div>
+
+<div class="view-actions">
+
+<button
+    class="view-action"
+    data-camera="moto"
+>
+    ⌖
+</button>
+
+<button
+    class="view-action"
+    data-grid="moto"
+>
+    #
+</button>
+
+<button
+    class="view-action"
+    data-capture="moto"
+>
+    📷
+</button>
+
+</div>
+
+</div>
+
+<div class="canvas-wrap">
+
+<canvas id="motoCanvas"></canvas>
+
+<div class="model-status">
+    3D • MESURES
+</div>
+
+<div class="dimension-box">
+
+<div class="dimension-title">
+    📐 Dimensions moto
+</div>
+
+<div
+    class="dimension-list"
+    id="motoDimensions"
+></div>
+
+</div>
+
+</div>
+
+</article>
+
+
+<!-- VOITURE -->
+
+<article
+    class="view-card"
+    data-view="voiture"
+>
+
+<div class="view-head">
+
+<div class="view-title">
+
+    <span>🚗</span>
+
+    <div>
+
+        Voiture 3D
+
+        <small>
+            Modèle dimensionnel
+        </small>
+
+    </div>
+
+</div>
+
+<div class="view-actions">
+
+<button
+    class="view-action"
+    data-camera="voiture"
+>
+    ⌖
+</button>
+
+<button
+    class="view-action"
+    data-grid="voiture"
+>
+    #
+</button>
+
+<button
+    class="view-action"
+    data-capture="voiture"
+>
+    📷
+</button>
+
+</div>
+
+</div>
+
+<div class="canvas-wrap">
+
+<canvas id="carCanvas"></canvas>
+
+<div class="model-status">
+    3D • MESURES
+</div>
+
+<div class="dimension-box">
+
+<div class="dimension-title">
+    📐 Dimensions voiture
+</div>
+
+<div
+    class="dimension-list"
+    id="carDimensions"
+></div>
+
+</div>
+
+</div>
+
+</article>
+
+</section>
+
+</div>
+
+
+<!-- =======================================================
+     TABLEAU DES MESURES
+======================================================= -->
+
+<section class="specs">
+
+
+<div class="panel spec-card">
+
+<h3>
+    👤 Spécifications mannequin
+</h3>
+
+<div class="spec-row">
+    <span>Taille</span>
+    <b id="specHeight"></b>
+</div>
+
+<div class="spec-row">
+    <span>Poitrine</span>
+    <b id="specChest"></b>
+</div>
+
+<div class="spec-row">
+    <span>Taille</span>
+    <b id="specWaist"></b>
+</div>
+
+<div class="spec-row">
+    <span>Hanches</span>
+    <b id="specHips"></b>
+</div>
+
+<div class="spec-row">
+    <span>Épaules</span>
+    <b id="specShoulders"></b>
+</div>
+
+</div>
+
+
+<div class="panel spec-card">
+
+<h3>
+    🏍️ Spécifications moto
+</h3>
+
+<div class="spec-row">
+    <span>Longueur</span>
+    <b id="specMotoLength"></b>
+</div>
+
+<div class="spec-row">
+    <span>Largeur</span>
+    <b id="specMotoWidth"></b>
+</div>
+
+<div class="spec-row">
+    <span>Hauteur</span>
+    <b id="specMotoHeight"></b>
+</div>
+
+<div class="spec-row">
+    <span>Empattement</span>
+    <b id="specMotoWheelbase"></b>
+</div>
+
+<div class="spec-row">
+    <span>Selle</span>
+    <b id="specMotoSeat"></b>
+</div>
+
+<div class="spec-row">
+    <span>Garde au sol</span>
+    <b id="specMotoGround"></b>
+</div>
+
+</div>
+
+
+<div class="panel spec-card">
+
+<h3>
+    🚗 Spécifications voiture
+</h3>
+
+<div class="spec-row">
+    <span>Longueur</span>
+    <b id="specCarLength"></b>
+</div>
+
+<div class="spec-row">
+    <span>Largeur</span>
+    <b id="specCarWidth"></b>
+</div>
+
+<div class="spec-row">
+    <span>Hauteur</span>
+    <b id="specCarHeight"></b>
+</div>
+
+<div class="spec-row">
+    <span>Empattement</span>
+    <b id="specCarWheelbase"></b>
+</div>
+
+<div class="spec-row">
+    <span>Voie avant</span>
+    <b id="specCarFrontTrack"></b>
+</div>
+
+<div class="spec-row">
+    <span>Garde au sol</span>
+    <b id="specCarGround"></b>
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<!-- =========================================================
+     BARRE BASSE
+========================================================= -->
+
+<div class="bottom-bar">
+
+<button
+    class="bottom-btn"
+    id="centerAll"
+>
+    ⌖ Centrer
+</button>
+
+<button
+    class="bottom-btn"
+    id="toggleGrid"
+>
+    # Grille
+</button>
+
+<button
+    class="bottom-btn"
+    id="captureAll"
+>
+    📷 Capture
+</button>
+
+<button
+    class="bottom-btn"
+    id="saveData"
+>
+    💾 Sauver
+</button>
+
+<div class="status">
+
+<span class="status-dot"></span>
+
+<span>
+    Modèles prêts
+</span>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL AIDE
+========================================================= -->
+
+<div
+    class="modal"
+    id="helpModal"
+>
+
+<div class="modal-content">
+
+<div class="modal-head">
+
+<h2>
+    ⚙️ Mesure3D Pro
+</h2>
+
+<button
+    class="close"
+    id="closeHelp"
+>
+    ×
+</button>
+
+</div>
+
+<div class="help">
+
+<p>
+<strong>Rotation :</strong>
+faites glisser avec le bouton gauche de la souris
+ou avec le doigt.
+</p>
+
+<br>
+
+<p>
+<strong>Zoom :</strong>
+utilisez la molette de la souris ou le pincement
+sur écran tactile.
+</p>
+
+<br>
+
+<p>
+<strong>Déplacement :</strong>
+maintenez le bouton droit de la souris et déplacez.
+</p>
+
+<br>
+
+<p>
+<strong>Mannequin :</strong>
+les dimensions saisies modifient les proportions
+du modèle 3D.
+</p>
+
+<br>
+
+<p>
+<strong>Vêtements :</strong>
+les géométries des vêtements sont recalculées
+à partir des mensurations.
+</p>
+
+<br>
+
+<p>
+<strong>Moto / voiture :</strong>
+les valeurs sont des dimensions de démonstration.
+Remplacez-les par les mesures réelles du véhicule
+pour une modélisation précise.
+</p>
+
+<br>
+
+<p>
+<strong>Sauvegarde :</strong>
+les paramètres sont conservés localement dans
+le navigateur avec localStorage.
+</p>
+
+<br>
+
+<p>
+<strong>Important :</strong>
+ce mannequin est un modèle paramétrique de
+visualisation et non un modèle anthropométrique
+médical certifié.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<!-- =========================================================
+     THREE.JS
+========================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const APP_KEY =
+    "mesure3d_pro_v2";
+
+
+let unit =
+    "cm";
+
+let shirtColor =
+    "#1683ff";
+
+let gridVisible =
+    true;
+
+
+/* =========================================================
+   DONNEES MANNEQUIN
+========================================================= */
+
+const mannequin = {
+
+    height:175,
+
+    chest:92,
+
+    waist:78,
+
+    hips:96,
+
+    shoulders:44,
+
+    arm:60,
+
+    leg:78,
+
+    neck:38
+
+};
+
+
+/* =========================================================
+   PRESETS
+========================================================= */
+
+const presets = {
+
+    man:{
+
+        height:175,
+        chest:92,
+        waist:78,
+        hips:96,
+        shoulders:44,
+        arm:60,
+        leg:78,
+        neck:38
+
+    },
+
+    woman:{
+
+        height:165,
+        chest:88,
+        waist:68,
+        hips:98,
+        shoulders:40,
+        arm:57,
+        leg:76,
+        neck:34
+
+    },
+
+    sport:{
+
+        height:180,
+        chest:104,
+        waist:80,
+        hips:96,
+        shoulders:48,
+        arm:64,
+        leg:84,
+        neck:40
+
+    }
+
+};
+
+
+/* =========================================================
+   DONNEES MOTO
+========================================================= */
+
+const moto = {
+
+    length:214,
+
+    width:82,
+
+    height:112,
+
+    wheelbase:146,
+
+    seat:82,
+
+    wheelDiameter:43,
+
+    ground:15
+
+};
+
+
+/* =========================================================
+   DONNEES VOITURE
+========================================================= */
+
+const car = {
+
+    length:472,
+
+    width:183,
+
+    height:144,
+
+    wheelbase:285,
+
+    frontTrack:158,
+
+    rearTrack:156,
+
+    ground:14,
+
+    wheelDiameter:68
+
+};
+
+
+/* =========================================================
+   SCENES
+========================================================= */
+
+const scenes = {};
+
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
+
+function clamp(
+    value,
+    min,
+    max
+){
+
+    return Math.max(
+        min,
+        Math.min(max,value)
+    );
+
+}
+
+
+function cmToScene(
+    cm
+){
+
+    /*
+       1 unité Three.js =
+       100 cm.
+    */
+
+    return cm / 100;
+
+}
+
+
+function convertUnit(
+    cm
+){
+
+    if(unit === "mm"){
+        return cm * 10;
+    }
+
+    if(unit === "m"){
+        return cm / 100;
+    }
+
+    return cm;
+
+}
+
+
+function formatDimension(
+    cm
+){
+
+    const value =
+        convertUnit(cm);
+
+    let decimals = 1;
+
+    if(unit === "m"){
+        decimals = 3;
+    }
+
+    if(unit === "mm"){
+        decimals = 0;
+    }
+
+    return (
+        Number(value.toFixed(decimals))
+        + " "
+        + unit
+    );
+
+}
+
+
+function showToast(
+    message
+){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent =
+        message;
+
+    toast.classList.add("show");
+
+    clearTimeout(
+        showToast.timer
+    );
+
+    showToast.timer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2200
+        );
+
+}
+
+
+/* =========================================================
+   MATERIAUX
+========================================================= */
+
+function material(
+    color,
+    metalness=.15,
+    roughness=.65
+){
+
+    return new THREE.MeshStandardMaterial({
+
+        color,
+
+        metalness,
+
+        roughness
+
+    });
+
+}
+
+
+/* =========================================================
+   GEOMETRIE BOITE
+========================================================= */
+
+function box(
+    w,
+    h,
+    d,
+    color,
+    parent
+){
+
+    const mesh =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                w,
+                h,
+                d
+            ),
+
+            material(color)
+
+        );
+
+    parent.add(mesh);
+
+    return mesh;
+
+}
+
+
+/* =========================================================
+   CYLINDRE
+========================================================= */
+
+function cylinder(
+    radius,
+    height,
+    color,
+    parent,
+    radial=32
+){
+
+    const mesh =
+        new THREE.Mesh(
+
+            new THREE.CylinderGeometry(
+                radius,
+                radius,
+                height,
+                radial
+            ),
+
+            material(color)
+        );
+
+    parent.add(mesh);
+
+    return mesh;
+
+}
+
+
+/* =========================================================
+   SCENE 3D
+========================================================= */
+
+function createScene(
+    canvas
+){
+
+    const scene =
+        new THREE.Scene();
+
+    scene.background =
+        new THREE.Color(
+            0x07111f
+        );
+
+
+    const camera =
+        new THREE.PerspectiveCamera(
+            42,
+            1,
+            .01,
+            100
+        );
+
+
+    camera.position.set(
+        3,
+        2.2,
+        5
+    );
+
+
+    const renderer =
+        new THREE.WebGLRenderer({
+
+            canvas,
+
+            antialias:true,
+
+            preserveDrawingBuffer:true
+
+        });
+
+
+    renderer.setPixelRatio(
+
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        )
+
+    );
+
+
+    renderer.outputColorSpace =
+        THREE.SRGBColorSpace;
+
+
+    /*
+       Eclairage
+    */
+
+    const hemi =
+        new THREE.HemisphereLight(
+            0x9ed7ff,
+            0x101827,
+            2
+        );
+
+    scene.add(
+        hemi
+    );
+
+
+    const light =
+        new THREE.DirectionalLight(
+            0xffffff,
+            3
+        );
+
+    light.position.set(
+        4,
+        7,
+        5
+    );
+
+    scene.add(
+        light
+    );
+
+
+    const light2 =
+        new THREE.DirectionalLight(
+            0x22d3ee,
+            1.5
+        );
+
+    light2.position.set(
+        -4,
+        3,
+        -5
+    );
+
+    scene.add(
+        light2
+    );
+
+
+    /*
+       Grille
+    */
+
+    const grid =
+        new THREE.GridHelper(
+            20,
+            40,
+            0x245071,
+            0x18344d
+        );
+
+    scene.add(
+        grid
+    );
+
+
+    /*
+       Controle souris/tactile personnalisé
+    */
+
+    const control = {
+
+        rotX:0,
+
+        rotY:0,
+
+        distance:5,
+
+        targetY:1,
+
+        dragging:false,
+
+        rightDragging:false,
+
+        lastX:0,
+
+        lastY:0
+
+    };
+
+
+    canvas.addEventListener(
+        "pointerdown",
+        event => {
+
+            control.dragging =
+                event.button === 0;
+
+            control.rightDragging =
+                event.button === 2;
+
+            control.lastX =
+                event.clientX;
+
+            control.lastY =
+                event.clientY;
+
+            canvas.setPointerCapture(
+                event.pointerId
+            );
+
+        }
+    );
+
+
+    canvas.addEventListener(
+        "pointermove",
+        event => {
+
+            const dx =
+                event.clientX -
+                control.lastX;
+
+            const dy =
+                event.clientY -
+                control.lastY;
+
+            if(
+                control.dragging
+            ){
+
+                control.rotY +=
+                    dx * .008;
+
+                control.rotX +=
+                    dy * .008;
+
+                control.rotX =
+                    clamp(
+                        control.rotX,
+                        -1.4,
+                        1.4
+                    );
+
+            }
+
+
+            if(
+                control.rightDragging
+            ){
+
+                control.targetY -=
+                    dy * .005;
+
+            }
+
+
+            control.lastX =
+                event.clientX;
+
+            control.lastY =
+                event.clientY;
+
+        }
+    );
+
+
+    canvas.addEventListener(
+        "pointerup",
+        event => {
+
+            control.dragging =
+                false;
+
+            control.rightDragging =
+                false;
+
+        }
+    );
+
+
+    canvas.addEventListener(
+        "contextmenu",
+        event => {
+
+            event.preventDefault();
+
+        }
+    );
+
+
+    canvas.addEventListener(
+        "wheel",
+        event => {
+
+            event.preventDefault();
+
+            control.distance +=
+                event.deltaY * .004;
+
+            control.distance =
+                clamp(
+                    control.distance,
+                    1.2,
+                    15
+                );
+
+        },
+        {
+            passive:false
+        }
+    );
+
+
+    const data = {
+
+        scene,
+
+        camera,
+
+        renderer,
+
+        grid,
+
+        object:null,
+
+        control
+
+    };
+
+
+    scenes[
+        canvas.id
+    ] =
+        data;
+
+
+    resizeScene(
+        data
+    );
+
+
+    animateScene(
+        data
+    );
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resizeScene(
+    data
+){
+
+    const canvas =
+        data.renderer.domElement;
+
+    const parent =
+        canvas.parentElement;
+
+    const width =
+        Math.max(
+            1,
+            parent.clientWidth
+        );
+
+    const height =
+        Math.max(
+            1,
+            parent.clientHeight
+        );
+
+
+    data.renderer.setSize(
+        width,
+        height,
+        false
+    );
+
+
+    data.camera.aspect =
+        width / height;
+
+    data.camera.updateProjectionMatrix();
+
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function animateScene(
+    data
+){
+
+    function loop(){
+
+        requestAnimationFrame(
+            loop
+        );
+
+
+        const c =
+            data.control;
+
+
+        /*
+           caméra orbitale
+        */
+
+        const radius =
+            c.distance;
+
+
+        const x =
+            Math.sin(c.rotY)
+            * Math.cos(c.rotX)
+            * radius;
+
+
+        const z =
+            Math.cos(c.rotY)
+            * Math.cos(c.rotX)
+            * radius;
+
+
+        const y =
+            c.targetY +
+            Math.sin(c.rotX)
+            * radius;
+
+
+        data.camera.position.set(
+            x,
+            y,
+            z
+        );
+
+
+        data.camera.lookAt(
+            0,
+            c.targetY,
+            0
+        );
+
+
+        data.renderer.render(
+            data.scene,
+            data.camera
+        );
+
+    }
+
+    loop();
+
+}
+
+
+/* =========================================================
+   SUPPRIMER ANCIEN MODELE
+========================================================= */
+
+function clearObject(
+    data
+){
+
+    if(!data.object){
+        return;
+    }
+
+
+    data.scene.remove(
+        data.object
+    );
+
+
+    data.object.traverse(
+        child => {
+
+            if(
+                child.geometry
+            ){
+
+                child.geometry.dispose();
+
+            }
+
+
+            if(
+                child.material
+            ){
+
+                if(
+                    Array.isArray(
+                        child.material
+                    )
+                ){
+
+                    child.material.forEach(
+                        m => m.dispose()
+                    );
+
+                }
+                else{
+
+                    child.material.dispose();
+
+                }
+
+            }
+
+        }
+    );
+
+
+    data.object =
+        null;
+
+}
+
+
+/* =========================================================
+   MANNEQUIN
+========================================================= */
+
+function buildMannequin(){
+
+    const data =
+        scenes.mannequinCanvas;
+
+    if(!data){
+        return;
+    }
+
+
+    clearObject(
+        data
+    );
+
+
+    const group =
+        new THREE.Group();
+
+
+    const H =
+        cmToScene(
+            mannequin.height
+        );
+
+
+    const chest =
+        cmToScene(
+            mannequin.chest
+        );
+
+
+    const waist =
+        cmToScene(
+            mannequin.waist
+        );
+
+
+    const hips =
+        cmToScene(
+            mannequin.hips
+        );
+
+
+    const shoulders =
+        cmToScene(
+            mannequin.shoulders
+        );
+
+
+    const neck =
+        cmToScene(
+            mannequin.neck
+        );
+
+
+    const arm =
+        cmToScene(
+            mannequin.arm
+        );
+
+
+    const leg =
+        cmToScene(
+            mannequin.leg
+        );
+
+
+    /*
+       proportions verticales
+    */
+
+    const headH =
+        H * .125;
+
+
+    const neckH =
+        H * .045;
+
+
+    const torsoH =
+        H * .30;
+
+
+    const legH =
+        H * .44;
+
+
+    const footH =
+        H * .035;
+
+
+    const torsoY =
+        footH +
+        legH +
+        torsoH / 2;
+
+
+    /*
+       Tête
+    */
+
+    const head =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                H * .068,
+                32,
+                24
+            ),
+
+            material(
+                0xd9a77a,
+                0,
+                .8
+            )
+
+        );
+
+
+    head.position.y =
+        H -
+        headH / 2;
+
+    group.add(
+        head
+    );
+
+
+    /*
+       Cou
+    */
+
+    const neckMesh =
+        cylinder(
+            neck / (Math.PI * 2) * .9,
+            neckH,
+            0xd9a77a,
+            group,
+            24
+        );
+
+
+    neckMesh.position.y =
+        H -
+        headH -
+        neckH / 2;
+
+
+    /*
+       Torse
+    */
+
+    const torso =
+        new THREE.Mesh(
+
+            new THREE.CapsuleGeometry(
+                Math.max(
+                    chest / (Math.PI * 2),
+                    .16
+                ),
+                torsoH * .65,
+                8,
+                20
+            ),
+
+            material(
+                shirtColor,
+                .1,
+                .7
+            )
+
+        );
+
+
+    torso.scale.x =
+        1.15;
+
+    torso.scale.z =
+        .72;
+
+    torso.position.y =
+        torsoY;
+
+    group.add(
+        torso
+    );
+
+
+    /*
+       Ceinture
+    */
+
+    const waistRing =
+        new THREE.Mesh(
+
+            new THREE.CylinderGeometry(
+                Math.max(
+                    waist /
+                    (Math.PI * 2)
+                    *.95,
+                    .14
+                ),
+                Math.max(
+                    waist /
+                    (Math.PI * 2)
+                    *.95,
+                    .14
+                ),
+                .12,
+                32
+            ),
+
+            material(
+                "#111827",
+                .1,
+                .8
+            )
+
+        );
+
+
+    waistRing.scale.z =
+        .72;
+
+    waistRing.position.y =
+        footH +
+        legH;
+
+    group.add(
+        waistRing
+    );
+
+
+    /*
+       Hanches / bas
+    */
+
+    const hipWidth =
+        Math.max(
+            hips / Math.PI,
+            .25
+        );
+
+
+    const pantsColor =
+        getPantsColor();
+
+
+    /*
+       jambes
+    */
+
+    const legRadius =
+        Math.max(
+            hipWidth * .20,
+            .09
+        );
+
+
+    for(
+        const side of [-1,1]
+    ){
+
+        const legMesh =
+            cylinder(
+                legRadius,
+                legH,
+                pantsColor,
+                group,
+                24
+            );
+
+
+        legMesh.position.set(
+
+            side *
+            hipWidth *
+            .25,
+
+            footH +
+            legH / 2,
+
+            0
+
+        );
+
+
+        /*
+           chaussures
+        */
+
+        const shoe =
+            box(
+                legRadius * 2.2,
+                footH,
+                legRadius * 3,
+                0x111827,
+                group
+            );
+
+
+        shoe.position.set(
+
+            side *
+            hipWidth *
+            .25,
+
+            footH / 2,
+
+            .07
+
+        );
+
+    }
+
+
+    /*
+       Bras
+    */
+
+    const armRadius =
+        Math.max(
+            .055,
+            chest / 10000
+        );
+
+
+    for(
+        const side of [-1,1]
+    ){
+
+        const armMesh =
+            cylinder(
+                armRadius,
+                cmToScene(
+                    mannequin.arm
+                ),
+                shirtColor,
+                group,
+                20
+            );
+
+
+        armMesh.rotation.z =
+            side * -.08;
+
+
+        armMesh.position.set(
+
+            side *
+            (
+                shoulders / 100
+                / 2
+                + .05
+            ),
+
+            torsoY +
+            torsoH * .12,
+
+            0
+
+        );
+
+
+        /*
+           main
+        */
+
+        const hand =
+            new THREE.Mesh(
+
+                new THREE.SphereGeometry(
+                    .065,
+                    18,
+                    12
+                ),
+
+                material(
+                    0xd9a77a
+                )
+
+            );
+
+
+        hand.position.set(
+
+            side *
+            (
+                shoulders / 100
+                / 2
+                + .05
+            ),
+
+            torsoY +
+            torsoH * .12 -
+            cmToScene(
+                mannequin.arm
+            ) / 2,
+
+            0
+
+        );
+
+
+        group.add(
+            hand
+        );
+
+    }
+
+
+    /*
+       Vêtements supplémentaires
+    */
+
+    buildClothing(
+        group,
+        H,
+        torsoY,
+        torsoH,
+        hipWidth,
+        legH
+    );
+
+
+    /*
+       épaules
+    */
+
+    const shoulderBar =
+        box(
+            cmToScene(
+                mannequin.shoulders
+            ),
+            .08,
+            .16,
+            shirtColor,
+            group
+        );
+
+
+    shoulderBar.position.y =
+        torsoY +
+        torsoH * .36;
+
+
+    /*
+       groupe
+    */
+
+    group.position.y =
+        0;
+
+
+    data.object =
+        group;
+
+    data.scene.add(
+        group
+    );
+
+
+    data.control.distance =
+        clamp(
+            H * 2.4,
+            2.8,
+            6
+        );
+
+
+    data.control.targetY =
+        H * .48;
+
+}
+
+
+/* =========================================================
+   COULEUR PANTALON
+========================================================= */
+
+function getPantsColor(){
+
+    const type =
+        document.getElementById(
+            "pantsType"
+        ).value;
+
+
+    if(type === "sport"){
+        return 0x374151;
+    }
+
+    if(type === "short"){
+        return 0x1e3a8a;
+    }
+
+    return 0x172554;
+
+}
+
+
+/* =========================================================
+   VETEMENTS
+========================================================= */
+
+function buildClothing(
+    group,
+    H,
+    torsoY,
+    torsoH,
+    hipWidth,
+    legH
+){
+
+    const shirt =
+        document.getElementById(
+            "shirtType"
+        ).value;
+
+
+    /*
+       veste
+    */
+
+    if(
+        shirt === "jacket"
+    ){
+
+        const jacket =
+            box(
+                cmToScene(
+                    mannequin.shoulders
+                ) * 1.18,
+
+                torsoH * .72,
+
+                .30,
+
+                shirtColor,
+
+                group
+            );
+
+
+        jacket.position.y =
+            torsoY +
+            .02;
+
+    }
+
+
+    /*
+       chemise
+    */
+
+    if(
+        shirt === "shirt"
+    ){
+
+        const collar =
+            new THREE.Mesh(
+
+                new THREE.TorusGeometry(
+                    .085,
+                    .018,
+                    8,
+                    24
+                ),
+
+                material(
+                    0xf8fafc,
+                    0,
+                    .7
+                )
+
+            );
+
+
+        collar.rotation.x =
+            Math.PI / 2;
+
+        collar.position.y =
+            torsoY +
+            torsoH * .35;
+
+        group.add(
+            collar
+        );
+
+    }
+
+
+    /*
+       sport
+    */
+
+    if(
+        shirt === "sport"
+    ){
+
+        const stripe =
+            box(
+                cmToScene(
+                    mannequin.shoulders
+                ) * .85,
+
+                .035,
+
+                .32,
+
+                0xffffff,
+
+                group
+            );
+
+
+        stripe.position.y =
+            torsoY +
+            torsoH * .05;
+
+    }
+
+
+    /*
+       Short
+    */
+
+    const pants =
+        document.getElementById(
+            "pantsType"
+        ).value;
+
+
+    if(
+        pants === "short"
+    ){
+
+        const shortMesh =
+            box(
+                hipWidth * .75,
+
+                legH * .28,
+
+                .28,
+
+                getPantsColor(),
+
+                group
+            );
+
+
+        shortMesh.position.y =
+            legH * .95;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOTO
+========================================================= */
+
+function buildMoto(){
+
+    const data =
+        scenes.motoCanvas;
+
+    if(!data){
+        return;
+    }
+
+
+    clearObject(
+        data
+    );
+
+
+    const group =
+        new THREE.Group();
+
+
+    const L =
+        cmToScene(
+            moto.length
+        );
+
+    const W =
+        cmToScene(
+            moto.width
+        );
+
+    const H =
+        cmToScene(
+            moto.height
+        );
+
+    const WB =
+        cmToScene(
+            moto.wheelbase
+        );
+
+    const wheelD =
+        cmToScene(
+            moto.wheelDiameter
+        );
+
+
+    /*
+       Roues
+    */
+
+    const wheelRadius =
+        wheelD / 2;
+
+
+    for(
+        const x of [
+            -WB/2,
+            WB/2
+        ]
+    ){
+
+        const wheel =
+            cylinder(
+                wheelRadius,
+                .10,
+                0x111827,
+                group,
+                32
+            );
+
+
+        wheel.rotation.z =
+            Math.PI / 2;
+
+        wheel.position.set(
+            x,
+            wheelRadius,
+            0
+        );
+
+
+        /*
+           jante
+        */
+
+        const rim =
+            cylinder(
+                wheelRadius * .65,
+                .115,
+                0x94a3b8,
+                group,
+                32
+            );
+
+
+        rim.rotation.z =
+            Math.PI / 2;
+
+        rim.position.set(
+            x,
+            wheelRadius,
+            0
+        );
+
+    }
+
+
+    /*
+       Cadre
+    */
+
+    const frame =
+        box(
+            WB * .85,
+            .10,
+            .13,
+            0x374151,
+            group
+        );
+
+
+    frame.position.y =
+        wheelRadius +
+        .18;
+
+
+    /*
+       réservoir
+    */
+
+    const tank =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .35,
+                24,
+                16
+            ),
+
+            material(
+                0xdc2626,
+                .35,
+                .35
+            )
+
+        );
+
+
+    tank.scale.set(
+        1.4,
+        .65,
+        .85
+    );
+
+
+    tank.position.set(
+        -.15,
+        wheelRadius + .48,
+        0
+    );
+
+
+    group.add(
+        tank
+    );
+
+
+    /*
+       selle
+    */
+
+    const seat =
+        box(
+            .72,
+            .11,
+            .30,
+            0x111827,
+            group
+        );
+
+
+    seat.position.set(
+        .25,
+        wheelRadius + .65,
+        0
+    );
+
+
+    /*
+       guidon
+    */
+
+    const handle =
+        box(
+            .65,
+            .06,
+            .06,
+            0x222222,
+            group
+        );
+
+
+    handle.position.set(
+        WB / 2 - .05,
+        wheelRadius + .72,
+        0
+    );
+
+
+    /*
+       fourche
+    */
+
+    const fork =
+        cylinder(
+            .035,
+            .75,
+            0x94a3b8,
+            group,
+            16
+        );
+
+
+    fork.position.set(
+        WB / 2,
+        wheelRadius + .32,
+        0
+    );
+
+
+    /*
+       moteur
+    */
+
+    const engine =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .28,
+                24,
+                16
+            ),
+
+            material(
+                0x4b5563,
+                .75,
+                .3
+            )
+
+        );
+
+
+    engine.scale.y =
+        .75;
+
+    engine.position.set(
+        0,
+        wheelRadius + .30,
+        0
+    );
+
+    group.add(
+        engine
+    );
+
+
+    /*
+       pot échappement
+    */
+
+    const exhaust =
+        cylinder(
+            .055,
+            .75,
+            0x64748b,
+            group,
+            16
+        );
+
+
+    exhaust.rotation.z =
+        Math.PI / 2;
+
+    exhaust.position.set(
+        -.35,
+        wheelRadius + .28,
+        .18
+    );
+
+
+    group.position.y =
+        0;
+
+
+    data.object =
+        group;
+
+    data.scene.add(
+        group
+    );
+
+
+    data.control.distance =
+        clamp(
+            L * 2.8,
+            3,
+            8
+        );
+
+    data.control.targetY =
+        H * .4;
+
+}
+
+
+/* =========================================================
+   VOITURE
+========================================================= */
+
+function buildCar(){
+
+    const data =
+        scenes.carCanvas;
+
+    if(!data){
+        return;
+    }
+
+
+    clearObject(
+        data
+    );
+
+
+    const group =
+        new THREE.Group();
+
+
+    const L =
+        cmToScene(
+            car.length
+        );
+
+    const W =
+        cmToScene(
+            car.width
+        );
+
+    const H =
+        cmToScene(
+            car.height
+        );
+
+    const WB =
+        cmToScene(
+            car.wheelbase
+        );
+
+    const wheelD =
+        cmToScene(
+            car.wheelDiameter
+        );
+
+
+    /*
+       carrosserie principale
+    */
+
+    const body =
+        box(
+            L,
+            H * .38,
+            W * .78,
+            0x2563eb,
+            group
+        );
+
+
+    body.position.y =
+        wheelD / 2 +
+        H * .25;
+
+
+    /*
+       habitacle
+    */
+
+    const cabin =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                L * .52,
+                H * .36,
+                W * .70
+            ),
+
+            material(
+                0x172033,
+                .05,
+                .45
+            )
+
+        );
+
+
+    cabin.position.set(
+        -.02,
+        wheelD / 2 +
+        H * .53,
+        0
+    );
+
+
+    group.add(
+        cabin
+    );
+
+
+    /*
+       capot
+    */
+
+    const hood =
+        box(
+            L * .30,
+            H * .13,
+            W * .72,
+            0x2563eb,
+            group
+        );
+
+
+    hood.position.set(
+        L * .27,
+        wheelD / 2 +
+        H * .46,
+        0
+    );
+
+
+    /*
+       coffre
+    */
+
+    const trunk =
+        box(
+            L * .22,
+            H * .14,
+            W * .72,
+            0x2563eb,
+            group
+        );
+
+
+    trunk.position.set(
+        -L * .30,
+        wheelD / 2 +
+        H * .46,
+        0
+    );
+
+
+    /*
+       roues
+    */
+
+    const wheelRadius =
+        wheelD / 2;
+
+
+    const wheelPositions = [
+
+        [WB/2, W*.43],
+        [WB/2, -W*.43],
+
+        [-WB/2, W*.43],
+        [-WB/2, -W*.43]
+
+    ];
+
+
+    wheelPositions.forEach(
+        position => {
+
+            const wheel =
+                cylinder(
+                    wheelRadius,
+                    .12,
+                    0x111111,
+                    group,
+                    32
+                );
+
+
+            wheel.rotation.z =
+                Math.PI / 2;
+
+
+            wheel.position.set(
+
+                position[0],
+
+                wheelRadius,
+
+                position[1]
+
+            );
+
+
+            const hub =
+                cylinder(
+                    wheelRadius * .38,
+                    .13,
+                    0x94a3b8,
+                    group,
+                    24
+                );
+
+
+            hub.rotation.z =
+                Math.PI / 2;
+
+
+            hub.position.copy(
+                wheel.position
+            );
+
+        }
+    );
+
+
+    /*
+       phares
+    */
+
+    for(
+        const side of [-1,1]
+    ){
+
+        const light =
+            box(
+                .10,
+                .10,
+                .20,
+                0xfef3c7,
+                group
+            );
+
+
+        light.position.set(
+            L / 2 + .005,
+            wheelRadius +
+            H * .25,
+            side *
+            W * .25
+        );
+
+    }
+
+
+    /*
+       feux arrière
+    */
+
+    for(
+        const side of [-1,1]
+    ){
+
+        const light =
+            box(
+                .08,
+                .10,
+                .20,
+                0xef4444,
+                group
+            );
+
+
+        light.position.set(
+            -L / 2 - .005,
+            wheelRadius +
+            H * .25,
+            side *
+            W * .25
+        );
+
+    }
+
+
+    /*
+       pare-chocs
+    */
+
+    const bumperFront =
+        box(
+            .08,
+            .12,
+            W * .72,
+            0x111827,
+            group
+        );
+
+
+    bumperFront.position.set(
+        L / 2,
+        wheelRadius +
+        H * .12,
+        0
+    );
+
+
+    const bumperRear =
+        box(
+            .08,
+            .12,
+            W * .72,
+            0x111827,
+            group
+        );
+
+
+    bumperRear.position.set(
+        -L / 2,
+        wheelRadius +
+        H * .12,
+        0
+    );
+
+
+    data.object =
+        group;
+
+    data.scene.add(
+        group
+    );
+
+
+    data.control.distance =
+        clamp(
+            L * 2.2,
+            4,
+            10
+        );
+
+    data.control.targetY =
+        H * .35;
+
+}
+
+
+/* =========================================================
+   DIMENSIONS MANNEQUIN
+========================================================= */
+
+function updateMannequinDimensions(){
+
+    const html = `
+
+        <div>
+            Taille
+            <b>${formatDimension(mannequin.height)}</b>
+        </div>
+
+        <div>
+            Poitrine
+            <b>${formatDimension(mannequin.chest)}</b>
+        </div>
+
+        <div>
+            Taille
+            <b>${formatDimension(mannequin.waist)}</b>
+        </div>
+
+        <div>
+            Hanches
+            <b>${formatDimension(mannequin.hips)}</b>
+        </div>
+
+        <div>
+            Épaules
+            <b>${formatDimension(mannequin.shoulders)}</b>
+        </div>
+
+        <div>
+            Bras
+            <b>${formatDimension(mannequin.arm)}</b>
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "mannequinDimensions"
+    ).innerHTML =
+        html;
+
+
+    document.getElementById(
+        "specHeight"
+    ).textContent =
+        formatDimension(
+            mannequin.height
+        );
+
+
+    document.getElementById(
+        "specChest"
+    ).textContent =
+        formatDimension(
+            mannequin.chest
+        );
+
+
+    document.getElementById(
+        "specWaist"
+    ).textContent =
+        formatDimension(
+            mannequin.waist
+        );
+
+
+    document.getElementById(
+        "specHips"
+    ).textContent =
+        formatDimension(
+            mannequin.hips
+        );
+
+
+    document.getElementById(
+        "specShoulders"
+    ).textContent =
+        formatDimension(
+            mannequin.shoulders
+        );
+
+}
+
+
+/* =========================================================
+   DIMENSIONS MOTO
+========================================================= */
+
+function updateMotoDimensions(){
+
+    document.getElementById(
+        "motoDimensions"
+    ).innerHTML = `
+
+        <div>
+            Longueur
+            <b>${formatDimension(moto.length)}</b>
+        </div>
+
+        <div>
+            Largeur
+            <b>${formatDimension(moto.width)}</b>
+        </div>
+
+        <div>
+            Hauteur
+            <b>${formatDimension(moto.height)}</b>
+        </div>
+
+        <div>
+            Empattement
+            <b>${formatDimension(moto.wheelbase)}</b>
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "specMotoLength"
+    ).textContent =
+        formatDimension(
+            moto.length
+        );
+
+
+    document.getElementById(
+        "specMotoWidth"
+    ).textContent =
+        formatDimension(
+            moto.width
+        );
+
+
+    document.getElementById(
+        "specMotoHeight"
+    ).textContent =
+        formatDimension(
+            moto.height
+        );
+
+
+    document.getElementById(
+        "specMotoWheelbase"
+    ).textContent =
+        formatDimension(
+            moto.wheelbase
+        );
+
+
+    document.getElementById(
+        "specMotoSeat"
+    ).textContent =
+        formatDimension(
+            moto.seat
+        );
+
+
+    document.getElementById(
+        "specMotoGround"
+    ).textContent =
+        formatDimension(
+            moto.ground
+        );
+
+}
+
+
+/* =========================================================
+   DIMENSIONS VOITURE
+========================================================= */
+
+function updateCarDimensions(){
+
+    document.getElementById(
+        "carDimensions"
+    ).innerHTML = `
+
+        <div>
+            Longueur
+            <b>${formatDimension(car.length)}</b>
+        </div>
+
+        <div>
+            Largeur
+            <b>${formatDimension(car.width)}</b>
+        </div>
+
+        <div>
+            Hauteur
+            <b>${formatDimension(car.height)}</b>
+        </div>
+
+        <div>
+            Empattement
+            <b>${formatDimension(car.wheelbase)}</b>
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "specCarLength"
+    ).textContent =
+        formatDimension(
+            car.length
+        );
+
+
+    document.getElementById(
+        "specCarWidth"
+    ).textContent =
+        formatDimension(
+            car.width
+        );
+
+
+    document.getElementById(
+        "specCarHeight"
+    ).textContent =
+        formatDimension(
+            car.height
+        );
+
+
+    document.getElementById(
+        "specCarWheelbase"
+    ).textContent =
+        formatDimension(
+            car.wheelbase
+        );
+
+
+    document.getElementById(
+        "specCarFrontTrack"
+    ).textContent =
+        formatDimension(
+            car.frontTrack
+        );
+
+
+    document.getElementById(
+        "specCarGround"
+    ).textContent =
+        formatDimension(
+            car.ground
+        );
+
+}
+
+
+/* =========================================================
+   LECTURE DES INPUTS
+========================================================= */
+
+function readMannequinInputs(){
+
+    mannequin.height =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mHeight"
+                ).value
+            ) || 175,
+            100,
+            250
+        );
+
+
+    mannequin.chest =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mChest"
+                ).value
+            ) || 92,
+            50,
+            160
+        );
+
+
+    mannequin.waist =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mWaist"
+                ).value
+            ) || 78,
+            40,
+            150
+        );
+
+
+    mannequin.hips =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mHips"
+                ).value
+            ) || 96,
+            50,
+            160
+        );
+
+
+    mannequin.shoulders =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mShoulders"
+                ).value
+            ) || 44,
+            20,
+            80
+        );
+
+
+    mannequin.arm =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mArm"
+                ).value
+            ) || 60,
+            30,
+            100
+        );
+
+
+    mannequin.leg =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mLeg"
+                ).value
+            ) || 78,
+            40,
+            130
+        );
+
+
+    mannequin.neck =
+        clamp(
+            Number(
+                document.getElementById(
+                    "mNeck"
+                ).value
+            ) || 38,
+            25,
+            60
+        );
+
+}
+
+
+/* =========================================================
+   APPLICATION MANNEQUIN
+========================================================= */
+
+function applyMannequin(){
+
+    readMannequinInputs();
+
+    buildMannequin();
+
+    updateMannequinDimensions();
+
+    saveLocal();
+
+    showToast(
+        "Mensurations appliquées."
+    );
+
+}
+
+
+/* =========================================================
+   PRESET
+========================================================= */
+
+function applyPreset(
+    name
+){
+
+    const preset =
+        presets[name];
+
+    if(!preset){
+        return;
+    }
+
+
+    Object.assign(
+        mannequin,
+        preset
+    );
+
+
+    document.getElementById(
+        "mHeight"
+    ).value =
+        mannequin.height;
+
+
+    document.getElementById(
+        "mChest"
+    ).value =
+        mannequin.chest;
+
+
+    document.getElementById(
+        "mWaist"
+    ).value =
+        mannequin.waist;
+
+
+    document.getElementById(
+        "mHips"
+    ).value =
+        mannequin.hips;
+
+
+    document.getElementById(
+        "mShoulders"
+    ).value =
+        mannequin.shoulders;
+
+
+    document.getElementById(
+        "mArm"
+    ).value =
+        mannequin.arm;
+
+
+    document.getElementById(
+        "mLeg"
+    ).value =
+        mannequin.leg;
+
+
+    document.getElementById(
+        "mNeck"
+    ).value =
+        mannequin.neck;
+
+
+    buildMannequin();
+
+    updateMannequinDimensions();
+
+    saveLocal();
+
+    showToast(
+        "Préréglage appliqué."
+    );
+
+}
+
+
+/* =========================================================
+   SAUVEGARDE
+========================================================= */
+
+function saveLocal(){
+
+    const data = {
+
+        mannequin,
+
+        shirtColor,
+
+        shirtType:
+            document.getElementById(
+                "shirtType"
+            ).value,
+
+        pantsType:
+            document.getElementById(
+                "pantsType"
+            ).value,
+
+        unit,
+
+        theme:
+            document.body.classList.contains(
+                "light"
+            )
+                ? "light"
+                : "dark"
+
+    };
+
+
+    localStorage.setItem(
+        APP_KEY,
+        JSON.stringify(data)
+    );
+
+}
+
+
+/* =========================================================
+   CHARGEMENT
+========================================================= */
+
+function loadLocal(){
+
+    const saved =
+        localStorage.getItem(
+            APP_KEY
+        );
+
+
+    if(!saved){
+        return;
+    }
+
+
+    try{
+
+        const data =
+            JSON.parse(
+                saved
+            );
+
+
+        if(data.mannequin){
+
+            Object.assign(
+                mannequin,
+                data.mannequin
+            );
+
+        }
+
+
+        if(data.shirtColor){
+
+            shirtColor =
+                data.shirtColor;
+
+        }
+
+
+        if(data.unit){
+
+            unit =
+                data.unit;
+
+            document.getElementById(
+                "unitSelect"
+            ).value =
+                unit;
+
+        }
+
+
+        if(data.shirtType){
+
+            document.getElementById(
+                "shirtType"
+            ).value =
+                data.shirtType;
+
+        }
+
+
+        if(data.pantsType){
+
+            document.getElementById(
+                "pantsType"
+            ).value =
+                data.pantsType;
+
+        }
+
+
+        if(
+            data.theme ===
+            "light"
+        ){
+
+            document.body.classList.add(
+                "light"
+            );
+
+        }
+
+    }
+    catch(error){
+
+        console.warn(
+            "Sauvegarde invalide",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INPUTS -> UI
+========================================================= */
+
+function updateInputs(){
+
+    document.getElementById(
+        "mHeight"
+    ).value =
+        mannequin.height;
+
+
+    document.getElementById(
+        "mChest"
+    ).value =
+        mannequin.chest;
+
+
+    document.getElementById(
+        "mWaist"
+    ).value =
+        mannequin.waist;
+
+
+    document.getElementById(
+        "mHips"
+    ).value =
+        mannequin.hips;
+
+
+    document.getElementById(
+        "mShoulders"
+    ).value =
+        mannequin.shoulders;
+
+
+    document.getElementById(
+        "mArm"
+    ).value =
+        mannequin.arm;
+
+
+    document.getElementById(
+        "mLeg"
+    ).value =
+        mannequin.leg;
+
+
+    document.getElementById(
+        "mNeck"
+    ).value =
+        mannequin.neck;
+
+}
+
+
+/* =========================================================
+   GRILLE
+========================================================= */
+
+function toggleGrids(){
+
+    gridVisible =
+        !gridVisible;
+
+
+    Object.values(
+        scenes
+    ).forEach(
+        data => {
+
+            data.grid.visible =
+                gridVisible;
+
+        }
+    );
+
+
+    showToast(
+        gridVisible
+            ? "Grille activée."
+            : "Grille désactivée."
+    );
+
+}
+
+
+/* =========================================================
+   CENTRAGE CAMERA
+========================================================= */
+
+function centerScene(
+    key
+){
+
+    const data =
+        scenes[key];
+
+    if(!data){
+        return;
+    }
+
+
+    data.control.rotX =
+        0;
+
+
+    data.control.rotY =
+        0;
+
+
+    if(key === "mannequinCanvas"){
+
+        data.control.distance =
+            4;
+
+        data.control.targetY =
+            cmToScene(
+                mannequin.height
+            ) * .48;
+
+    }
+
+
+    if(key === "motoCanvas"){
+
+        data.control.distance =
+            5;
+
+        data.control.targetY =
+            .5;
+
+    }
+
+
+    if(key === "carCanvas"){
+
+        data.control.distance =
+            6;
+
+        data.control.targetY =
+            .5;
+
+    }
+
+
+    showToast(
+        "Caméra recentrée."
+    );
+
+}
+
+
+/* =========================================================
+   CAPTURE
+========================================================= */
+
+function captureScene(
+    key,
+    filename
+){
+
+    const data =
+        scenes[key];
+
+    if(!data){
+        return;
+    }
+
+
+    data.renderer.render(
+        data.scene,
+        data.camera
+    );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.download =
+        filename;
+
+
+    link.href =
+        data.renderer
+            .domElement
+            .toDataURL(
+                "image/png"
+            );
+
+
+    link.click();
+
+
+    showToast(
+        "Capture créée."
+    );
+
+}
+
+
+/* =========================================================
+   CAPTURE TOUS
+========================================================= */
+
+function captureAll(){
+
+    captureScene(
+        "mannequinCanvas",
+        "mannequin-3d.png"
+    );
+
+
+    setTimeout(
+        () => {
+
+            captureScene(
+                "motoCanvas",
+                "moto-3d.png"
+            );
+
+        },
+        250
+    );
+
+
+    setTimeout(
+        () => {
+
+            captureScene(
+                "carCanvas",
+                "voiture-3d.png"
+            );
+
+        },
+        500
+    );
+
+}
+
+
+/* =========================================================
+   FILTRE NAVIGATION
+========================================================= */
+
+function filterViews(
+    target
+){
+
+    document
+        .querySelectorAll(
+            ".view-card"
+        )
+        .forEach(
+            card => {
+
+                if(
+                    target === "all" ||
+                    card.dataset.view ===
+                    target
+                ){
+
+                    card.style.display =
+                        "";
+
+                }
+                else{
+
+                    card.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            ".spec-card"
+        )
+        .forEach(
+            (card,index) => {
+
+                if(target === "all"){
+
+                    card.style.display =
+                        "";
+
+                    return;
+
+                }
+
+
+                if(
+                    target ===
+                    "mannequin"
+                ){
+
+                    card.style.display =
+                        index === 0
+                            ? ""
+                            : "none";
+
+                }
+
+
+                if(
+                    target ===
+                    "moto"
+                ){
+
+                    card.style.display =
+                        index === 1
+                            ? ""
+                            : "none";
+
+                }
+
+
+                if(
+                    target ===
+                    "voiture"
+                ){
+
+                    card.style.display =
+                        index === 2
+                            ? ""
+                            : "none";
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   COULEURS
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".color"
+    )
+    .forEach(
+        element => {
+
+            element.onclick =
+                () => {
+
+                    document
+                        .querySelectorAll(
+                            ".color"
+                        )
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    element.classList.add(
+                        "active"
+                    );
+
+
+                    shirtColor =
+                        element.dataset.color;
+
+
+                    buildMannequin();
+
+                    saveLocal();
+
+                };
+
+        }
+    );
+
+
+/* =========================================================
+   CHANGEMENT VETEMENTS
+========================================================= */
+
+document.getElementById(
+    "shirtType"
+).addEventListener(
+    "change",
+    () => {
+
+        buildMannequin();
+
+        saveLocal();
+
+    }
+);
+
+
+document.getElementById(
+    "pantsType"
+).addEventListener(
+    "change",
+    () => {
+
+        buildMannequin();
+
+        saveLocal();
+
+    }
+);
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".nav-btn"
+    )
+    .forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    document
+                        .querySelectorAll(
+                            ".nav-btn"
+                        )
+                        .forEach(
+                            btn =>
+                                btn.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    filterViews(
+                        button.dataset.target
+                    );
+
+                };
+
+        }
+    );
+
+
+/* =========================================================
+   PRESETS
+========================================================= */
+
+document
+    .querySelectorAll(
+        "[data-preset]"
+    )
+    .forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    applyPreset(
+                        button.dataset.preset
+                    );
+
+                };
+
+        }
+    );
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+document.getElementById(
+    "resetBtn"
+).onclick =
+    () => {
+
+        applyPreset(
+            "man"
+        );
+
+        showToast(
+            "Configuration réinitialisée."
+        );
+
+    };
+
+
+/* =========================================================
+   APPLICATION
+========================================================= */
+
+document.getElementById(
+    "applyMan"
+).onclick =
+    applyMannequin;
+
+
+/* =========================================================
+   UNITES
+========================================================= */
+
+document.getElementById(
+    "unitSelect"
+).onchange =
+    event => {
+
+        unit =
+            event.target.value;
+
+
+        updateMannequinDimensions();
+
+        updateMotoDimensions();
+
+        updateCarDimensions();
+
+        saveLocal();
+
+    };
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+document.getElementById(
+    "themeBtn"
+).onclick =
+    () => {
+
+        document.body.classList.toggle(
+            "light"
+        );
+
+
+        saveLocal();
+
+    };
+
+
+/* =========================================================
+   AIDE
+========================================================= */
+
+const helpModal =
+    document.getElementById(
+        "helpModal"
+    );
+
+
+document.getElementById(
+    "helpBtn"
+).onclick =
+    () => {
+
+        helpModal.classList.add(
+            "show"
+        );
+
+    };
+
+
+document.getElementById(
+    "closeHelp"
+).onclick =
+    () => {
+
+        helpModal.classList.remove(
+            "show"
+        );
+
+    };
+
+
+helpModal.onclick =
+    event => {
+
+        if(
+            event.target ===
+            helpModal
+        ){
+
+            helpModal.classList.remove(
+                "show"
+            );
+
+        }
+
+    };
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key ===
+            "Escape"
+        ){
+
+            helpModal.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SAUVEGARDE
+========================================================= */
+
+document.getElementById(
+    "saveData"
+).onclick =
+    () => {
+
+        saveLocal();
+
+        showToast(
+            "Données sauvegardées sur cet appareil."
+        );
+
+    };
+
+
+document.getElementById(
+    "saveLocalBtn"
+).onclick =
+    () => {
+
+        saveLocal();
+
+        showToast(
+            "Sauvegarde effectuée."
+        );
+
+    };
+
+
+/* =========================================================
+   EFFACER SAUVEGARDE
+========================================================= */
+
+document.getElementById(
+    "clearLocalBtn"
+).onclick =
+    () => {
+
+        localStorage.removeItem(
+            APP_KEY
+        );
+
+        showToast(
+            "Sauvegarde locale supprimée."
+        );
+
+    };
+
+
+/* =========================================================
+   GRILLE GENERALE
+========================================================= */
+
+document.getElementById(
+    "toggleGrid"
+).onclick =
+    toggleGrids;
+
+
+/* =========================================================
+   CENTRAGE GENERAL
+========================================================= */
+
+document.getElementById(
+    "centerAll"
+).onclick =
+    () => {
+
+        centerScene(
+            "mannequinCanvas"
+        );
+
+        centerScene(
+            "motoCanvas"
+        );
+
+        centerScene(
+            "carCanvas"
+        );
+
+    };
+
+
+/* =========================================================
+   ACTIONS DES VUES
+========================================================= */
+
+document
+    .querySelectorAll(
+        "[data-camera]"
+    )
+    .forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    const key =
+                        button.dataset.camera ===
+                        "voiture"
+                            ? "carCanvas"
+                            : button.dataset.camera +
+                              "Canvas";
+
+
+                    centerScene(
+                        key
+                    );
+
+                };
+
+        }
+    );
+
+
+document
+    .querySelectorAll(
+        "[data-grid]"
+    )
+    .forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    const key =
+                        button.dataset.grid ===
+                        "voiture"
+                            ? "carCanvas"
+                            : button.dataset.grid +
+                              "Canvas";
+
+
+                    const data =
+                        scenes[key];
+
+
+                    if(data){
+
+                        data.grid.visible =
+                            !data.grid.visible;
+
+                    }
+
+                };
+
+        }
+    );
+
+
+document
+    .querySelectorAll(
+        "[data-capture]"
+    )
+    .forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    const type =
+                        button.dataset.capture;
+
+
+                    const key =
+                        type ===
+                        "voiture"
+                            ? "carCanvas"
+                            : type +
+                              "Canvas";
+
+
+                    captureScene(
+                        key,
+                        type +
+                        "-3d.png"
+                    );
+
+                };
+
+        }
+    );
+
+
+/* =========================================================
+   CAPTURE GENERALE
+========================================================= */
+
+document.getElementById(
+    "captureAll"
+).onclick =
+    captureAll;
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        Object.values(
+            scenes
+        ).forEach(
+            resizeScene
+        );
+
+    }
+);
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+function init(){
+
+    loadLocal();
+
+    updateInputs();
+
+
+    /*
+       Création des trois scènes
+    */
+
+    createScene(
+        document.getElementById(
+            "mannequinCanvas"
+        )
+    );
+
+
+    createScene(
+        document.getElementById(
+            "motoCanvas"
+        )
+    );
+
+
+    createScene(
+        document.getElementById(
+            "carCanvas"
+        )
+    );
+
+
+    /*
+       Construction des modèles
+    */
+
+    buildMannequin();
+
+    buildMoto();
+
+    buildCar();
+
+
+    /*
+       Affichage des mesures
+    */
+
+    updateMannequinDimensions();
+
+    updateMotoDimensions();
+
+    updateCarDimensions();
+
+
+    /*
+       Rendre les couleurs cohérentes
+    */
+
+    document
+        .querySelectorAll(
+            ".color"
+        )
+        .forEach(
+            element => {
+
+                if(
+                    element.dataset.color
+                    ===
+                    shirtColor
+                ){
+
+                    element.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+
+    /*
+       Sauvegarde initiale
+    */
+
+    saveLocal();
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>

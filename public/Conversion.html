@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Convertisseur d'unités moderne - Informatique, Chimie et Physique"
+    >
+
+    <title>⚡ UnitLab — Convertisseur d'unités</title>
+
+    <style>
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+
+            --bg: #020617;
+            --bg-soft: #07111f;
+            --panel: rgba(15, 23, 42, .82);
+            --panel-2: rgba(15, 23, 42, .58);
+
+            --border: rgba(148, 163, 184, .15);
+            --border-active: rgba(34, 211, 238, .55);
+
+            --text: #f8fafc;
+            --text-soft: #94a3b8;
+            --text-muted: #64748b;
+
+            --cyan: #22d3ee;
+            --cyan-dark: #0891b2;
+
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+
+            --shadow:
+                0 25px 80px rgba(0, 0, 0, .45);
+
+            --radius: 18px;
+        }
+
+
+        /* =========================================================
+           BODY
+        ========================================================= */
+
+        body {
+
+            min-height: 100vh;
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+
+                radial-gradient(
+                    circle at 10% 0%,
+                    rgba(14, 165, 233, .16),
+                    transparent 28%
+                ),
+
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(139, 92, 246, .14),
+                    transparent 25%
+                ),
+
+                linear-gradient(
+                    135deg,
+                    #020617,
+                    #06101e 50%,
+                    #020617
+                );
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================================
+           APP
+        ========================================================= */
+
+        .app {
+
+            width: min(1400px, 100%);
+
+            margin: auto;
+
+            padding: 24px;
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+
+            padding: 22px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 24px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(15, 23, 42, .9),
+                    rgba(8, 47, 73, .48)
+                );
+
+            box-shadow: var(--shadow);
+
+            backdrop-filter: blur(18px);
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+        }
+
+
+        .logo {
+
+            width: 52px;
+            height: 52px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 16px;
+
+            font-size: 27px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0891b2,
+                    #2563eb
+                );
+
+            box-shadow:
+                0 0 35px
+                rgba(34, 211, 238, .25);
+        }
+
+
+        .brand h1 {
+
+            font-size: clamp(22px, 4vw, 30px);
+
+            letter-spacing: -.7px;
+        }
+
+
+        .brand p {
+
+            margin-top: 3px;
+
+            color: var(--text-soft);
+
+            font-size: 13px;
+        }
+
+
+        .status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color: var(--text-soft);
+
+            font-size: 13px;
+        }
+
+
+        .status-dot {
+
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+
+            box-shadow:
+                0 0 12px
+                rgba(34, 197, 94, .7);
+        }
+
+
+        /* =========================================================
+           DOMAINES
+        ========================================================= */
+
+        .domains {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .domain-btn {
+
+            position: relative;
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+
+            padding: 17px;
+
+            color: var(--text-soft);
+
+            background:
+                rgba(15, 23, 42, .65);
+
+            cursor: pointer;
+
+            text-align: left;
+
+            transition:
+                .2s ease;
+        }
+
+
+        .domain-btn:hover {
+
+            transform: translateY(-2px);
+
+            border-color:
+                rgba(34, 211, 238, .35);
+
+            color: white;
+        }
+
+
+        .domain-btn.active {
+
+            color: white;
+
+            border-color:
+                var(--border-active);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(8, 145, 178, .2),
+                    rgba(37, 99, 235, .13)
+                );
+
+            box-shadow:
+                0 10px 35px
+                rgba(8, 145, 178, .12);
+        }
+
+
+        .domain-icon {
+
+            font-size: 25px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .domain-title {
+
+            display: block;
+
+            font-weight: 700;
+
+            font-size: 15px;
+        }
+
+
+        .domain-description {
+
+            display: block;
+
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            color: var(--text-muted);
+        }
+
+
+        /* =========================================================
+           LAYOUT PRINCIPAL
+        ========================================================= */
+
+        .workspace {
+
+            display: grid;
+
+            grid-template-columns:
+                290px
+                1fr;
+
+            gap: 20px;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+
+            padding: 18px;
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            background:
+                var(--panel);
+
+            box-shadow: var(--shadow);
+
+            backdrop-filter: blur(18px);
+
+            height: fit-content;
+        }
+
+
+        .sidebar-title {
+
+            margin-bottom: 13px;
+
+            color: var(--text-soft);
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.4px;
+
+            text-transform: uppercase;
+        }
+
+
+        .category-list {
+
+            display: grid;
+
+            gap: 8px;
+        }
+
+
+        .category-btn {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: 1px solid transparent;
+
+            border-radius: 12px;
+
+            background: transparent;
+
+            color: var(--text-soft);
+
+            cursor: pointer;
+
+            text-align: left;
+
+            transition: .2s ease;
+        }
+
+
+        .category-btn:hover {
+
+            background:
+                rgba(148, 163, 184, .07);
+
+            color: white;
+        }
+
+
+        .category-btn.active {
+
+            border-color:
+                rgba(34, 211, 238, .25);
+
+            background:
+                rgba(34, 211, 238, .08);
+
+            color: var(--cyan);
+        }
+
+
+        .category-name {
+
+            display: block;
+
+            font-weight: 700;
+        }
+
+
+        .category-info {
+
+            display: block;
+
+            margin-top: 3px;
+
+            font-size: 11px;
+
+            color: var(--text-muted);
+        }
+
+
+        /* =========================================================
+           CONVERTISSEUR
+        ========================================================= */
+
+        .converter {
+
+            min-width: 0;
+
+            padding: 25px;
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            background:
+                var(--panel);
+
+            box-shadow: var(--shadow);
+
+            backdrop-filter: blur(18px);
+        }
+
+
+        .converter-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .converter-header h2 {
+
+            font-size: clamp(20px, 3vw, 27px);
+        }
+
+
+        .converter-header p {
+
+            margin-top: 6px;
+
+            color: var(--text-soft);
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        .badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 7px 10px;
+
+            border: 1px solid
+                rgba(34, 211, 238, .25);
+
+            border-radius: 999px;
+
+            color: var(--cyan);
+
+            background:
+                rgba(34, 211, 238, .08);
+
+            font-size: 11px;
+
+            white-space: nowrap;
+        }
+
+
+        /* =========================================================
+           INPUT PRINCIPAL
+        ========================================================= */
+
+        .input-section {
+
+            padding: 18px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+
+            background:
+                rgba(2, 6, 23, .45);
+
+            margin-bottom: 20px;
+        }
+
+
+        .input-label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: var(--text-soft);
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .input-row {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                180px
+                52px;
+
+            gap: 10px;
+        }
+
+
+        input,
+        select {
+
+            width: 100%;
+
+            min-height: 50px;
+
+            border: 1px solid
+                rgba(148, 163, 184, .18);
+
+            border-radius: 12px;
+
+            outline: none;
+
+            color: white;
+
+            background:
+                #0b1220;
+
+            padding: 0 14px;
+
+            font-size: 15px;
+
+            transition: .2s ease;
+        }
+
+
+        input:focus,
+        select:focus {
+
+            border-color:
+                var(--cyan);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(34, 211, 238, .08);
+        }
+
+
+        input[type="number"] {
+
+            font-size: 20px;
+
+            font-weight: 700;
+        }
+
+
+        select {
+
+            cursor: pointer;
+        }
+
+
+        option {
+
+            background: #0b1220;
+
+            color: white;
+        }
+
+
+        .swap-btn {
+
+            width: 52px;
+
+            border: 1px solid
+                rgba(34, 211, 238, .25);
+
+            border-radius: 12px;
+
+            background:
+                rgba(34, 211, 238, .08);
+
+            color: var(--cyan);
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            transition: .2s ease;
+        }
+
+
+        .swap-btn:hover {
+
+            transform: rotate(180deg);
+
+            background:
+                rgba(34, 211, 238, .15);
+        }
+
+
+        /* =========================================================
+           OPTIONS
+        ========================================================= */
+
+        .options {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-top: 13px;
+        }
+
+
+        .toggle {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color: var(--text-soft);
+
+            font-size: 12px;
+
+            cursor: pointer;
+        }
+
+
+        .toggle input {
+
+            width: 38px;
+
+            min-height: auto;
+
+            height: 20px;
+
+            accent-color: var(--cyan);
+
+            cursor: pointer;
+        }
+
+
+        .molar-box {
+
+            display: none;
+
+            grid-template-columns:
+                1fr 130px;
+
+            gap: 10px;
+
+            margin-top: 13px;
+        }
+
+
+        .molar-box.visible {
+
+            display: grid;
+        }
+
+
+        /* =========================================================
+           RESULTATS
+        ========================================================= */
+
+        .results-title {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 11px;
+        }
+
+
+        .results-title strong {
+
+            font-size: 14px;
+        }
+
+
+        .results-title span {
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+        }
+
+
+        .results {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+
+        .result-card {
+
+            position: relative;
+
+            min-width: 0;
+
+            padding: 17px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(15, 23, 42, .75),
+                    rgba(2, 6, 23, .55)
+                );
+
+            transition:
+                .2s ease;
+        }
+
+
+        .result-card:hover {
+
+            border-color:
+                rgba(34, 211, 238, .35);
+
+            transform: translateY(-2px);
+        }
+
+
+        .result-unit {
+
+            color: var(--text-soft);
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            margin-bottom: 9px;
+        }
+
+
+        .result-value {
+
+            overflow-wrap: anywhere;
+
+            color: white;
+
+            font-size: clamp(18px, 3vw, 24px);
+
+            font-weight: 800;
+
+            letter-spacing: -.5px;
+        }
+
+
+        .result-copy {
+
+            position: absolute;
+
+            right: 12px;
+            top: 12px;
+
+            border: none;
+
+            background: transparent;
+
+            color: var(--text-muted);
+
+            cursor: pointer;
+
+            font-size: 15px;
+        }
+
+
+        .result-copy:hover {
+
+            color: var(--cyan);
+        }
+
+
+        /* =========================================================
+           FORMULE
+        ========================================================= */
+
+        .formula {
+
+            margin-top: 18px;
+
+            padding: 15px 17px;
+
+            border-left:
+                3px solid
+                var(--cyan);
+
+            border-radius: 10px;
+
+            color: var(--text-soft);
+
+            background:
+                rgba(34, 211, 238, .04);
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                monospace;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+        }
+
+
+        .formula strong {
+
+            color: var(--cyan);
+        }
+
+
+        /* =========================================================
+           INFO PHYSIQUE
+        ========================================================= */
+
+        .warning {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 15px;
+
+            padding: 13px;
+
+            border:
+                1px solid
+                rgba(245, 158, 11, .25);
+
+            border-radius: 12px;
+
+            color: #fcd34d;
+
+            background:
+                rgba(245, 158, 11, .05);
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+
+            margin-top: 20px;
+
+            padding: 17px;
+
+            text-align: center;
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        #toast {
+
+            position: fixed;
+
+            left: 50%;
+
+            bottom: 25px;
+
+            transform:
+                translate(-50%, 120px);
+
+            padding: 12px 18px;
+
+            border:
+                1px solid
+                rgba(34, 211, 238, .3);
+
+            border-radius: 999px;
+
+            color: white;
+
+            background:
+                rgba(15, 23, 42, .95);
+
+            box-shadow:
+                0 15px 45px
+                rgba(0,0,0,.4);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: .3s ease;
+
+            z-index: 100;
+        }
+
+
+        #toast.show {
+
+            opacity: 1;
+
+            transform:
+                translate(-50%, 0);
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media(max-width: 900px) {
+
+            .workspace {
+
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+
+                overflow-x: auto;
+            }
+
+            .category-list {
+
+                display: flex;
+
+                min-width: max-content;
+            }
+
+            .category-btn {
+
+                width: 190px;
+            }
+
+        }
+
+
+        @media(max-width: 650px) {
+
+            .app {
+
+                padding: 12px;
+            }
+
+            header {
+
+                padding: 17px;
+
+                align-items: flex-start;
+            }
+
+            .status {
+
+                display: none;
+            }
+
+            .domains {
+
+                grid-template-columns: 1fr;
+            }
+
+            .domain-btn {
+
+                padding: 14px;
+            }
+
+            .converter {
+
+                padding: 17px;
+            }
+
+            .converter-header {
+
+                flex-direction: column;
+            }
+
+            .input-row {
+
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+            .swap-btn {
+
+                width: 100%;
+
+                grid-column: 1 / -1;
+
+                height: 42px;
+            }
+
+            .results {
+
+                grid-template-columns: 1fr;
+            }
+
+            .molar-box {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media(max-width: 400px) {
+
+            .brand p {
+
+                display: none;
+            }
+
+            .logo {
+
+                width: 45px;
+                height: 45px;
+            }
+
+            .input-row {
+
+                grid-template-columns: 1fr;
+            }
+
+            .swap-btn {
+
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header>
+
+        <div class="brand">
+
+            <div class="logo">
+                ⚡
+            </div>
+
+            <div>
+
+                <h1>
+                    UnitLab
+                </h1>
+
+                <p>
+                    Convertisseur scientifique moderne
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="status">
+
+            <span class="status-dot"></span>
+
+            Conversion instantanée
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         DOMAINES
+    ========================================================== -->
+
+    <section class="domains">
+
+        <button
+            class="domain-btn active"
+            data-domain="informatique"
+        >
+
+            <div class="domain-icon">
+                💻
+            </div>
+
+            <span class="domain-title">
+                Informatique
+            </span>
+
+            <span class="domain-description">
+                Stockage et débit réseau
+            </span>
+
+        </button>
+
+
+        <button
+            class="domain-btn"
+            data-domain="chimie"
+        >
+
+            <div class="domain-icon">
+                🧪
+            </div>
+
+            <span class="domain-title">
+                Chimie
+            </span>
+
+            <span class="domain-description">
+                Concentrations et volumes
+            </span>
+
+        </button>
+
+
+        <button
+            class="domain-btn"
+            data-domain="physique"
+        >
+
+            <div class="domain-icon">
+                ⚛️
+            </div>
+
+            <span class="domain-title">
+                Physique
+            </span>
+
+            <span class="domain-description">
+                Grandeurs physiques
+            </span>
+
+        </button>
+
+    </section>
+
+
+    <!-- =========================================================
+         WORKSPACE
+    ========================================================== -->
+
+    <main class="workspace">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-title">
+                Grandeur
+            </div>
+
+            <div
+                class="category-list"
+                id="categoryList"
+            ></div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             CONVERTISSEUR
+        ====================================================== -->
+
+        <section class="converter">
+
+            <div class="converter-header">
+
+                <div>
+
+                    <h2 id="converterTitle">
+                        Stockage de données
+                    </h2>
+
+                    <p id="converterDescription">
+                        Convertissez bits, octets et multiples décimaux ou binaires.
+                    </p>
+
+                </div>
+
+                <div
+                    class="badge"
+                    id="unitBadge"
+                >
+                    ⚡ Temps réel
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 INPUT
+            ================================================== -->
+
+            <div class="input-section">
+
+                <label
+                    class="input-label"
+                    for="inputValue"
+                >
+                    Valeur à convertir
+                </label>
+
+
+                <div class="input-row">
+
+                    <input
+                        id="inputValue"
+                        type="number"
+                        value="1"
+                        step="any"
+                        autocomplete="off"
+                    >
+
+
+                    <select id="fromUnit">
+                    </select>
+
+
+                    <button
+                        class="swap-btn"
+                        id="swapBtn"
+                        title="Échanger les unités"
+                    >
+                        ⇄
+                    </button>
+
+                </div>
+
+
+                <!-- Options -->
+
+                <div
+                    class="options"
+                    id="options"
+                ></div>
+
+
+                <!-- Masse molaire -->
+
+                <div
+                    class="molar-box"
+                    id="molarBox"
+                >
+
+                    <input
+                        id="molarName"
+                        type="text"
+                        value="NaCl"
+                        placeholder="Substance"
+                    >
+
+                    <input
+                        id="molarMass"
+                        type="number"
+                        value="58.5"
+                        min="0.000001"
+                        step="any"
+                        placeholder="g/mol"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 RESULTATS
+            ================================================== -->
+
+            <div class="results-title">
+
+                <strong>
+                    Résultats
+                </strong>
+
+                <span id="resultCount">
+                    0 unités
+                </span>
+
+            </div>
+
+
+            <div
+                class="results"
+                id="results"
+            ></div>
+
+
+            <!-- Formule -->
+
+            <div
+                class="formula"
+                id="formula"
+            ></div>
+
+
+            <!-- Avertissement -->
+
+            <div
+                class="warning"
+                id="warning"
+                style="display:none;"
+            >
+
+                <span>💡</span>
+
+                <span id="warningText"></span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        UnitLab • Informatique • Chimie • Physique
+        <br>
+        Toutes les conversions sont calculées localement en JavaScript.
+
+    </footer>
+
+</div>
+
+
+<div id="toast">
+    Copié !
+</div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   DONNÉES DES CONVERSIONS
+========================================================= */
+
+/*
+    Chaque unité possède un facteur permettant
+    de convertir vers une unité de référence.
+
+    Exemple :
+
+    1 km = 1000 m
+
+    facteur km = 1000
+    référence = m
+*/
+
+
+const DATA = {
+
+
+    /* =====================================================
+       INFORMATIQUE
+    ===================================================== */
+
+    informatique: {
+
+        stockage: {
+
+            title:
+                "Stockage de données",
+
+            description:
+                "Convertissez bits, octets et multiples décimaux ou binaires.",
+
+            units: {
+
+                bit: {
+                    label: "Bit (b)",
+                    factor: 1 / 8
+                },
+
+                octet: {
+                    label: "Octet (o / B)",
+                    factor: 1
+                },
+
+                ko: {
+                    label: "Kilooctet (Ko)",
+                    factor: 1000
+                },
+
+                mo: {
+                    label: "Mégaoctet (Mo)",
+                    factor: 1000000
+                },
+
+                go: {
+                    label: "Gigaoctet (Go)",
+                    factor: 1000000000
+                },
+
+                to: {
+                    label: "Téraoctet (To)",
+                    factor: 1000000000000
+                }
+
+            },
+
+            formula:
+                "1 o = 8 b • 1 Ko = 10³ o • 1 Mo = 10⁶ o • 1 Go = 10⁹ o • 1 To = 10¹² o"
+
+        },
+
+
+        debit: {
+
+            title:
+                "Débit réseau",
+
+            description:
+                "Convertissez les vitesses de transfert entre Mo/s et Mb/s.",
+
+            units: {
+
+                mos: {
+                    label: "Mégaoctet / seconde (Mo/s)",
+                    factor: 1
+                },
+
+                mbs: {
+                    label: "Mégabit / seconde (Mb/s)",
+                    factor: 1 / 8
+                },
+
+                gbs: {
+                    label: "Gigabit / seconde (Gb/s)",
+                    factor: 125
+                }
+
+            },
+
+            formula:
+                "1 Mo/s = 8 Mb/s • 1 Gb/s = 1000 Mb/s = 125 Mo/s"
+
+        }
+
+    },
+
+
+    /* =====================================================
+       CHIMIE
+    ===================================================== */
+
+    chimie: {
+
+        concentration: {
+
+            title:
+                "Concentration",
+
+            description:
+                "Convertissez concentration molaire et concentration massique avec une masse molaire.",
+
+            units: {
+
+                molL: {
+                    label: "Concentration molaire (mol/L)",
+                    factor: 1
+                },
+
+                gL: {
+                    label: "Concentration massique (g/L)",
+                    factor: 1
+                }
+
+            },
+
+            formula:
+                "Cm = C × M • C = Cm / M"
+
+        },
+
+
+        volume: {
+
+            title:
+                "Volume",
+
+            description:
+                "Convertissez litres, millilitres, dm³ et m³.",
+
+            units: {
+
+                L: {
+                    label: "Litre (L)",
+                    factor: 1
+                },
+
+                mL: {
+                    label: "Millilitre (mL)",
+                    factor: 0.001
+                },
+
+                dm3: {
+                    label: "Décimètre cube (dm³)",
+                    factor: 1
+                },
+
+                m3: {
+                    label: "Mètre cube (m³)",
+                    factor: 1000
+                }
+
+            },
+
+            formula:
+                "1 L = 1 dm³ = 1000 mL = 0,001 m³"
+
+        }
+
+    },
+
+
+    /* =====================================================
+       PHYSIQUE
+    ===================================================== */
+
+    physique: {
+
+        temps: {
+
+            title:
+                "Temps",
+
+            description:
+                "Convertissez secondes, minutes et heures.",
+
+            units: {
+
+                s: {
+                    label: "Seconde (s)",
+                    factor: 1
+                },
+
+                min: {
+                    label: "Minute (min)",
+                    factor: 60
+                },
+
+                h: {
+                    label: "Heure (h)",
+                    factor: 3600
+                }
+
+            },
+
+            formula:
+                "1 min = 60 s • 1 h = 3600 s"
+
+        },
+
+
+        distance: {
+
+            title:
+                "Distance / Longueur",
+
+            description:
+                "Convertissez mètres, kilomètres, millimètres, micromètres et nanomètres.",
+
+            units: {
+
+                m: {
+                    label: "Mètre (m)",
+                    factor: 1
+                },
+
+                km: {
+                    label: "Kilomètre (km)",
+                    factor: 1000
+                },
+
+                mm: {
+                    label: "Millimètre (mm)",
+                    factor: 0.001
+                },
+
+                um: {
+                    label: "Micromètre (µm)",
+                    factor: 0.000001
+                },
+
+                nm: {
+                    label: "Nanomètre (nm)",
+                    factor: 0.000000001
+                }
+
+            },
+
+            formula:
+                "1 km = 1000 m • 1 m = 1000 mm = 10⁶ µm = 10⁹ nm"
+
+        },
+
+
+        vitesse: {
+
+            title:
+                "Vitesse",
+
+            description:
+                "Convertissez mètres par seconde et kilomètres par heure.",
+
+            units: {
+
+                ms: {
+                    label: "Mètre / seconde (m/s)",
+                    factor: 1
+                },
+
+                kmh: {
+                    label: "Kilomètre / heure (km/h)",
+                    factor: 1 / 3.6
+                }
+
+            },
+
+            formula:
+                "m/s → km/h : × 3,6 • km/h → m/s : ÷ 3,6"
+
+        },
+
+
+        energie: {
+
+            title:
+                "Énergie",
+
+            description:
+                "Convertissez joules, kilowattheures et calories.",
+
+            units: {
+
+                J: {
+                    label: "Joule (J)",
+                    factor: 1
+                },
+
+                kWh: {
+                    label: "Kilowattheure (kWh)",
+                    factor: 3600000
+                },
+
+                cal: {
+                    label: "Calorie (cal)",
+                    factor: 4.184
+                }
+
+            },
+
+            formula:
+                "1 kWh = 3,6 × 10⁶ J • 1 cal = 4,184 J"
+
+        },
+
+
+        puissance: {
+
+            title:
+                "Puissance",
+
+            description:
+                "Unité de puissance exprimée en watts.",
+
+            units: {
+
+                W: {
+                    label: "Watt (W)",
+                    factor: 1
+                },
+
+                kW: {
+                    label: "Kilowatt (kW)",
+                    factor: 1000
+                }
+
+            },
+
+            formula:
+                "1 W = 1 J/s • 1 kW = 1000 W",
+
+            warning:
+                "Un watt mesure une puissance alors qu'un joule mesure une énergie. Ils ne peuvent pas être convertis directement sans connaître une durée."
+
+        },
+
+
+        electricite: {
+
+            title:
+                "Électricité",
+
+            description:
+                "Explorez les principales unités électriques. Les grandeurs restent séparées car elles ne sont pas directement convertibles entre elles.",
+
+            units: {
+
+                V: {
+                    label: "Volt (V)",
+                    factor: 1
+                },
+
+                A: {
+                    label: "Ampère (A)",
+                    factor: 1
+                },
+
+                ohm: {
+                    label: "Ohm (Ω)",
+                    factor: 1
+                },
+
+                Hz: {
+                    label: "Hertz (Hz)",
+                    factor: 1
+                },
+
+                GHz: {
+                    label: "Gigahertz (GHz)",
+                    factor: 1000000000
+                }
+
+            },
+
+            formula:
+                "V, A, Ω et Hz représentent des grandeurs différentes. GHz = 10⁹ Hz.",
+
+            warning:
+                "Les volts, ampères et ohms ne sont pas des unités interchangeables. La conversion automatique n'est appliquée qu'entre Hz et GHz."
+
+        },
+
+
+        frequence: {
+
+            title:
+                "Fréquence",
+
+            description:
+                "Convertissez les fréquences entre Hz et GHz.",
+
+            units: {
+
+                Hz: {
+                    label: "Hertz (Hz)",
+                    factor: 1
+                },
+
+                GHz: {
+                    label: "Gigahertz (GHz)",
+                    factor: 1000000000
+                }
+
+            },
+
+            formula:
+                "1 GHz = 10⁹ Hz"
+
+        },
+
+
+        pression: {
+
+            title:
+                "Pression",
+
+            description:
+                "Convertissez pascals, bars et atmosphères.",
+
+            units: {
+
+                Pa: {
+                    label: "Pascal (Pa)",
+                    factor: 1
+                },
+
+                bar: {
+                    label: "Bar (bar)",
+                    factor: 100000
+                },
+
+                atm: {
+                    label: "Atmosphère (atm)",
+                    factor: 101325
+                }
+
+            },
+
+            formula:
+                "1 bar = 10⁵ Pa • 1 atm = 101325 Pa = 1,01325 bar"
+
+        }
+
+    }
+
+};
+
+
+/* =========================================================
+   ÉTAT
+========================================================= */
+
+let currentDomain =
+    "informatique";
+
+let currentCategory =
+    "stockage";
+
+
+/* =========================================================
+   ELEMENTS DOM
+========================================================= */
+
+const domainButtons =
+    document.querySelectorAll(
+        ".domain-btn"
+    );
+
+const categoryList =
+    document.getElementById(
+        "categoryList"
+    );
+
+const inputValue =
+    document.getElementById(
+        "inputValue"
+    );
+
+const fromUnit =
+    document.getElementById(
+        "fromUnit"
+    );
+
+const results =
+    document.getElementById(
+        "results"
+    );
+
+const converterTitle =
+    document.getElementById(
+        "converterTitle"
+    );
+
+const converterDescription =
+    document.getElementById(
+        "converterDescription"
+    );
+
+const formula =
+    document.getElementById(
+        "formula"
+    );
+
+const options =
+    document.getElementById(
+        "options"
+    );
+
+const molarBox =
+    document.getElementById(
+        "molarBox"
+    );
+
+const molarMass =
+    document.getElementById(
+        "molarMass"
+    );
+
+const molarName =
+    document.getElementById(
+        "molarName"
+    );
+
+const warning =
+    document.getElementById(
+        "warning"
+    );
+
+const warningText =
+    document.getElementById(
+        "warningText"
+    );
+
+const resultCount =
+    document.getElementById(
+        "resultCount"
+    );
+
+const swapBtn =
+    document.getElementById(
+        "swapBtn"
+    );
+
+const toast =
+    document.getElementById(
+        "toast"
+    );
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+renderCategories();
+
+renderConverter();
+
+
+/* =========================================================
+   CHANGEMENT DE DOMAINE
+========================================================= */
+
+domainButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                currentDomain =
+                    button.dataset.domain;
+
+                const firstCategory =
+                    Object.keys(
+                        DATA[currentDomain]
+                    )[0];
+
+                currentCategory =
+                    firstCategory;
+
+                domainButtons.forEach(
+                    btn =>
+                        btn.classList.remove(
+                            "active"
+                        )
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                renderCategories();
+
+                renderConverter();
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   AFFICHER LES CATÉGORIES
+========================================================= */
+
+function renderCategories() {
+
+    categoryList.innerHTML =
+        "";
+
+    const categories =
+        DATA[currentDomain];
+
+    Object.entries(
+        categories
+    ).forEach(
+        (
+            [key, category]
+        ) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.className =
+                "category-btn";
+
+            if(
+                key ===
+                currentCategory
+            ) {
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+            button.innerHTML = `
+                <span class="category-name">
+                    ${category.title}
+                </span>
+
+                <span class="category-info">
+                    ${Object.keys(category.units).length} unités
+                </span>
+            `;
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    currentCategory =
+                        key;
+
+                    renderCategories();
+
+                    renderConverter();
+
+                }
+            );
+
+            categoryList.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   AFFICHER LE CONVERTISSEUR
+========================================================= */
+
+function renderConverter() {
+
+    const category =
+        DATA[currentDomain][currentCategory];
+
+    converterTitle.textContent =
+        category.title;
+
+    converterDescription.textContent =
+        category.description;
+
+    formula.innerHTML =
+        `<strong>Formules :</strong> ${category.formula}`;
+
+    warning.style.display =
+        category.warning
+            ? "flex"
+            : "none";
+
+    warningText.textContent =
+        category.warning || "";
+
+    /*
+        Unités
+    */
+
+    fromUnit.innerHTML =
+        "";
+
+    Object.entries(
+        category.units
+    ).forEach(
+        (
+            [key, unit]
+        ) => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                key;
+
+            option.textContent =
+                unit.label;
+
+            fromUnit.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    /*
+        Options spécifiques
+    */
+
+    renderOptions();
+
+    /*
+        Concentration
+    */
+
+    molarBox.classList.toggle(
+        "visible",
+        currentCategory ===
+        "concentration"
+    );
+
+
+    /*
+        Calcul initial
+    */
+
+    convert();
+
+}
+
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+function renderOptions() {
+
+    options.innerHTML =
+        "";
+
+    /*
+        Toggle binaire pour
+        le stockage informatique.
+    */
+
+    if(
+        currentDomain ===
+        "informatique" &&
+        currentCategory ===
+        "stockage"
+    ) {
+
+        const label =
+            document.createElement(
+                "label"
+            );
+
+        label.className =
+            "toggle";
+
+        label.innerHTML = `
+            <input
+                type="checkbox"
+                id="binaryToggle"
+            >
+
+            <span>
+                Mode binaire : Kio / Mio / Gio / Tio
+            </span>
+        `;
+
+        options.appendChild(
+            label
+        );
+
+
+        document
+            .getElementById(
+                "binaryToggle"
+            )
+            .addEventListener(
+                "change",
+                convert
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   OBTENIR LES UNITÉS ACTUELLES
+========================================================= */
+
+function getUnits() {
+
+    const category =
+        DATA[currentDomain][currentCategory];
+
+    /*
+        Mode binaire.
+    */
+
+    if(
+        currentDomain ===
+        "informatique" &&
+        currentCategory ===
+        "stockage"
+    ) {
+
+        const binaryToggle =
+            document.getElementById(
+                "binaryToggle"
+            );
+
+        if(
+            binaryToggle &&
+            binaryToggle.checked
+        ) {
+
+            return {
+
+                bit: {
+                    label: "Bit (b)",
+                    factor: 1 / 8
+                },
+
+                octet: {
+                    label: "Octet (o / B)",
+                    factor: 1
+                },
+
+                ko: {
+                    label: "Kibioctet (Kio)",
+                    factor: 1024
+                },
+
+                mo: {
+                    label: "Mébioctet (Mio)",
+                    factor:
+                        1024 ** 2
+                },
+
+                go: {
+                    label: "Gibioctet (Gio)",
+                    factor:
+                        1024 ** 3
+                },
+
+                to: {
+                    label: "Tébioctet (Tio)",
+                    factor:
+                        1024 ** 4
+                }
+
+            };
+
+        }
+
+    }
+
+    return category.units;
+
+}
+
+
+/* =========================================================
+   CONVERSION
+========================================================= */
+
+function convert() {
+
+    const value =
+        Number(
+            inputValue.value
+        );
+
+    const units =
+        getUnits();
+
+    const sourceUnit =
+        fromUnit.value;
+
+
+    /*
+        Valeur invalide
+    */
+
+    if(
+        !Number.isFinite(value)
+    ) {
+
+        results.innerHTML =
+            `
+            <div class="result-card">
+                <div class="result-value">
+                    —
+                </div>
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    /*
+        CAS SPÉCIAL :
+        CONCENTRATION CHIMIQUE
+    */
+
+    if(
+        currentCategory ===
+        "concentration"
+    ) {
+
+        convertConcentration(
+            value
+        );
+
+        return;
+
+    }
+
+
+    /*
+        CAS SPÉCIAL :
+        ÉLECTRICITÉ
+    */
+
+    if(
+        currentCategory ===
+        "electricite"
+    ) {
+
+        convertElectricity(
+            value
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Conversion classique.
+
+        1. Convertir l'entrée
+           vers l'unité de référence.
+
+        2. Convertir la référence
+           vers toutes les unités.
+    */
+
+    const baseValue =
+        value *
+        units[sourceUnit].factor;
+
+
+    results.innerHTML =
+        "";
+
+
+    Object.entries(
+        units
+    ).forEach(
+        (
+            [key, unit]
+        ) => {
+
+            const converted =
+                baseValue /
+                unit.factor;
+
+            createResultCard(
+                key,
+                unit.label,
+                converted
+            );
+
+        }
+    );
+
+
+    resultCount.textContent =
+        `${Object.keys(units).length} unités`;
+
+}
+
+
+/* =========================================================
+   CONCENTRATION
+========================================================= */
+
+function convertConcentration(
+    value
+) {
+
+    const M =
+        Number(
+            molarMass.value
+        );
+
+
+    if(
+        !Number.isFinite(M) ||
+        M <= 0
+    ) {
+
+        results.innerHTML =
+            `
+            <div class="result-card">
+                <div class="result-unit">
+                    Masse molaire
+                </div>
+
+                <div class="result-value">
+                    Entrez M
+                </div>
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    results.innerHTML =
+        "";
+
+
+    let C;
+    let Cm;
+
+
+    /*
+        C = mol/L
+        Cm = g/L
+
+        Cm = C × M
+    */
+
+    if(
+        fromUnit.value ===
+        "molL"
+    ) {
+
+        C =
+            value;
+
+        Cm =
+            C * M;
+
+    }
+    else {
+
+        Cm =
+            value;
+
+        C =
+            Cm / M;
+
+    }
+
+
+    createResultCard(
+        "molL",
+        "Concentration molaire (mol/L)",
+        C
+    );
+
+
+    createResultCard(
+        "gL",
+        "Concentration massique (g/L)",
+        Cm
+    );
+
+
+    resultCount.textContent =
+        "2 unités";
+
+
+    formula.innerHTML =
+        `
+        <strong>${molarName.value || "Substance"}</strong>
+        —
+        M = ${formatNumber(M)} g/mol
+        •
+        Cm = C × M
+        •
+        C = Cm / M
+        `;
+
+}
+
+
+/* =========================================================
+   ÉLECTRICITÉ
+========================================================= */
+
+function convertElectricity(
+    value
+) {
+
+    results.innerHTML =
+        "";
+
+
+    /*
+        Hz et GHz peuvent être
+        convertis entre eux.
+
+        V, A et Ω ne sont pas
+        directement convertibles.
+    */
+
+    if(
+        fromUnit.value ===
+        "Hz" ||
+        fromUnit.value ===
+        "GHz"
+    ) {
+
+        const hz =
+            fromUnit.value ===
+            "Hz"
+                ? value
+                : value * 1000000000;
+
+
+        createResultCard(
+            "Hz",
+            "Hertz (Hz)",
+            hz
+        );
+
+
+        createResultCard(
+            "GHz",
+            "Gigahertz (GHz)",
+            hz / 1000000000
+        );
+
+    }
+    else {
+
+        const unit =
+            DATA
+                .physique
+                .electricite
+                .units[
+                    fromUnit.value
+                ];
+
+        createResultCard(
+            fromUnit.value,
+            unit.label,
+            value
+        );
+
+        const message =
+            document.createElement(
+                "div"
+            );
+
+        message.className =
+            "result-card";
+
+        message.innerHTML = `
+            <div class="result-unit">
+                Conversion physique
+            </div>
+
+            <div
+                class="result-value"
+                style="font-size:15px;line-height:1.5"
+            >
+                ${unit.label} ne peut pas être
+                converti directement en V,
+                A ou Ω.
+            </div>
+        `;
+
+        results.appendChild(
+            message
+        );
+
+    }
+
+
+    resultCount.textContent =
+        "Grandeur physique";
+}
+
+
+/* =========================================================
+   CREER UNE CARTE DE RESULTAT
+========================================================= */
+
+function createResultCard(
+    key,
+    label,
+    value
+) {
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "result-card";
+
+
+    const valueText =
+        formatNumber(value);
+
+
+    card.innerHTML = `
+
+        <div class="result-unit">
+            ${label}
+        </div>
+
+        <div class="result-value">
+            ${valueText}
+        </div>
+
+        <button
+            class="result-copy"
+            title="Copier"
+        >
+            📋
+        </button>
+
+    `;
+
+
+    const copyButton =
+        card.querySelector(
+            ".result-copy"
+        );
+
+
+    copyButton.addEventListener(
+        "click",
+        () => {
+
+            copyText(
+                valueText
+            );
+
+        }
+    );
+
+
+    results.appendChild(
+        card
+    );
+
+}
+
+
+/* =========================================================
+   FORMATAGE DES NOMBRES
+========================================================= */
+
+function formatNumber(
+    value
+) {
+
+    if(
+        !Number.isFinite(value)
+    ) {
+
+        return "—";
+
+    }
+
+
+    /*
+        Évite les nombres avec
+        trop de décimales.
+    */
+
+    const absolute =
+        Math.abs(value);
+
+
+    if(
+        absolute !== 0 &&
+        (
+            absolute >= 1e12 ||
+            absolute < 1e-6
+        )
+    ) {
+
+        return value.toExponential(8);
+
+    }
+
+
+    return new Intl.NumberFormat(
+        "fr-FR",
+        {
+            maximumFractionDigits: 12
+        }
+    ).format(value);
+
+}
+
+
+/* =========================================================
+   ÉCHANGER LES UNITÉS
+========================================================= */
+
+swapBtn.addEventListener(
+    "click",
+    () => {
+
+        /*
+            On choisit la première
+            autre unité comme nouvelle
+            unité source.
+        */
+
+        const options =
+            [...fromUnit.options];
+
+        const currentIndex =
+            fromUnit.selectedIndex;
+
+        const nextIndex =
+            (currentIndex + 1) %
+            options.length;
+
+        fromUnit.value =
+            options[nextIndex].value;
+
+        convert();
+
+    }
+);
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+inputValue.addEventListener(
+    "input",
+    convert
+);
+
+fromUnit.addEventListener(
+    "change",
+    convert
+);
+
+molarMass.addEventListener(
+    "input",
+    convert
+);
+
+molarName.addEventListener(
+    "input",
+    convert
+);
+
+
+/* =========================================================
+   COPIE
+========================================================= */
+
+async function copyText(
+    text
+) {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        showToast(
+            "✓ Résultat copié"
+        );
+
+    }
+    catch(error) {
+
+        /*
+            Fallback pour certains
+            navigateurs.
+        */
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+        textarea.value =
+            text;
+
+        document.body.appendChild(
+            textarea
+        );
+
+        textarea.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+        textarea.remove();
+
+        showToast(
+            "✓ Résultat copié"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+function showToast(
+    text
+) {
+
+    toast.textContent =
+        text;
+
+    toast.classList.add(
+        "show"
+    );
+
+    clearTimeout(
+        toastTimer
+    );
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            1800
+        );
+
+}
+
+
+/* =========================================================
+   RACCOURCIS CLAVIER
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        /*
+            Ctrl + K
+            met le curseur
+            dans le champ principal.
+        */
+
+        if(
+            event.ctrlKey &&
+            event.key.toLowerCase() === "k"
+        ) {
+
+            event.preventDefault();
+
+            inputValue.focus();
+
+            inputValue.select();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PREVENTION DES VALEURS NEGATIVES
+========================================================= */
+
+inputValue.addEventListener(
+    "wheel",
+    () => {
+
+        inputValue.blur();
+
+    }
+);
+
+
+/* =========================================================
+   MESSAGE CONSOLE
+========================================================= */
+
+console.log(
+    "⚡ UnitLab initialisé correctement."
+);
+
+console.log(
+    "Domaines disponibles :",
+    Object.keys(DATA)
+);
+
+</script>
+
+</body>
+
+</html>
+
+

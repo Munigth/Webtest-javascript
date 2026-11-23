@@ -1,0 +1,3303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vision Space Analyzer</title>
+
+<style>
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+:root{
+    --bg:#eef8ff;
+    --card:#ffffff;
+    --text:#102a43;
+    --muted:#627d98;
+
+    --blue:#087ea4;
+    --blue2:#0ea5e9;
+    --cyan:#22d3ee;
+
+    --yellow:#fbbf24;
+    --yellow2:#f59e0b;
+
+    --green:#16a34a;
+    --red:#dc2626;
+
+    --border:#d9edf7;
+
+    --shadow:0 12px 30px rgba(11,95,122,.12);
+
+    --radius:22px;
+}
+
+body.dark{
+    --bg:#020617;
+    --card:#0f172a;
+    --text:#e6f7ff;
+    --muted:#94a3b8;
+    --border:#1e3a4a;
+    --shadow:0 15px 40px rgba(0,0,0,.35);
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:var(--bg);
+    color:var(--text);
+
+    min-height:100vh;
+
+    transition:
+        background .25s ease,
+        color .25s ease;
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.topbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--blue2)
+        );
+
+    color:white;
+
+    padding:14px 20px;
+
+    box-shadow:
+        0 8px 30px rgba(8,126,164,.25);
+}
+
+.topbar-inner{
+    max-width:1400px;
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:15px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:46px;
+    height:46px;
+
+    border-radius:15px;
+
+    display:grid;
+    place-items:center;
+
+    background:rgba(255,255,255,.15);
+
+    font-size:25px;
+
+    backdrop-filter:blur(10px);
+}
+
+.brand h1{
+    font-size:18px;
+}
+
+.brand p{
+    font-size:12px;
+    opacity:.8;
+}
+
+.header-actions{
+    display:flex;
+    gap:8px;
+}
+
+.icon-btn{
+    border:0;
+
+    width:42px;
+    height:42px;
+
+    border-radius:13px;
+
+    background:rgba(255,255,255,.15);
+    color:white;
+
+    cursor:pointer;
+
+    font-size:19px;
+
+    transition:.2s;
+}
+
+.icon-btn:hover{
+    background:rgba(255,255,255,.25);
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+    width:min(1400px,94%);
+    margin:25px auto 100px;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:25px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:20px;
+}
+
+.hero h2{
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+.hero p{
+    color:var(--muted);
+    line-height:1.6;
+}
+
+.status{
+    margin-top:18px;
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:12px 15px;
+
+    background:rgba(14,165,233,.08);
+
+    border:1px solid var(--border);
+
+    border-radius:15px;
+}
+
+.status-dot{
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:#94a3b8;
+}
+
+.status-dot.active{
+    background:var(--green);
+
+    box-shadow:
+        0 0 0 5px rgba(22,163,74,.12);
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.dashboard{
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,1.6fr)
+        minmax(300px,.8fr);
+
+    gap:20px;
+}
+
+.card{
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    padding:20px;
+}
+
+.card-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:10px;
+
+    margin-bottom:18px;
+}
+
+.card-title{
+    font-size:19px;
+    font-weight:800;
+}
+
+.card-subtitle{
+    font-size:12px;
+    color:var(--muted);
+
+    margin-top:3px;
+}
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+.camera-card{
+    min-width:0;
+}
+
+.camera-container{
+    position:relative;
+
+    width:100%;
+
+    aspect-ratio:16/10;
+
+    overflow:hidden;
+
+    border-radius:18px;
+
+    background:#020617;
+
+    border:1px solid #1e293b;
+}
+
+#camera{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+#overlay{
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    pointer-events:none;
+}
+
+/* Camera guides */
+
+.camera-guide{
+    position:absolute;
+
+    inset:8%;
+
+    border:1px dashed rgba(255,255,255,.45);
+
+    border-radius:10px;
+
+    pointer-events:none;
+}
+
+.camera-crosshair{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:30px;
+    height:30px;
+
+    transform:translate(-50%,-50%);
+
+    pointer-events:none;
+}
+
+.camera-crosshair::before,
+.camera-crosshair::after{
+    content:"";
+
+    position:absolute;
+
+    background:rgba(255,255,255,.7);
+}
+
+.camera-crosshair::before{
+    width:30px;
+    height:1px;
+
+    top:15px;
+}
+
+.camera-crosshair::after{
+    width:1px;
+    height:30px;
+
+    left:15px;
+}
+
+.camera-info{
+    position:absolute;
+
+    left:12px;
+    bottom:12px;
+
+    background:rgba(2,6,23,.7);
+
+    color:white;
+
+    padding:8px 11px;
+
+    border-radius:11px;
+
+    font-size:12px;
+
+    backdrop-filter:blur(8px);
+}
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-top:15px;
+}
+
+.btn{
+    border:0;
+
+    border-radius:14px;
+
+    padding:12px 16px;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        opacity .15s ease;
+}
+
+.btn:hover{
+    transform:translateY(-1px);
+}
+
+.btn:active{
+    transform:translateY(1px);
+}
+
+.btn-primary{
+    background:var(--blue);
+    color:white;
+}
+
+.btn-blue{
+    background:var(--blue2);
+    color:white;
+}
+
+.btn-yellow{
+    background:var(--yellow);
+    color:#172033;
+}
+
+.btn-green{
+    background:var(--green);
+    color:white;
+}
+
+.btn-danger{
+    background:var(--red);
+    color:white;
+}
+
+.btn-secondary{
+    background:rgba(14,165,233,.1);
+    color:var(--blue);
+
+    border:1px solid var(--border);
+}
+
+.btn:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    transform:none;
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.setting{
+    margin-top:16px;
+}
+
+.setting label{
+    display:flex;
+    justify-content:space-between;
+
+    font-size:13px;
+    font-weight:700;
+
+    margin-bottom:8px;
+}
+
+select,
+input[type="range"]{
+    width:100%;
+}
+
+select{
+    padding:11px;
+
+    border-radius:12px;
+
+    border:1px solid var(--border);
+
+    background:var(--card);
+    color:var(--text);
+}
+
+/* =========================================================
+   ANALYSIS
+========================================================= */
+
+.metrics{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:10px;
+}
+
+.metric{
+    padding:15px;
+
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(14,165,233,.08),
+            rgba(251,191,36,.08)
+        );
+
+    border:1px solid var(--border);
+}
+
+.metric-label{
+    font-size:11px;
+    color:var(--muted);
+
+    text-transform:uppercase;
+
+    letter-spacing:.06em;
+}
+
+.metric-value{
+    font-size:22px;
+
+    font-weight:800;
+
+    margin-top:4px;
+}
+
+/* =========================================================
+   SPACE MAP
+========================================================= */
+
+.space-map{
+    margin-top:18px;
+
+    height:230px;
+
+    position:relative;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    border:1px solid var(--border);
+
+    background:
+        linear-gradient(
+            rgba(14,165,233,.08) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(14,165,233,.08) 1px,
+            transparent 1px
+        );
+
+    background-size:25px 25px;
+}
+
+.space-map::before{
+    content:"ZONE D'ANALYSE";
+
+    position:absolute;
+
+    top:10px;
+    left:12px;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    color:var(--muted);
+}
+
+.detected-box{
+    position:absolute;
+
+    border:2px solid var(--yellow);
+
+    background:rgba(251,191,36,.12);
+
+    border-radius:5px;
+
+    pointer-events:none;
+}
+
+.detected-box span{
+    position:absolute;
+
+    top:-22px;
+    left:-2px;
+
+    background:var(--yellow);
+
+    color:#172033;
+
+    padding:3px 6px;
+
+    border-radius:5px;
+
+    font-size:9px;
+
+    font-weight:800;
+
+    white-space:nowrap;
+}
+
+/* =========================================================
+   RECOMMENDATIONS
+========================================================= */
+
+.recommendations{
+    margin-top:18px;
+
+    display:grid;
+
+    gap:9px;
+}
+
+.recommendation{
+    padding:12px;
+
+    border-left:4px solid var(--yellow);
+
+    background:rgba(251,191,36,.08);
+
+    border-radius:10px;
+
+    font-size:13px;
+}
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+.canvas-card{
+    margin-top:20px;
+}
+
+#analysisCanvas{
+    width:100%;
+    height:260px;
+
+    background:#020617;
+
+    border-radius:18px;
+
+    display:block;
+}
+
+/* =========================================================
+   CAPTURE
+========================================================= */
+
+.capture-preview{
+    margin-top:15px;
+
+    display:none;
+}
+
+.capture-preview img{
+    width:100%;
+
+    max-height:450px;
+
+    object-fit:contain;
+
+    border-radius:16px;
+
+    background:#020617;
+}
+
+/* =========================================================
+   HELP
+========================================================= */
+
+.help{
+    margin-top:20px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:12px;
+}
+
+.help-item{
+    padding:16px;
+
+    border-radius:17px;
+
+    border:1px solid var(--border);
+
+    background:rgba(14,165,233,.05);
+}
+
+.help-item strong{
+    display:block;
+
+    margin-bottom:6px;
+}
+
+.help-item p{
+    color:var(--muted);
+
+    font-size:12px;
+
+    line-height:1.5;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast{
+    position:fixed;
+
+    right:20px;
+    bottom:25px;
+
+    z-index:3000;
+
+    max-width:350px;
+
+    padding:13px 16px;
+
+    border-radius:14px;
+
+    background:#0f172a;
+
+    color:white;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+
+    transform:translateY(30px);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:.25s;
+}
+
+#toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottom-nav{
+    position:fixed;
+
+    z-index:2000;
+
+    left:50%;
+
+    bottom:15px;
+
+    transform:translateX(-50%);
+
+    width:min(650px,92%);
+
+    padding:8px;
+
+    background:rgba(15,23,42,.9);
+
+    backdrop-filter:blur(15px);
+
+    border-radius:20px;
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.25);
+
+    display:flex;
+
+    justify-content:space-around;
+
+    gap:5px;
+}
+
+.bottom-nav button{
+    border:0;
+
+    background:transparent;
+
+    color:#cbd5e1;
+
+    padding:9px 13px;
+
+    border-radius:13px;
+
+    cursor:pointer;
+
+    font-size:12px;
+
+    font-weight:700;
+}
+
+.bottom-nav button:hover{
+    background:rgba(255,255,255,.08);
+    color:white;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+    .dashboard{
+        grid-template-columns:1fr;
+    }
+
+    .help{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:600px){
+
+    main{
+        width:94%;
+
+        margin-top:15px;
+    }
+
+    .hero h2{
+        font-size:23px;
+    }
+
+    .camera-container{
+        aspect-ratio:4/3;
+    }
+
+    .metrics{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .controls .btn{
+        flex:1 1 45%;
+    }
+
+    .bottom-nav button{
+        font-size:10px;
+        padding:9px 8px;
+    }
+
+    #toast{
+        left:15px;
+        right:15px;
+        bottom:80px;
+        max-width:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =======================================================
+     HEADER
+======================================================== -->
+
+<header class="topbar">
+
+    <div class="topbar-inner">
+
+        <div class="brand">
+
+            <div class="logo">
+                📐
+            </div>
+
+            <div>
+                <h1>Vision Space</h1>
+                <p>Analyse géométrique intelligente</p>
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+
+            <button
+                class="icon-btn"
+                id="themeBtn"
+                title="Changer le thème">
+                🌙
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =======================================================
+     MAIN
+======================================================== -->
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h2>
+            📷 Analyseur d'espace
+        </h2>
+
+        <p>
+            Utilisez la caméra de votre appareil pour analyser
+            les contours, proportions et espaces disponibles
+            afin de faciliter l'organisation et le rangement
+            des objets.
+        </p>
+
+        <div class="status">
+
+            <span
+                id="statusDot"
+                class="status-dot">
+            </span>
+
+            <span id="statusText">
+                Caméra inactive
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         DASHBOARD
+    ===================================================== -->
+
+    <section class="dashboard">
+
+
+        <!-- CAMERA -->
+
+        <div class="card camera-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        📷 Caméra
+                    </div>
+
+                    <div class="card-subtitle">
+                        Analyse en temps réel
+                    </div>
+
+                </div>
+
+                <span id="objectCounter">
+                    0 objet
+                </span>
+
+            </div>
+
+
+            <div class="camera-container">
+
+                <video
+                    id="camera"
+                    autoplay
+                    playsinline
+                    muted>
+                </video>
+
+                <canvas
+                    id="overlay">
+                </canvas>
+
+                <div class="camera-guide"></div>
+
+                <div class="camera-crosshair"></div>
+
+                <div class="camera-info">
+
+                    <span id="cameraResolution">
+                        Caméra non connectée
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="controls">
+
+                <button
+                    class="btn btn-primary"
+                    id="startCamera">
+                    📷 Démarrer
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    id="stopCamera"
+                    disabled>
+                    ⏹ Arrêter
+                </button>
+
+                <button
+                    class="btn btn-yellow"
+                    id="captureBtn"
+                    disabled>
+                    📸 Capturer
+                </button>
+
+                <button
+                    class="btn btn-blue"
+                    id="switchCamera"
+                    disabled>
+                    🔄 Changer caméra
+                </button>
+
+            </div>
+
+
+            <div class="capture-preview" id="capturePreview">
+
+                <img
+                    id="capturedImage"
+                    alt="Capture de l'analyse">
+
+            </div>
+
+        </div>
+
+
+        <!-- ANALYSIS -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        📊 Analyse
+                    </div>
+
+                    <div class="card-subtitle">
+                        Mesures géométriques
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="metrics">
+
+                <div class="metric">
+
+                    <div class="metric-label">
+                        Objets
+                    </div>
+
+                    <div
+                        class="metric-value"
+                        id="metricObjects">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="metric">
+
+                    <div class="metric-label">
+                        Occupation
+                    </div>
+
+                    <div
+                        class="metric-value"
+                        id="metricOccupation">
+                        0 %
+                    </div>
+
+                </div>
+
+
+                <div class="metric">
+
+                    <div class="metric-label">
+                        Largeur
+                    </div>
+
+                    <div
+                        class="metric-value"
+                        id="metricWidth">
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="metric">
+
+                    <div class="metric-label">
+                        Hauteur
+                    </div>
+
+                    <div
+                        class="metric-value"
+                        id="metricHeight">
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SPACE MAP -->
+
+            <div class="space-map" id="spaceMap">
+            </div>
+
+
+            <!-- RECOMMENDATIONS -->
+
+            <div class="recommendations">
+
+                <div
+                    class="recommendation"
+                    id="recommendation1">
+
+                    💡 Démarrez la caméra pour commencer
+                    l'analyse.
+
+                </div>
+
+                <div
+                    class="recommendation"
+                    id="recommendation2">
+
+                    📐 Le système recherchera principalement
+                    les zones rectangulaires et leurs proportions.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         ANALYSIS GRAPH
+    ===================================================== -->
+
+    <section class="card canvas-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <div class="card-title">
+                    📐 Carte géométrique
+                </div>
+
+                <div class="card-subtitle">
+                    Visualisation des zones détectées
+                </div>
+
+            </div>
+
+            <button
+                class="btn btn-secondary"
+                id="exportBtn">
+                💾 Exporter JSON
+            </button>
+
+        </div>
+
+
+        <canvas id="analysisCanvas"></canvas>
+
+    </section>
+
+
+    <!-- ===================================================
+         SETTINGS
+    ===================================================== -->
+
+    <section
+        class="card"
+        id="settings"
+        style="margin-top:20px;">
+
+        <div class="card-header">
+
+            <div>
+
+                <div class="card-title">
+                    ⚙️ Paramètres d'analyse
+                </div>
+
+                <div class="card-subtitle">
+                    Ajustez la sensibilité de la détection
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="setting">
+
+            <label>
+
+                <span>
+                    Seuil de détection
+                </span>
+
+                <span id="thresholdValue">
+                    80
+                </span>
+
+            </label>
+
+            <input
+                type="range"
+                id="threshold"
+                min="20"
+                max="180"
+                value="80">
+
+        </div>
+
+
+        <div class="setting">
+
+            <label>
+
+                <span>
+                    Taille minimale
+                </span>
+
+                <span id="minSizeValue">
+                    1 %
+                </span>
+
+            </label>
+
+            <input
+                type="range"
+                id="minSize"
+                min="0.2"
+                max="10"
+                step="0.1"
+                value="1">
+
+        </div>
+
+
+        <div class="setting">
+
+            <label>
+                Mode d'analyse
+            </label>
+
+            <select id="analysisMode">
+
+                <option value="rectangle">
+                    Rectangles / objets géométriques
+                </option>
+
+                <option value="edges">
+                    Contours
+                </option>
+
+                <option value="space">
+                    Occupation de l'espace
+                </option>
+
+            </select>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         HELP
+    ===================================================== -->
+
+    <section class="help">
+
+        <div class="help-item">
+
+            <strong>
+                📷 1. Filmez l'espace
+            </strong>
+
+            <p>
+                Placez votre téléphone ou votre ordinateur
+                devant la zone à analyser.
+            </p>
+
+        </div>
+
+
+        <div class="help-item">
+
+            <strong>
+                📐 2. Analysez
+            </strong>
+
+            <p>
+                Le navigateur analyse les différences de
+                luminosité et recherche des formes géométriques.
+            </p>
+
+        </div>
+
+
+        <div class="help-item">
+
+            <strong>
+                📦 3. Organisez
+            </strong>
+
+            <p>
+                Les rectangles détectés permettent d'estimer
+                l'occupation et les espaces disponibles.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =======================================================
+     BOTTOM NAVIGATION
+======================================================== -->
+
+<nav class="bottom-nav">
+
+    <button onclick="scrollToSection('cameraSection')">
+        📷 Caméra
+    </button>
+
+    <button onclick="scrollToSection('analysisSection')">
+        📊 Analyse
+    </button>
+
+    <button onclick="scrollToSection('settings')">
+        ⚙️ Paramètres
+    </button>
+
+</nav>
+
+
+<!-- TOAST -->
+
+<div id="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
+
+const $ = id => document.getElementById(id);
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const video = $("camera");
+const overlay = $("overlay");
+const overlayCtx = overlay.getContext("2d");
+
+const analysisCanvas = $("analysisCanvas");
+const analysisCtx = analysisCanvas.getContext("2d");
+
+const spaceMap = $("spaceMap");
+
+const startCameraBtn = $("startCamera");
+const stopCameraBtn = $("stopCamera");
+const captureBtn = $("captureBtn");
+const switchCameraBtn = $("switchCamera");
+
+const statusDot = $("statusDot");
+const statusText = $("statusText");
+
+const cameraResolution = $("cameraResolution");
+
+const objectCounter = $("objectCounter");
+
+const metricObjects = $("metricObjects");
+const metricOccupation = $("metricOccupation");
+const metricWidth = $("metricWidth");
+const metricHeight = $("metricHeight");
+
+const thresholdInput = $("threshold");
+const minSizeInput = $("minSize");
+const analysisMode = $("analysisMode");
+
+const thresholdValue = $("thresholdValue");
+const minSizeValue = $("minSizeValue");
+
+const capturedImage = $("capturedImage");
+const capturePreview = $("capturePreview");
+
+const toastElement = $("toast");
+
+
+/* =========================================================
+   ETAT
+========================================================= */
+
+let stream = null;
+
+let facingMode = "environment";
+
+let animationId = null;
+
+let analysisRunning = false;
+
+let detectedObjects = [];
+
+let lastFrame = null;
+
+let lastAnalysisTime = 0;
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+const savedTheme =
+    localStorage.getItem("visionTheme");
+
+if(savedTheme === "dark"){
+    document.body.classList.add("dark");
+    $("themeBtn").textContent = "☀️";
+}
+
+$("themeBtn").addEventListener("click", () => {
+
+    document.body.classList.toggle("dark");
+
+    const dark =
+        document.body.classList.contains("dark");
+
+    localStorage.setItem(
+        "visionTheme",
+        dark ? "dark" : "light"
+    );
+
+    $("themeBtn").textContent =
+        dark ? "☀️" : "🌙";
+
+});
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+function toast(message){
+
+    toastElement.textContent = message;
+
+    toastElement.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+
+        toastElement.classList.remove("show");
+
+    },3000);
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setCameraStatus(active,message){
+
+    statusText.textContent = message;
+
+    statusDot.classList.toggle(
+        "active",
+        active
+    );
+
+}
+
+
+/* =========================================================
+   START CAMERA
+========================================================= */
+
+async function startCamera(){
+
+    try{
+
+        if(stream){
+
+            stopCamera();
+
+        }
+
+
+        const constraints = {
+
+            audio:false,
+
+            video:{
+
+                facingMode:{
+                    ideal:facingMode
+                },
+
+                width:{
+                    ideal:1280
+                },
+
+                height:{
+                    ideal:720
+                },
+
+                frameRate:{
+                    ideal:30
+                }
+
+            }
+
+        };
+
+
+        stream =
+            await navigator.mediaDevices
+                .getUserMedia(constraints);
+
+
+        video.srcObject = stream;
+
+
+        await video.play();
+
+
+        setCameraStatus(
+            true,
+            "Caméra active — analyse en cours"
+        );
+
+
+        startCameraBtn.disabled = true;
+        stopCameraBtn.disabled = false;
+        captureBtn.disabled = false;
+        switchCameraBtn.disabled = false;
+
+
+        const track =
+            stream.getVideoTracks()[0];
+
+        const settings =
+            track.getSettings();
+
+
+        cameraResolution.textContent =
+            `${settings.width || "?"} × ${settings.height || "?"}`;
+
+
+        resizeCanvases();
+
+
+        analysisRunning = true;
+
+        analyseLoop();
+
+
+        toast("📷 Caméra activée");
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        setCameraStatus(
+            false,
+            "Impossible d'accéder à la caméra"
+        );
+
+
+        let message =
+            "Accès à la caméra refusé ou indisponible.";
+
+
+        if(error.name === "NotAllowedError"){
+
+            message =
+                "Autorisez l'accès à la caméra dans votre navigateur.";
+
+        }
+
+        if(error.name === "NotFoundError"){
+
+            message =
+                "Aucune caméra compatible n'a été trouvée.";
+
+        }
+
+        if(location.protocol === "file:"){
+
+            message +=
+                " Si nécessaire, ouvrez la page depuis localhost.";
+
+        }
+
+
+        toast(message);
+
+    }
+
+}
+
+
+/* =========================================================
+   STOP CAMERA
+========================================================= */
+
+function stopCamera(){
+
+    analysisRunning = false;
+
+
+    if(animationId){
+
+        cancelAnimationFrame(animationId);
+
+        animationId = null;
+
+    }
+
+
+    if(stream){
+
+        stream.getTracks().forEach(track => {
+
+            track.stop();
+
+        });
+
+        stream = null;
+
+    }
+
+
+    video.srcObject = null;
+
+
+    overlayCtx.clearRect(
+        0,
+        0,
+        overlay.width,
+        overlay.height
+    );
+
+
+    setCameraStatus(
+        false,
+        "Caméra inactive"
+    );
+
+
+    startCameraBtn.disabled = false;
+    stopCameraBtn.disabled = true;
+    captureBtn.disabled = true;
+    switchCameraBtn.disabled = true;
+
+    cameraResolution.textContent =
+        "Caméra non connectée";
+
+}
+
+
+/* =========================================================
+   SWITCH CAMERA
+========================================================= */
+
+async function switchCamera(){
+
+    facingMode =
+        facingMode === "environment"
+            ? "user"
+            : "environment";
+
+
+    await startCamera();
+
+}
+
+
+/* =========================================================
+   RESIZE CANVAS
+========================================================= */
+
+function resizeCanvases(){
+
+    const rect =
+        video.getBoundingClientRect();
+
+
+    if(rect.width === 0 || rect.height === 0){
+
+        return;
+
+    }
+
+
+    const dpr =
+        window.devicePixelRatio || 1;
+
+
+    overlay.width =
+        Math.round(rect.width * dpr);
+
+    overlay.height =
+        Math.round(rect.height * dpr);
+
+
+    overlayCtx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+
+    const graphRect =
+        analysisCanvas.getBoundingClientRect();
+
+
+    analysisCanvas.width =
+        Math.round(graphRect.width * dpr);
+
+    analysisCanvas.height =
+        Math.round(graphRect.height * dpr);
+
+
+    analysisCtx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+}
+
+
+window.addEventListener(
+    "resize",
+    resizeCanvases
+);
+
+
+/* =========================================================
+   ANALYSIS LOOP
+========================================================= */
+
+function analyseLoop(timestamp = 0){
+
+    if(!analysisRunning){
+
+        return;
+
+    }
+
+
+    animationId =
+        requestAnimationFrame(analyseLoop);
+
+
+    if(
+        timestamp - lastAnalysisTime < 150
+    ){
+
+        return;
+
+    }
+
+
+    lastAnalysisTime = timestamp;
+
+
+    if(
+        video.readyState >=
+        HTMLMediaElement.HAVE_CURRENT_DATA
+    ){
+
+        analyseFrame();
+
+    }
+
+}
+
+
+/* =========================================================
+   IMAGE ANALYSIS
+========================================================= */
+
+function analyseFrame(){
+
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+
+
+    if(!width || !height){
+
+        return;
+
+    }
+
+
+    /*
+        Analyse à une résolution réduite.
+        Cela évite de surcharger le CPU.
+    */
+
+    const maxWidth = 480;
+
+    const scale =
+        Math.min(
+            1,
+            maxWidth / width
+        );
+
+
+    const w =
+        Math.max(
+            1,
+            Math.floor(width * scale)
+        );
+
+
+    const h =
+        Math.max(
+            1,
+            Math.floor(height * scale)
+        );
+
+
+    const temp =
+        document.createElement("canvas");
+
+
+    temp.width = w;
+    temp.height = h;
+
+
+    const ctx =
+        temp.getContext("2d", {
+            willReadFrequently:true
+        });
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        w,
+        h
+    );
+
+
+    const image =
+        ctx.getImageData(
+            0,
+            0,
+            w,
+            h
+        );
+
+
+    const data = image.data;
+
+
+    /*
+        Transformation en luminosité.
+    */
+
+    const gray =
+        new Uint8Array(w * h);
+
+
+    for(
+        let i = 0,
+        p = 0;
+        i < data.length;
+        i += 4,
+        p++
+    ){
+
+        gray[p] =
+            Math.round(
+                0.299 * data[i] +
+                0.587 * data[i+1] +
+                0.114 * data[i+2]
+            );
+
+    }
+
+
+    /*
+        Détection des contours.
+    */
+
+    const edges =
+        new Uint8Array(w * h);
+
+
+    const threshold =
+        Number(thresholdInput.value);
+
+
+    for(let y=1; y<h-1; y++){
+
+        for(let x=1; x<w-1; x++){
+
+            const index =
+                y*w+x;
+
+
+            const gx =
+                -gray[index-w-1]
+                -2*gray[index-1]
+                -gray[index+w-1]
+                +
+                gray[index-w+1]
+                +2*gray[index+1]
+                +gray[index+w+1];
+
+
+            const gy =
+                -gray[index-w-1]
+                -2*gray[index-w]
+                -gray[index-w+1]
+                +
+                gray[index+w-1]
+                +2*gray[index+w]
+                +gray[index+w+1];
+
+
+            const magnitude =
+                Math.sqrt(
+                    gx*gx +
+                    gy*gy
+                );
+
+
+            if(magnitude > threshold){
+
+                edges[index] = 255;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+        Recherche de zones rectangulaires.
+    */
+
+    detectedObjects =
+        detectRectangles(
+            edges,
+            w,
+            h
+        );
+
+
+    updateAnalysis(
+        detectedObjects,
+        w,
+        h
+    );
+
+
+    drawOverlay(
+        detectedObjects,
+        w,
+        h
+    );
+
+
+    drawAnalysisGraph(
+        detectedObjects
+    );
+
+}
+
+
+/* =========================================================
+   DETECTION DE RECTANGLES / COMPOSANTES
+========================================================= */
+
+function detectRectangles(
+    edges,
+    width,
+    height
+){
+
+    const visited =
+        new Uint8Array(
+            width * height
+        );
+
+
+    const objects = [];
+
+
+    /*
+        Taille minimale de détection.
+    */
+
+    const minPercent =
+        Number(minSizeInput.value);
+
+
+    const minArea =
+        width *
+        height *
+        (minPercent / 100);
+
+
+    /*
+        Parcours par composantes connexes.
+    */
+
+    for(let y=1; y<height-1; y++){
+
+        for(let x=1; x<width-1; x++){
+
+            const start =
+                y*width+x;
+
+
+            if(
+                !edges[start] ||
+                visited[start]
+            ){
+
+                continue;
+
+            }
+
+
+            const queue = [start];
+
+            visited[start] = 1;
+
+
+            let minX=x;
+            let maxX=x;
+            let minY=y;
+            let maxY=y;
+
+            let count=0;
+
+
+            while(queue.length){
+
+                const current =
+                    queue.pop();
+
+
+                const cy =
+                    Math.floor(
+                        current / width
+                    );
+
+                const cx =
+                    current % width;
+
+
+                count++;
+
+
+                minX =
+                    Math.min(
+                        minX,
+                        cx
+                    );
+
+                maxX =
+                    Math.max(
+                        maxX,
+                        cx
+                    );
+
+                minY =
+                    Math.min(
+                        minY,
+                        cy
+                    );
+
+                maxY =
+                    Math.max(
+                        maxY,
+                        cy
+                    );
+
+
+                const neighbours = [
+
+                    current-1,
+                    current+1,
+                    current-width,
+                    current+width
+
+                ];
+
+
+                for(
+                    const n of neighbours
+                ){
+
+                    if(
+                        n >= 0 &&
+                        n < edges.length &&
+                        edges[n] &&
+                        !visited[n]
+                    ){
+
+                        visited[n] = 1;
+
+                        queue.push(n);
+
+                    }
+
+                }
+
+            }
+
+
+            const boxWidth =
+                maxX - minX + 1;
+
+            const boxHeight =
+                maxY - minY + 1;
+
+
+            const area =
+                boxWidth *
+                boxHeight;
+
+
+            /*
+                Ignore les petits contours.
+            */
+
+            if(area < minArea){
+
+                continue;
+
+            }
+
+
+            /*
+                Ignore les zones extrêmement fines.
+            */
+
+            if(
+                boxWidth < 12 ||
+                boxHeight < 12
+            ){
+
+                continue;
+
+            }
+
+
+            /*
+                Ratio géométrique.
+            */
+
+            const ratio =
+                boxWidth /
+                boxHeight;
+
+
+            /*
+                On privilégie les formes
+                ressemblant à des objets.
+            */
+
+            if(
+                ratio > 12 ||
+                ratio < 0.08
+            ){
+
+                continue;
+
+            }
+
+
+            /*
+                Évite les gigantesques contours
+                correspondant à toute la scène.
+            */
+
+            const relativeArea =
+                area /
+                (width * height);
+
+
+            if(relativeArea > .75){
+
+                continue;
+
+            }
+
+
+            objects.push({
+
+                x:minX,
+                y:minY,
+
+                width:boxWidth,
+                height:boxHeight,
+
+                area,
+
+                ratio,
+
+                relativeArea
+
+            });
+
+        }
+
+    }
+
+
+    /*
+        Trier par surface décroissante.
+    */
+
+    objects.sort(
+        (a,b) =>
+            b.area-a.area
+    );
+
+
+    /*
+        Limitation pour éviter
+        trop de rectangles.
+    */
+
+    return objects.slice(0,20);
+
+}
+
+
+/* =========================================================
+   ANALYSIS DATA
+========================================================= */
+
+function updateAnalysis(
+    objects,
+    width,
+    height
+){
+
+    const totalArea =
+        width * height;
+
+
+    let occupied = 0;
+
+
+    objects.forEach(obj => {
+
+        occupied +=
+            obj.area;
+
+    });
+
+
+    const occupation =
+        Math.min(
+            100,
+            occupied /
+            totalArea *
+            100
+        );
+
+
+    metricObjects.textContent =
+        objects.length;
+
+
+    metricOccupation.textContent =
+        occupation.toFixed(1) +
+        " %";
+
+
+    objectCounter.textContent =
+        objects.length +
+        (
+            objects.length > 1
+                ? " objets"
+                : " objet"
+        );
+
+
+    if(objects.length){
+
+        const biggest =
+            objects[0];
+
+
+        metricWidth.textContent =
+            Math.round(
+                biggest.width /
+                width *
+                100
+            ) +
+            " %";
+
+
+        metricHeight.textContent =
+            Math.round(
+                biggest.height /
+                height *
+                100
+            ) +
+            " %";
+
+
+        recommendation1.textContent =
+            "📦 " +
+            objects.length +
+            " zone(s) géométrique(s) détectée(s).";
+
+
+        if(occupation > 60){
+
+            recommendation2.textContent =
+                "⚠️ L'espace analysé est fortement occupé. Cherchez les zones libres entre les objets.";
+
+        }else if(occupation > 30){
+
+            recommendation2.textContent =
+                "📐 Plusieurs zones libres peuvent être utilisées pour optimiser le rangement.";
+
+        }else{
+
+            recommendation2.textContent =
+                "✨ Une grande partie de la zone semble disponible.";
+
+        }
+
+    }else{
+
+        metricWidth.textContent = "—";
+        metricHeight.textContent = "—";
+
+        recommendation1.textContent =
+            "🔎 Aucun objet géométrique suffisamment marqué n'a été détecté.";
+
+        recommendation2.textContent =
+            "💡 Essayez d'améliorer l'éclairage ou de modifier le seuil de détection.";
+
+    }
+
+
+    drawSpaceMap(
+        objects,
+        width,
+        height
+    );
+
+}
+
+
+/* =========================================================
+   CAMERA OVERLAY
+========================================================= */
+
+function drawOverlay(
+    objects,
+    width,
+    height
+){
+
+    const rect =
+        video.getBoundingClientRect();
+
+
+    if(!rect.width){
+
+        return;
+
+    }
+
+
+    overlayCtx.clearRect(
+        0,
+        0,
+        rect.width,
+        rect.height
+    );
+
+
+    const scaleX =
+        rect.width / width;
+
+    const scaleY =
+        rect.height / height;
+
+
+    objects.forEach(
+        (obj,index) => {
+
+            const x =
+                obj.x * scaleX;
+
+            const y =
+                obj.y * scaleY;
+
+            const w =
+                obj.width * scaleX;
+
+            const h =
+                obj.height * scaleY;
+
+
+            overlayCtx.strokeStyle =
+                "#fbbf24";
+
+            overlayCtx.lineWidth = 2;
+
+
+            overlayCtx.strokeRect(
+                x,
+                y,
+                w,
+                h
+            );
+
+
+            overlayCtx.fillStyle =
+                "rgba(251,191,36,.14)";
+
+
+            overlayCtx.fillRect(
+                x,
+                y,
+                w,
+                h
+            );
+
+
+            overlayCtx.fillStyle =
+                "#fbbf24";
+
+
+            overlayCtx.font =
+                "bold 11px system-ui";
+
+
+            overlayCtx.fillText(
+                `Objet ${index+1}`,
+                x+4,
+                Math.max(
+                    12,
+                    y+12
+                )
+            );
+
+
+            overlayCtx.font =
+                "10px system-ui";
+
+
+            overlayCtx.fillText(
+                `${Math.round(obj.width)}×${Math.round(obj.height)}`,
+                x+4,
+                Math.min(
+                    rect.height-5,
+                    y+h-5
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SPACE MAP
+========================================================= */
+
+function drawSpaceMap(
+    objects,
+    width,
+    height
+){
+
+    spaceMap
+        .querySelectorAll(".detected-box")
+        .forEach(
+            el => el.remove()
+        );
+
+
+    objects.forEach(
+        (obj,index) => {
+
+            const box =
+                document.createElement("div");
+
+
+            box.className =
+                "detected-box";
+
+
+            box.style.left =
+                (
+                    obj.x / width * 100
+                ) + "%";
+
+
+            box.style.top =
+                (
+                    obj.y / height * 100
+                ) + "%";
+
+
+            box.style.width =
+                (
+                    obj.width / width * 100
+                ) + "%";
+
+
+            box.style.height =
+                (
+                    obj.height / height * 100
+                ) + "%";
+
+
+            const label =
+                document.createElement("span");
+
+
+            label.textContent =
+                `Objet ${index+1} • ` +
+                `${Math.round(obj.ratio*100)/100}:1`;
+
+
+            box.appendChild(label);
+
+
+            spaceMap.appendChild(box);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GRAPH
+========================================================= */
+
+function drawAnalysisGraph(objects){
+
+    const rect =
+        analysisCanvas.getBoundingClientRect();
+
+
+    const width = rect.width;
+    const height = rect.height;
+
+
+    if(!width || !height){
+
+        return;
+
+    }
+
+
+    analysisCtx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+        Fond
+    */
+
+    analysisCtx.fillStyle =
+        "#020617";
+
+
+    analysisCtx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+        Grille
+    */
+
+    analysisCtx.strokeStyle =
+        "rgba(14,165,233,.15)";
+
+
+    analysisCtx.lineWidth = 1;
+
+
+    for(
+        let x=0;
+        x<width;
+        x+=40
+    ){
+
+        analysisCtx.beginPath();
+
+        analysisCtx.moveTo(
+            x,
+            0
+        );
+
+        analysisCtx.lineTo(
+            x,
+            height
+        );
+
+        analysisCtx.stroke();
+
+    }
+
+
+    for(
+        let y=0;
+        y<height;
+        y+=40
+    ){
+
+        analysisCtx.beginPath();
+
+        analysisCtx.moveTo(
+            0,
+            y
+        );
+
+        analysisCtx.lineTo(
+            width,
+            y
+        );
+
+        analysisCtx.stroke();
+
+    }
+
+
+    /*
+        Texte
+    */
+
+    analysisCtx.fillStyle =
+        "#94a3b8";
+
+    analysisCtx.font =
+        "12px system-ui";
+
+
+    analysisCtx.fillText(
+        "CARTE DES PROPORTIONS",
+        15,
+        22
+    );
+
+
+    /*
+        Dessin des objets
+    */
+
+    if(!objects.length){
+
+        analysisCtx.fillStyle =
+            "#64748b";
+
+        analysisCtx.textAlign =
+            "center";
+
+        analysisCtx.font =
+            "14px system-ui";
+
+
+        analysisCtx.fillText(
+            "Aucune zone détectée",
+            width/2,
+            height/2
+        );
+
+
+        analysisCtx.textAlign =
+            "left";
+
+
+        return;
+
+    }
+
+
+    /*
+        Normalisation pour l'affichage.
+    */
+
+    const maxX =
+        Math.max(
+            ...objects.map(
+                o => o.x+o.width
+            )
+        );
+
+
+    const maxY =
+        Math.max(
+            ...objects.map(
+                o => o.y+o.height
+            )
+        );
+
+
+    const sourceWidth =
+        video.videoWidth || 640;
+
+    const sourceHeight =
+        video.videoHeight || 480;
+
+
+    objects.forEach(
+        (obj,index) => {
+
+            const x =
+                obj.x /
+                sourceWidth *
+                width;
+
+
+            const y =
+                obj.y /
+                sourceHeight *
+                height;
+
+
+            const w =
+                obj.width /
+                sourceWidth *
+                width;
+
+
+            const h =
+                obj.height /
+                sourceHeight *
+                height;
+
+
+            analysisCtx.strokeStyle =
+                "#fbbf24";
+
+
+            analysisCtx.lineWidth = 2;
+
+
+            analysisCtx.strokeRect(
+                x,
+                y,
+                w,
+                h
+            );
+
+
+            analysisCtx.fillStyle =
+                "rgba(251,191,36,.18)";
+
+
+            analysisCtx.fillRect(
+                x,
+                y,
+                w,
+                h
+            );
+
+
+            analysisCtx.fillStyle =
+                "#fbbf24";
+
+
+            analysisCtx.font =
+                "bold 10px system-ui";
+
+
+            analysisCtx.fillText(
+                `OBJ ${index+1}`,
+                x+4,
+                y+13
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CAPTURE IMAGE
+========================================================= */
+
+function captureImage(){
+
+    if(!stream){
+
+        toast(
+            "📷 Démarrez d'abord la caméra."
+        );
+
+        return;
+
+    }
+
+
+    const canvas =
+        document.createElement("canvas");
+
+
+    canvas.width =
+        video.videoWidth;
+
+    canvas.height =
+        video.videoHeight;
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0
+    );
+
+
+    /*
+        Ajout des rectangles
+        directement sur la capture.
+    */
+
+    const scaleX =
+        video.videoWidth /
+        video.getBoundingClientRect().width;
+
+
+    const scaleY =
+        video.videoHeight /
+        video.getBoundingClientRect().height;
+
+
+    /*
+        Les coordonnées détectées
+        sont basées sur la résolution réduite.
+        On récupère une approximation
+        à partir du dernier résultat.
+    */
+
+    const sourceWidth =
+        video.videoWidth;
+
+
+    const sourceHeight =
+        video.videoHeight;
+
+
+    detectedObjects.forEach(
+        (obj,index) => {
+
+            const x =
+                obj.x /
+                480 *
+                sourceWidth;
+
+
+            const y =
+                obj.y /
+                (
+                    480 *
+                    sourceHeight /
+                    sourceWidth
+                ) *
+                sourceHeight;
+
+
+            const w =
+                obj.width /
+                480 *
+                sourceWidth;
+
+
+            const h =
+                obj.height /
+                (
+                    480 *
+                    sourceHeight /
+                    sourceWidth
+                ) *
+                sourceHeight;
+
+
+            ctx.strokeStyle =
+                "#fbbf24";
+
+            ctx.lineWidth =
+                Math.max(
+                    2,
+                    sourceWidth / 500
+                );
+
+
+            ctx.strokeRect(
+                x,
+                y,
+                w,
+                h
+            );
+
+        }
+    );
+
+
+    capturedImage.src =
+        canvas.toDataURL(
+            "image/jpeg",
+            .92
+        );
+
+
+    capturePreview.style.display =
+        "block";
+
+
+    toast(
+        "📸 Capture effectuée"
+    );
+
+}
+
+
+/* =========================================================
+   EXPORT JSON
+========================================================= */
+
+function exportAnalysis(){
+
+    const result = {
+
+        application:
+            "Vision Space Analyzer",
+
+        date:
+            new Date().toISOString(),
+
+        camera:
+            cameraResolution.textContent,
+
+        numberOfObjects:
+            detectedObjects.length,
+
+        objects:
+            detectedObjects.map(
+                (obj,index) => ({
+
+                    id:index+1,
+
+                    x:obj.x,
+
+                    y:obj.y,
+
+                    width:obj.width,
+
+                    height:obj.height,
+
+                    ratio:
+                        Number(
+                            obj.ratio.toFixed(3)
+                        ),
+
+                    relativeArea:
+                        Number(
+                            (
+                                obj.relativeArea *
+                                100
+                            ).toFixed(3)
+                        )
+
+                })
+            )
+
+    };
+
+
+    const blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    result,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const a =
+        document.createElement("a");
+
+
+    a.href = url;
+
+    a.download =
+        "analyse-espace.json";
+
+
+    a.click();
+
+
+    URL.revokeObjectURL(url);
+
+
+    toast(
+        "💾 Analyse exportée"
+    );
+
+}
+
+
+/* =========================================================
+   PARAMETRES
+========================================================= */
+
+thresholdInput.addEventListener(
+    "input",
+    () => {
+
+        thresholdValue.textContent =
+            thresholdInput.value;
+
+    }
+);
+
+
+minSizeInput.addEventListener(
+    "input",
+    () => {
+
+        minSizeValue.textContent =
+            minSizeInput.value +
+            " %";
+
+    }
+);
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+startCameraBtn.addEventListener(
+    "click",
+    startCamera
+);
+
+
+stopCameraBtn.addEventListener(
+    "click",
+    stopCamera
+);
+
+
+switchCameraBtn.addEventListener(
+    "click",
+    switchCamera
+);
+
+
+captureBtn.addEventListener(
+    "click",
+    captureImage
+);
+
+
+$("exportBtn").addEventListener(
+    "click",
+    exportAnalysis
+);
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function scrollToSection(section){
+
+    /*
+        La navigation est volontairement
+        simple et sans framework.
+    */
+
+    if(section === "cameraSection"){
+
+        window.scrollTo({
+            top:0,
+            behavior:"smooth"
+        });
+
+        return;
+
+    }
+
+
+    if(section === "analysisSection"){
+
+        $("analysisCanvas")
+            .closest(".card")
+            .scrollIntoView({
+                behavior:"smooth"
+            });
+
+        return;
+
+    }
+
+
+    $(section)
+        ?.scrollIntoView({
+            behavior:"smooth"
+        });
+
+}
+
+
+/* =========================================================
+   DRAG / TOUCH RESIZE
+========================================================= */
+
+window.addEventListener(
+    "orientationchange",
+    () => {
+
+        setTimeout(
+            resizeCanvases,
+            400
+        );
+
+    }
+);
+
+
+/* =========================================================
+   DETECTION DE SUPPORT CAMERA
+========================================================= */
+
+if(
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+){
+
+    setCameraStatus(
+        false,
+        "Votre navigateur ne permet pas l'accès à la caméra."
+    );
+
+
+    startCameraBtn.disabled = true;
+
+
+}else{
+
+    setCameraStatus(
+        false,
+        "Caméra prête — cliquez sur Démarrer"
+    );
+
+}
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+resizeCanvases();
+
+
+/*
+    Message d'accueil
+*/
+
+setTimeout(
+    () => {
+
+        toast(
+            "📐 Vision Space est prêt."
+        );
+
+    },
+    700
+);
+
+</script>
+
+</body>
+</html>
