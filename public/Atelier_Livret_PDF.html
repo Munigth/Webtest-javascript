@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10213b">
+<title>Atelier PDF — Créateur de livrets</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+<script src="js/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+ <a class="brand" href="#"><span class="brand-icon">▤</span><span>Atelier <b>PDF</b><small>ORGANISER · MODIFIER · IMPRIMER</small></span></a>
+ <div class="top-actions"><span class="local-tag">● Traitement local</span><button id="resetBtn" class="btn btn-ghost" disabled>Réinitialiser</button></div>
+</header>
+<main class="layout">
+ <section class="intro">
+  <div><p class="eyebrow">OUTIL PDF TOUT-EN-UN</p><h1>Préparez vos documents<br><em>pour l'impression en livret.</em></h1><p class="lead">Importez un PDF, réorganisez ses pages, corrigez leur orientation puis générez un fichier prêt pour l'impression recto-verso.</p></div>
+  <div class="intro-mark">PDF<span>↗</span></div>
+ </section>
+ <section class="workspace">
+  <aside class="sidebar">
+   <div class="section-head"><div><span class="step">01</span><h2>Votre document</h2></div><span class="muted" id="docStatus">En attente</span></div>
+   <label class="dropzone" id="dropZone" for="fileInput"><span class="upload-icon">↑</span><strong>Glissez votre PDF ici</strong><span>ou cliquez pour choisir un fichier</span><small>PDF uniquement · 100 Mo maximum</small><input id="fileInput" type="file" accept="application/pdf"></label>
+   <div id="fileSummary" class="file-summary hidden"><span class="pdf-icon">PDF</span><div><b id="fileName">document.pdf</b><small id="fileMeta"></small></div></div>
+   <div class="section-head tools-head"><div><span class="step">02</span><h2>Outils des pages</h2></div></div>
+   <div class="tool-grid">
+    <button id="rotateLeftBtn" class="tool" disabled><b>↶</b>Rotation -90°</button>
+    <button id="rotateRightBtn" class="tool" disabled><b>↷</b>Rotation +90°</button>
+    <button id="duplicateBtn" class="tool" disabled><b>▣</b>Dupliquer</button>
+    <button id="deleteBtn" class="tool danger-tool" disabled><b>×</b>Supprimer</button>
+   </div>
+   <p class="hint">Sélectionnez une vignette pour appliquer une action. Faites glisser les vignettes pour changer leur ordre.</p>
+   <div class="section-head settings-head"><div><span class="step">03</span><h2>Paramètres du livret</h2></div></div>
+   <label class="field">Format de la feuille<select id="paperSize"><option value="A4">A4 — 210 × 297 mm</option><option value="A3">A3 — 297 × 420 mm</option><option value="LETTER">Letter — 8.5 × 11 pouces</option></select></label>
+   <div class="two-fields"><label class="field">Marge (mm)<input id="margin" type="number" min="0" max="25" value="5"></label><label class="field">Gouttière (mm)<input id="gutter" type="number" min="0" max="20" value="4"></label></div>
+   <label class="check"><input id="foldLine" type="checkbox" checked><span>Repère de pliure central</span></label>
+   <label class="check"><input id="cropMarks" type="checkbox"><span>Repères de coupe</span></label>
+   <label class="check"><input id="autoRotate" type="checkbox" checked><span>Adapter automatiquement les pages</span></label>
+   <label class="field">Ordre de sortie<select id="duplexMode"><option value="booklet">Livret recto-verso (recommandé)</option><option value="fronts">Rectos uniquement (contrôle)</option></select></label>
+   <button id="exportBtn" class="btn btn-primary full" disabled><span>Créer le PDF livret</span><b>→</b></button>
+   <div id="progressWrap" class="progress-wrap hidden"><div class="progress-track"><span id="progressBar"></span></div><small id="progressText">Préparation…</small></div>
+   <p id="status" class="status" role="status" aria-live="polite"></p>
+  </aside>
+  <section class="pages-panel">
+   <div class="pages-heading"><div><span class="step">04</span><h2>Pages du document</h2><p id="pageCount">Importez un PDF pour afficher ses pages.</p></div><div class="page-actions"><button id="selectAllBtn" class="small-btn" disabled>Tout sélectionner</button><button id="clearSelectionBtn" class="small-btn" disabled>Effacer sélection</button></div></div>
+   <div id="emptyState" class="empty-state"><div class="empty-illustration"><span>▤</span><i>＋</i></div><h3>Votre espace de travail est prêt</h3><p>Les pages de votre PDF apparaîtront ici sous forme de vignettes.</p></div>
+   <div id="pagesGrid" class="pages-grid"></div>
+   <div class="bottom-note"><span>ⓘ</span> Vos fichiers restent sur votre appareil. Aucun PDF n'est envoyé à un serveur.</div>
+  </section>
+ </section>
+ <section class="help">
+  <h2>Comment imprimer votre livret ?</h2><div class="help-grid"><article><span>1</span><b>Générez le PDF</b><p>Les pages sont imposées par paires sur des feuilles paysage.</p></article><article><span>2</span><b>Imprimez en recto-verso</b><p>Dans les paramètres d'impression, activez le recto-verso et choisissez le retournement sur le bord court si votre imprimante le demande.</p></article><article><span>3</span><b>Pliez les feuilles</b><p>Empilez les feuilles dans l'ordre, pliez-les au centre puis agrafez si nécessaire.</p></article></div>
+  <p class="disclaimer">Remarque : vérifiez le sens du verso avec une feuille de test. Le réglage de retournement dépend du pilote de votre imprimante.</p>
+ </section>
+</main>
+<footer>ATELIER PDF <span>·</span> Application locale HTML, CSS et JavaScript</footer>
+</body></html>
