@@ -3,62 +3,238 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
   <title>Mes applications web</title>
   <style>
     :root {
       color-scheme: dark;
-      font-family: system-ui, sans-serif;
-      background: #101827;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1120;
       color: #eef2ff;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --muted: #aab6cd;
+      --line: rgba(190, 208, 245, .15);
+      --accent: #8bd5ff;
     }
-    body { margin: 0; padding: 3rem 1.25rem; }
-    main { max-width: 1000px; margin: auto; }
-    h1 { margin-bottom: .5rem; }
-    p { color: #b8c2d8; }
-    ul {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 1rem;
-      padding: 0;
-      list-style: none;
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+      background:
+        radial-gradient(ellipse at 12% 0%, rgba(73, 113, 210, .2), transparent 35rem),
+        radial-gradient(ellipse at 100% 30%, rgba(119, 70, 180, .14), transparent 32rem),
+        #0b1120;
     }
-    a {
-      display: block;
-      padding: 1rem;
-      border: 1px solid #34435d;
+    main { width: min(1120px, 100%); margin: 0 auto; }
+    .topline {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: 1.5rem;
+      color: #b6c8e8;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .topline::before {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #7de2bd;
+      box-shadow: 0 0 18px rgba(125, 226, 189, .8);
+      content: "";
+    }
+    h1 { margin: 0; font-size: clamp(2.2rem, 6vw, 4.5rem); letter-spacing: -.055em; line-height: 1.05; }
+    .intro { max-width: 650px; margin: 1rem 0 2.5rem; color: var(--muted); font-size: 1.08rem; line-height: 1.7; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    h2 { margin: 0; font-size: 1.35rem; letter-spacing: -.02em; }
+    .hint { margin: 0; color: #8492aa; font-size: .88rem; }
+    .showcase {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 1.5rem;
+      background: linear-gradient(135deg, rgba(28, 42, 66, .96), rgba(17, 26, 43, .96));
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+    }
+    .slide { display: none; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: 390px; }
+    .slide.is-active { display: grid; animation: appear .35s ease both; }
+    .slide-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(1.5rem, 5vw, 3.5rem); }
+    .slide-number { margin: 0 0 1rem; color: #9eb4d8; font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .slide h3 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.8rem); letter-spacing: -.04em; }
+    .slide-copy p:not(.slide-number) { margin: .85rem 0 1.5rem; color: var(--muted); line-height: 1.65; }
+    .open-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .8rem 1.05rem;
+      border: 1px solid rgba(139, 213, 255, .4);
       border-radius: .75rem;
-      background: #1b2638;
-      color: #a5d8ff;
+      background: rgba(139, 213, 255, .12);
+      color: #c7ecff;
+      font-weight: 700;
       text-decoration: none;
+      transition: background .2s ease, transform .2s ease;
     }
-    a:hover, a:focus-visible { background: #263650; }
+    .open-link:hover, .open-link:focus-visible { background: rgba(139, 213, 255, .22); transform: translateY(-2px); }
+    .open-link:focus-visible, button:focus-visible, .app-card:focus-visible { outline: 3px solid #a5e3ff; outline-offset: 3px; }
+    .preview-wrap { position: relative; min-height: 300px; padding: 1.25rem 1.25rem 1.25rem 0; }
+    .browser {
+      height: 100%; min-height: 350px; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .17);
+      border-radius: 1rem;
+      background: #0c1220;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
+    }
+    .browser-bar { display: flex; align-items: center; gap: .4rem; height: 34px; padding: 0 .8rem; border-bottom: 1px solid rgba(255, 255, 255, .1); background: #192338; }
+    .browser-bar i { width: 7px; height: 7px; border-radius: 50%; background: #52627c; }
+    .browser-bar span { width: min(45%, 180px); margin: 0 auto; padding: .2rem .5rem; border-radius: 5px; background: rgba(255, 255, 255, .06); color: #93a2bb; font-size: .62rem; text-align: center; }
+    .preview-frame { display: block; width: 100%; height: 350px; border: 0; background: #101827; }
+    .preview-placeholder { display: grid; height: 350px; place-items: center; padding: 2rem; color: #9baac2; text-align: center; }
+    .carousel-controls { display: flex; align-items: center; justify-content: space-between; padding: .9rem 1.15rem; border-top: 1px solid var(--line); }
+    .arrow-button { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: #1a2840; color: #eef2ff; cursor: pointer; font-size: 1.2rem; transition: background .2s ease; }
+    .arrow-button:hover { background: #2a3c5a; }
+    .dots { display: flex; align-items: center; justify-content: center; gap: .5rem; }
+    .dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 10px; background: #53627a; cursor: pointer; transition: width .2s ease, background .2s ease; }
+    .dot[aria-current="true"] { width: 24px; background: var(--accent); }
+    .apps-section { margin-top: 3.5rem; }
+    .app-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: .85rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
+    .app-card {
+      position: relative; display: flex; min-height: 100px; align-items: center; gap: 1rem;
+      padding: 1rem; border: 1px solid var(--line); border-radius: 1rem;
+      background: rgba(24, 35, 55, .78); color: #eef2ff; text-decoration: none;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .app-card:hover { transform: translateY(-3px); border-color: rgba(139, 213, 255, .55); background: #1c2b43; }
+    .app-icon { display: grid; width: 46px; height: 46px; flex: 0 0 46px; place-items: center; border: 1px solid rgba(139, 213, 255, .17); border-radius: .85rem; background: linear-gradient(145deg, rgba(87, 133, 210, .23), rgba(133, 88, 182, .18)); font-size: 1.35rem; }
+    .app-card strong { display: block; font-size: .98rem; }
+    .app-card small { display: block; margin-top: .3rem; color: #91a0b8; font-size: .78rem; }
+    .app-card::after { margin-left: auto; color: #8193b1; content: "↗"; }
+    footer { margin-top: 2.5rem; color: #75839b; font-size: .82rem; text-align: center; }
+    @keyframes appear { from { opacity: .65; } to { opacity: 1; } }
+    @media (max-width: 760px) {
+      body { padding-top: 1.5rem; }
+      .intro { margin-bottom: 2rem; }
+      .slide { grid-template-columns: 1fr; }
+      .slide-copy { padding-bottom: 1.25rem; }
+      .preview-wrap { min-height: 280px; padding: 0 1rem 1rem; }
+      .browser { min-height: 280px; }
+      .preview-frame, .preview-placeholder { height: 280px; }
+      .section-heading { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
   </style>
 </head>
 <body>
   <main>
+    <div class="topline">Un espace pour vos outils</div>
     <h1>Mes applications web</h1>
-    <p>Choisissez une application pour l'ouvrir.</p>
-    <ul>
-      <li><a href="./Analyse-photo.html">Analyse photo</a></li>
-      <li><a href="./Analyse_réseau.html">Analyse réseau</a></li>
-      <li><a href="./Audio.html">Audio</a></li>
-      <li><a href="./Budget.html">Budget</a></li>
-      <li><a href="./billeterie.html">Billetterie</a></li>
-      <li><a href="./CONTROLE.html">Contrôle</a></li>
-       <li><a href="./Atelier_Livret_PDF.html">Atelier_Livret_PDF</a></li>
-       <li><a href="./numerix.html">Convertiseur-de-base</a></li>
-       <li><a href="./Convertisseur_defichier.html">Convertisseur_defichier</a></li>
-      <li><a href="./Conversion.html">Conversion d'unités</a></li>
-      <li><a href="./convertiseur.html">Convertisseur Markdown</a></li>
-      <li><a href="./document_livret.html">Créateur de livret PDF</a></li>
-      <li><a href="./Mesure.html">Mesure 3D</a></li>
-      <li><a href="./Météo.html">Météo</a></li>
-      <li><a href="./podomètre.html">Podomètre</a></li>
-      <li><a href="./Space.html">Vision Space</a></li>
-      <li><a href="./tontine.html">Tontine</a></li>
-      <li><a href="./animation.html">Animation</a></li>
-      <li><a href="./OCR_Image_Word_projet/OCR_Image_Word/index.html">OCR Image vers Word</a></li>
-    </ul>
+    <p class="intro">Découvrez les outils disponibles et ouvrez en un clic celui dont vous avez besoin. Faites défiler les aperçus pour explorer quelques applications.</p>
+
+    <section aria-labelledby="showcase-title">
+      <div class="section-heading">
+        <h2 id="showcase-title">À découvrir</h2>
+        <p class="hint">Aperçu interactif des applications</p>
+      </div>
+      <div class="showcase" aria-roledescription="diaporama" aria-label="Aperçu des applications">
+        <article class="slide is-active" data-title="Analyse photo" data-href="./Analyse-photo.html" data-description="Explorez l'outil d'analyse et découvrez ses fonctionnalités visuelles." aria-hidden="false">
+          <div class="slide-copy"><p class="slide-number">Application 1 / 4</p><h3>Analyse photo</h3><p>Explorez l'outil d'analyse et découvrez ses fonctionnalités visuelles.</p><a class="open-link" href="./Analyse-photo.html">Ouvrir l'application <span aria-hidden="true">→</span></a></div>
+          <div class="preview-wrap"><div class="browser"><div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>aperçu de l'application</span></div><div class="preview-placeholder" aria-live="polite">Chargement de l'aperçu…</div></div></div>
+        </article>
+        <article class="slide" data-title="Audio" data-href="./Audio.html" data-description="Retrouvez votre espace dédié aux outils audio.">
+          <div class="slide-copy"><p class="slide-number">Application 2 / 4</p><h3>Audio</h3><p>Retrouvez votre espace dédié aux outils audio.</p><a class="open-link" href="./Audio.html">Ouvrir l'application <span aria-hidden="true">→</span></a></div>
+          <div class="preview-wrap"><div class="browser"><div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>aperçu de l'application</span></div><div class="preview-placeholder">L'aperçu apparaît ici.</div></div></div>
+        </article>
+        <article class="slide" data-title="Budget" data-href="./Budget.html" data-description="Accédez rapidement à votre outil de gestion de budget.">
+          <div class="slide-copy"><p class="slide-number">Application 3 / 4</p><h3>Budget</h3><p>Accédez rapidement à votre outil de gestion de budget.</p><a class="open-link" href="./Budget.html">Ouvrir l'application <span aria-hidden="true">→</span></a></div>
+          <div class="preview-wrap"><div class="browser"><div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>aperçu de l'application</span></div><div class="preview-placeholder">L'aperçu apparaît ici.</div></div></div>
+        </article>
+        <article class="slide" data-title="Météo" data-href="./Météo.html" data-description="Consultez l'application météo directement depuis son aperçu.">
+          <div class="slide-copy"><p class="slide-number">Application 4 / 4</p><h3>Météo</h3><p>Consultez l'application météo directement depuis son aperçu.</p><a class="open-link" href="./Météo.html">Ouvrir l'application <span aria-hidden="true">→</span></a></div>
+          <div class="preview-wrap"><div class="browser"><div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>aperçu de l'application</span></div><div class="preview-placeholder">L'aperçu apparaît ici.</div></div></div>
+        </article>
+        <div class="carousel-controls">
+          <button class="arrow-button" type="button" data-direction="-1" aria-label="Application précédente">←</button>
+          <div class="dots" aria-label="Choisir un aperçu">
+            <button class="dot" type="button" aria-label="Afficher Analyse photo" aria-current="true"></button>
+            <button class="dot" type="button" aria-label="Afficher Audio" aria-current="false"></button>
+            <button class="dot" type="button" aria-label="Afficher Budget" aria-current="false"></button>
+            <button class="dot" type="button" aria-label="Afficher Météo" aria-current="false"></button>
+          </div>
+          <button class="arrow-button" type="button" data-direction="1" aria-label="Application suivante">→</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="apps-section" aria-labelledby="apps-title">
+      <div class="section-heading">
+        <h2 id="apps-title">Toutes les applications</h2>
+        <p class="hint">Choisissez un outil pour le lancer</p>
+      </div>
+      <ul class="app-grid">
+        <li><a class="app-card" href="./Analyse-photo.html"><span class="app-icon" aria-hidden="true">📷</span><span><strong>Analyse photo</strong><small>Image &amp; analyse</small></span></a></li>
+        <li><a class="app-card" href="./Analyse_réseau.html"><span class="app-icon" aria-hidden="true">🌐</span><span><strong>Analyse réseau</strong><small>Réseau &amp; données</small></span></a></li>
+        <li><a class="app-card" href="./Audio.html"><span class="app-icon" aria-hidden="true">🎧</span><span><strong>Audio</strong><small>Outils audio</small></span></a></li>
+        <li><a class="app-card" href="./Budget.html"><span class="app-icon" aria-hidden="true">💶</span><span><strong>Budget</strong><small>Gestion &amp; calculs</small></span></a></li>
+        <li><a class="app-card" href="./billeterie.html"><span class="app-icon" aria-hidden="true">🎟️</span><span><strong>Billetterie</strong><small>Billets &amp; réservations</small></span></a></li>
+        <li><a class="app-card" href="./CONTROLE.html"><span class="app-icon" aria-hidden="true">✅</span><span><strong>Contrôle</strong><small>Outils de contrôle</small></span></a></li>
+        <li><a class="app-card" href="./Atelier_Livret_PDF.html"><span class="app-icon" aria-hidden="true">📚</span><span><strong>Atelier Livret PDF</strong><small>Création de livrets</small></span></a></li>
+        <li><a class="app-card" href="./numerix.html"><span class="app-icon" aria-hidden="true">🔢</span><span><strong>Convertisseur de base</strong><small>Conversion numérique</small></span></a></li>
+        <li><a class="app-card" href="./Convertisseur_defichier.html"><span class="app-icon" aria-hidden="true">📁</span><span><strong>Convertisseur de fichiers</strong><small>Conversion de fichiers</small></span></a></li>
+        <li><a class="app-card" href="./Conversion.html"><span class="app-icon" aria-hidden="true">📐</span><span><strong>Conversion d'unités</strong><small>Mesures &amp; unités</small></span></a></li>
+        <li><a class="app-card" href="./convertiseur.html"><span class="app-icon" aria-hidden="true">✍️</span><span><strong>Convertisseur Markdown</strong><small>Texte &amp; Markdown</small></span></a></li>
+        <li><a class="app-card" href="./document_livret.html"><span class="app-icon" aria-hidden="true">📖</span><span><strong>Créateur de livret PDF</strong><small>Documents PDF</small></span></a></li>
+        <li><a class="app-card" href="./Mesure.html"><span class="app-icon" aria-hidden="true">🧊</span><span><strong>Mesure 3D</strong><small>Mesures en 3D</small></span></a></li>
+        <li><a class="app-card" href="./Météo.html"><span class="app-icon" aria-hidden="true">🌤️</span><span><strong>Météo</strong><small>Conditions météo</small></span></a></li>
+        <li><a class="app-card" href="./podomètre.html"><span class="app-icon" aria-hidden="true">👟</span><span><strong>Podomètre</strong><small>Suivi des pas</small></span></a></li>
+        <li><a class="app-card" href="./Space.html"><span class="app-icon" aria-hidden="true">🚀</span><span><strong>Vision Space</strong><small>Exploration spatiale</small></span></a></li>
+        <li><a class="app-card" href="./tontine.html"><span class="app-icon" aria-hidden="true">🤝</span><span><strong>Tontine</strong><small>Gestion de tontine</small></span></a></li>
+        <li><a class="app-card" href="./animation.html"><span class="app-icon" aria-hidden="true">🎨</span><span><strong>Animation</strong><small>Création animée</small></span></a></li>
+        <li><a class="app-card" href="./OCR_Image_Word_projet/OCR_Image_Word/index.html"><span class="app-icon" aria-hidden="true">📝</span><span><strong>OCR Image vers Word</strong><small>Image &amp; texte</small></span></a></li>
+      </ul>
+    </section>
+    <footer>Une collection d'outils web, accessible en un clic.</footer>
   </main>
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const dots = [...document.querySelectorAll('.dot')];
+      const preview = document.querySelector('.preview-wrap .browser');
+      let current = 0;
+
+      function showSlide(index) {
+        current = (index + slides.length) % slides.length;
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('is-active', i === current);
+          slide.setAttribute('aria-hidden', String(i !== current));
+        });
+        dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === current)));
+
+        const slide = slides[current];
+        const frame = document.createElement('iframe');
+        frame.className = 'preview-frame';
+        frame.title = `Aperçu de ${slide.dataset.title}`;
+        frame.loading = 'lazy';
+        frame.src = slide.dataset.href;
+        const browser = slide.querySelector('.browser');
+        const placeholder = browser.querySelector('.preview-placeholder');
+        if (placeholder) placeholder.replaceWith(frame);
+        else {
+          const previousFrame = browser.querySelector('iframe');
+          if (previousFrame) previousFrame.replaceWith(frame);
+          else browser.append(frame);
+        }
+      }
+
+      document.querySelectorAll('.arrow-button').forEach(button => {
+        button.addEventListener('click', () => showSlide(current + Number(button.dataset.direction)));
+      });
+      dots.forEach((dot, index) => dot.addEventListener('click', () => showSlide(index)));
+      showSlide(0);
+    })();
+  </script>
 </body>
 </html>
